@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정렬 테스트</title>
+<style>
+  body{ font-family: sans-serif; background:#111; color:#fff; padding:20px; }
+  h2{ font-size:14px; margin:24px 0 8px; color:#8f8; }
+
+  /* 테스트 1: 일반 div (버튼 아님) + grid */
+  .test1-row{
+    display:grid; grid-template-columns:1fr auto; gap:8px;
+    background:#223; padding:12px; border-radius:8px; margin-bottom:8px;
+  }
+  .test1-label{ background:yellow; color:#000; }
+  .test1-value{ background:lime; color:#000; text-align:right; }
+
+  /* 테스트 2: button 태그 + grid (실제 대시보드와 동일 구조) */
+  .test2-btn{
+    display:block; width:100%; box-sizing:border-box;
+    background:#334; padding:12px; border-radius:8px; margin-bottom:8px;
+    border:none; font-family:inherit; color:inherit;
+  }
+  .test2-row{
+    display:grid; grid-template-columns:1fr auto; gap:8px;
+  }
+  .test2-label{ background:orange; color:#000; }
+  .test2-value{ background:cyan; color:#000; text-align:right; }
+
+  /* 테스트 3: flex + space-between (grid 대신 flex로) */
+  .test3-row{
+    display:flex; justify-content:space-between;
+    background:#223; padding:12px; border-radius:8px; margin-bottom:8px;
+  }
+  .test3-label{ background:pink; color:#000; }
+  .test3-value{ background:violet; color:#000; }
+</style>
+</head>
+<body>
+
+<h2>테스트 1: div + grid (버튼 아님)</h2>
+<div class="test1-row">
+  <span class="test1-label">라벨텍스트</span>
+  <span class="test1-value">99</span>
+</div>
+
+<h2>테스트 2: button + grid (지금 대시보드와 같은 구조)</h2>
+<button class="test2-btn">
+  <div class="test2-row">
+    <span class="test2-label">라벨텍스트</span>
+    <span class="test2-value">99</span>
+  </div>
+</button>
+
+<h2>테스트 3: div + flex space-between</h2>
+<div class="test3-row">
+  <span class="test3-label">라벨텍스트</span>
+  <span class="test3-value">99</span>
+</div>
+
+<p style="color:#888; font-size:12px; margin-top:30px;">
+  세 개 다 초록/시안/보라색 숫자(99)가 노란/주황/분홍색 라벨 오른쪽 끝에 딱 붙어야 정상입니다.<br>
+  어느 것이 오른쪽 끝에 붙고, 어느 것이 안 붙는지 캡처해서 보내주세요.
+</p>
+
+</body>
+</html>
