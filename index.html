@@ -230,6 +230,51 @@
   }
 
   /* ---------- queue (공연예술과) ---------- */
+  /* ---------- schedule calendar ---------- */
+  .calendar-wrap{margin:14px 18px 0;}
+  .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .calendar-month{font-size:14px;font-weight:700;color:var(--text);}
+  .calendar-dept-label{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;}
+  .calendar-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+  .calendar-dow{text-align:center;font-size:10px;color:var(--text-dim);}
+  .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .calendar-day-empty{aspect-ratio:1;}
+  .calendar-day{
+    aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-size:11px;color:var(--text-muted);border-radius:8px;background:none;border:1px solid transparent;
+  }
+  .calendar-day.today{
+    border-color:var(--dept-color,var(--accent));
+    background:color-mix(in srgb, var(--dept-color,var(--accent)) 14%, transparent);
+    color:var(--text);font-weight:700;
+  }
+  .calendar-day.selected:not(.today){background:var(--surface-2);color:var(--text);}
+  .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--accent));}
+  .calendar-day-detail{margin-top:14px;border-top:1px solid var(--border);padding-top:10px;}
+  .calendar-day-detail-label{
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;margin:0 0 8px;
+  }
+  .schedule-row{
+    display:flex;align-items:center;gap:10px;
+    background:var(--surface);border:1px solid var(--border);
+    border-left:3px solid var(--dept-color,var(--accent));
+    border-radius:12px;padding:10px 12px;margin-bottom:8px;
+  }
+  .schedule-dday{
+    flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11px;
+    padding:4px 8px;border-radius:8px;
+    background:color-mix(in srgb, var(--dept-color,var(--accent)) 18%, transparent);
+    color:var(--dept-color,var(--accent));
+  }
+  .schedule-info{flex:1;min-width:0;}
+  .schedule-title{font-size:13px;font-weight:600;color:var(--text);margin:0 0 2px;}
+  .schedule-meta{font-size:11px;color:var(--text-muted);margin:0;}
+  .schedule-empty{
+    font-size:12.5px;color:var(--text-dim);text-align:center;
+    padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  }
+
   .queue-card{
     background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     padding:4px 0;margin-bottom:10px;
@@ -295,6 +340,8 @@
     <button class="range-tab" data-range="yearly">연간</button>
   </div>
 </div>
+
+<div id="scheduleSection"></div>
 
 <main id="main">
   <div class="skeleton"></div>
@@ -485,10 +532,128 @@ function queueSection(){
   return `<p class="section-label">대기 공연</p><div class="queue-card">${rows}</div>`;
 }
 
+function fmtDday(n){
+  if(n === 0) return 'D-DAY';
+  return 'D-' + n;
+}
+
+function dateKey(d){
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+
+function startOfWeek(date){
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  d.setDate(d.getDate() - d.getDay());
+  return d;
+}
+
+function renderSchedule(){
+  const wrap = document.getElementById('scheduleSection');
+  if(!state.data){ wrap.innerHTML=''; return; }
+
+  // 연간 보기에서는 캘린더 자체를 숨김
+  if(state.range === 'yearly'){ wrap.innerHTML=''; return; }
+
+  const items = (state.data.schedules && state.data.schedules[state.dept]) || [];
+  const deptVar = `var(--dept-${DEPT_COLOR_KEY[state.dept]})`;
+  const now = new Date();
+  const todayKey = dateKey(now);
+
+  // 날짜(YYYY-MM-DD) 기준으로 일정 묶기
+  const eventsByDate = {};
+  items.forEach(it=>{
+    const d = new Date(it.date);
+    const key = dateKey(d);
+    if(!eventsByDate[key]) eventsByDate[key] = [];
+    eventsByDate[key].push(it);
+  });
+
+  if(state.selectedDate == null) state.selectedDate = todayKey;
+
+  let headerLabel, cells;
+
+  if(state.range === 'weekly'){
+    const weekStart = startOfWeek(now);
+    const days = [...Array(7)].map((_,i)=>{
+      const d = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate()+i);
+      return d;
+    });
+    const p = n => String(n).padStart(2,'0');
+    headerLabel = `${p(days[0].getMonth()+1)}.${p(days[0].getDate())} - ${p(days[6].getMonth()+1)}.${p(days[6].getDate())}`;
+    cells = days.map(d=>{
+      const key = dateKey(d);
+      const hasEvent = !!eventsByDate[key];
+      const isToday = key === todayKey;
+      const isSelected = key === state.selectedDate;
+      return `
+        <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:${deptVar}" data-key="${key}">
+          <span>${d.getDate()}</span>
+          ${hasEvent ? '<span class="calendar-day-dot"></span>' : ''}
+        </button>`;
+    }).join('');
+  } else {
+    // monthly
+    const year = now.getFullYear(), month = now.getMonth();
+    const firstDow = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    headerLabel = `${year}년 ${month+1}월`;
+    let html = '';
+    for(let i=0;i<firstDow;i++) html += `<span class="calendar-day-empty"></span>`;
+    for(let day=1; day<=totalDays; day++){
+      const d = new Date(year, month, day);
+      const key = dateKey(d);
+      const hasEvent = !!eventsByDate[key];
+      const isToday = key === todayKey;
+      const isSelected = key === state.selectedDate;
+      html += `
+        <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:${deptVar}" data-key="${key}">
+          <span>${day}</span>
+          ${hasEvent ? '<span class="calendar-day-dot"></span>' : ''}
+        </button>`;
+    }
+    cells = html;
+  }
+
+  const selectedEvents = eventsByDate[state.selectedDate] || [];
+  const [sy, sm, sd] = state.selectedDate.split('-');
+  const detailRows = selectedEvents.length
+    ? selectedEvents.map(it => `
+        <div class="schedule-row" style="--dept-color:${deptVar}">
+          <span class="schedule-dday">${fmtDday(it.dDay)}</span>
+          <div class="schedule-info">
+            <p class="schedule-title">${escapeHtml(it.title||'')}</p>
+            ${it.content ? `<p class="schedule-meta">${escapeHtml(it.content)}</p>` : ''}
+          </div>
+        </div>`).join('')
+    : `<div class="schedule-empty">이 날 등록된 일정이 없습니다</div>`;
+
+  wrap.innerHTML = `
+    <div class="calendar-wrap">
+      <div class="calendar-header">
+        <span class="calendar-month">${headerLabel}</span>
+        <span class="calendar-dept-label mono">${state.dept}</span>
+      </div>
+      <div class="calendar-dow-row">
+        ${['일','월','화','수','목','금','토'].map(d=>`<span class="calendar-dow">${d}</span>`).join('')}
+      </div>
+      <div class="calendar-grid">${cells}</div>
+      <div class="calendar-day-detail">
+        <p class="calendar-day-detail-label">${sm}.${sd} 일정</p>
+        ${detailRows}
+      </div>
+    </div>`;
+
+  wrap.querySelectorAll('[data-key]').forEach(btn=>{
+    btn.onclick = ()=>{ state.selectedDate = btn.dataset.key; renderSchedule(); };
+  });
+}
+
 function render(){
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
+  renderSchedule();
 
   const main = document.getElementById('main');
   if(!state.data){ return; }
