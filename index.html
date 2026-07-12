@@ -46,6 +46,25 @@
   .mono{font-family:'IBM Plex Mono',monospace;}
 
   /* ---------- header ---------- */
+  /* ---------- alert banner ---------- */
+  #alertBanner{position:relative;}
+  .alert-banner{
+    display:flex;align-items:flex-start;gap:10px;
+    background:rgba(209,73,91,.14);border-bottom:1px solid rgba(209,73,91,.4);
+    padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top));
+  }
+  .alert-icon{
+    flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#D1495B;
+    margin-top:5px;box-shadow:0 0 8px 1.5px #D1495B;
+  }
+  .alert-body{flex:1;min-width:0;}
+  .alert-title{font-size:12.5px;font-weight:700;color:#F2EFE9;margin:0 0 2px;}
+  .alert-desc{font-size:11.5px;color:#C79098;margin:0;line-height:1.5;}
+  .alert-close{
+    flex:0 0 auto;background:none;border:none;color:#C79098;font-size:18px;
+    line-height:1;padding:2px 4px;font-family:inherit;
+  }
+
   header{
     position:sticky;top:0;z-index:20;
     background:linear-gradient(180deg,var(--bg) 70%,rgba(20,23,28,0));
@@ -316,6 +335,8 @@
 </style>
 </head>
 <body>
+
+<div id="alertBanner"></div>
 
 <header>
   <p class="eyebrow">CULTURAL AFFAIRS · CONTROL BOARD</p>
@@ -699,6 +720,38 @@ function showError(){
     </div>`;
 }
 
+function renderAlertBanner(){
+  const wrap = document.getElementById('alertBanner');
+  const now = new Date();
+  const day = now.getDay(); // 6 = 토요일
+  const hour = now.getHours();
+  const inWindow = (day === 6 && (hour === 20 || hour === 21 || hour === 22));
+
+  const unreported = (state.data && state.data.unreportedDepartments) || [];
+
+  if(!inWindow || unreported.length === 0){ wrap.innerHTML=''; return; }
+
+  const dismissKey = 'alertDismissed-' + now.toISOString().slice(0,10) + '-' + hour;
+  let dismissed = false;
+  try{ dismissed = localStorage.getItem(dismissKey) === '1'; }catch(e){}
+  if(dismissed){ wrap.innerHTML=''; return; }
+
+  wrap.innerHTML = `
+    <div class="alert-banner">
+      <span class="alert-icon"></span>
+      <div class="alert-body">
+        <p class="alert-title">이번 주 미보고 부서 ${unreported.length}곳</p>
+        <p class="alert-desc">${unreported.join(', ')} — 오늘(토요일) 안에 보고 부탁드립니다.</p>
+      </div>
+      <button class="alert-close" id="alertCloseBtn" aria-label="닫기">×</button>
+    </div>`;
+
+  document.getElementById('alertCloseBtn').onclick = ()=>{
+    try{ localStorage.setItem(dismissKey, '1'); }catch(e){}
+    wrap.innerHTML = '';
+  };
+}
+
 async function load(){
   document.getElementById('main').innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
   try{
@@ -706,6 +759,7 @@ async function load(){
     if(!res.ok) throw new Error('bad status');
     state.data = await res.json();
     render();
+    renderAlertBanner();
   }catch(err){
     console.error(err);
     showError();
