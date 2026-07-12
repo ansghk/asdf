@@ -725,7 +725,8 @@ function renderAlertBanner(){
   const now = new Date();
   const day = now.getDay(); // 6 = 토요일
   const hour = now.getHours();
-  const inWindow = (day === 6 && (hour === 20 || hour === 21 || hour === 22));
+  const forceTest = new URLSearchParams(location.search).get('forceAlert') === '1';
+  const inWindow = forceTest || (day === 6 && (hour === 20 || hour === 21 || hour === 22));
 
   const unreported = (state.data && state.data.unreportedDepartments) || [];
 
