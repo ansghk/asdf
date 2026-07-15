@@ -143,7 +143,8 @@
   }
   .dept-card{
     grid-column:span 1;align-self:stretch;height:100%;
-    display:block;width:100%;text-align:left;
+    display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
+    width:100%;text-align:left;
     padding:15px 15px 13px;border-radius:var(--radius);
     background:
       linear-gradient(160deg, color-mix(in srgb, var(--dept-color,var(--blue)) 13%, transparent), transparent 55%),
@@ -451,7 +452,8 @@
   .briefing-info{flex:1;min-width:0;}
   .briefing-title{font-size:14.5px;font-weight:700;margin:0 0 3px;letter-spacing:-.02em;}
   .briefing-desc{font-size:12px;color:var(--text-muted);margin:0 0 10px;line-height:1.5;}
-  .dept-chips{display:flex;flex-wrap:wrap;gap:5px;}
+  .dept-chips{display:flex;flex-direction:column;gap:5px;}
+  .dept-chips-row{display:flex;flex-wrap:wrap;gap:5px;}
   .dept-chip{
     display:inline-flex;align-items:center;gap:5px;
     font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:100px;
@@ -873,12 +875,18 @@ function renderBriefing(){
   const offset = C * (1 - done / DEPTS.length);
   const ringColor = pct === 100 ? '#30D158' : (pct >= 60 ? '#0A84FF' : '#FF9F0A');
 
-  const chips = DEPTS.map(dept=>{
+  const chipOf = dept => {
     const missing = unreported.includes(dept);
     return `<span class="dept-chip ${missing?'missing':''}">
       <span class="chip-dot"></span>${dept.slice(0,2)}
     </span>`;
-  }).join('');
+  };
+  const missingChips = DEPTS.filter(d=>unreported.includes(d)).map(chipOf).join('');
+  const doneChips    = DEPTS.filter(d=>!unreported.includes(d)).map(chipOf).join('');
+  const chips = [
+    missingChips ? `<div class="dept-chips-row">${missingChips}</div>` : '',
+    doneChips    ? `<div class="dept-chips-row">${doneChips}</div>`    : ''
+  ].join('');
 
   // ---- 전 부서 임박 일정 (D-day 기준 상위 3개) ----
   const schedules = state.data.schedules || {};
