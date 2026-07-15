@@ -8,26 +8,31 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#14171C;
-    --surface:#1D2129;
-    --surface-2:#262B35;
-    --border:#2A2F39;
-    --accent:#E8A33D;
-    --text:#F2EFE9;
-    --text-muted:#8B93A1;
-    --text-dim:#5B6270;
-    --radius:14px;
-    --dept-culture:#E8A33D;
-    --dept-video:#4FB0B0;
-    --dept-photo:#8C7AE0;
-    --dept-protocol:#7FA37A;
-    --dept-performance:#D1495B;
+    /* Apple Dark Mode palette */
+    --bg:#050507;
+    --text:#F5F5F7;
+    --text-muted:#98989F;
+    --text-dim:#636369;
+    --blue:#0A84FF;
+    --radius:20px;
+
+    /* Liquid glass surfaces */
+    --glass:rgba(255,255,255,0.055);
+    --glass-strong:rgba(255,255,255,0.09);
+    --glass-border:rgba(255,255,255,0.10);
+    --glass-border-strong:rgba(255,255,255,0.18);
+    --glass-shadow:0 8px 32px rgba(0,0,0,0.38);
+
+    /* Apple system colors (dark) per department */
+    --dept-culture:#FF9F0A;      /* orange */
+    --dept-video:#64D2FF;        /* cyan */
+    --dept-photo:#BF5AF2;        /* purple */
+    --dept-protocol:#30D158;     /* green */
+    --dept-performance:#FF453A;  /* red */
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box;letter-spacing:-0.01em;}
   html,body{margin:0;padding:0;}
   button{
     -webkit-appearance:none;appearance:none;
@@ -40,302 +45,480 @@
     color:var(--text);
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
     -webkit-font-smoothing:antialiased;
-    padding-bottom:calc(28px + env(safe-area-inset-bottom));
+    padding-bottom:calc(32px + env(safe-area-inset-bottom));
     min-height:100vh;
+    position:relative;
   }
-  .mono{font-family:'IBM Plex Mono',monospace;}
 
-  /* ---------- header ---------- */
+  /* ---------- ambient glow behind the glass ---------- */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(600px 420px at 15% -5%, rgba(255,159,10,0.13), transparent 65%),
+      radial-gradient(560px 460px at 100% 12%, rgba(10,132,255,0.11), transparent 65%),
+      radial-gradient(680px 560px at 50% 110%, rgba(191,90,242,0.08), transparent 70%);
+  }
+
+  .mono{font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}
+
   /* ---------- alert banner ---------- */
-  #alertBanner{position:relative;}
+  #alertBanner{position:relative;z-index:30;}
   .alert-banner{
     display:flex;align-items:flex-start;gap:10px;
-    background:#F5F1EA;border-bottom:2px solid #D1495B;
+    background:rgba(255,69,58,0.14);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border-bottom:1px solid rgba(255,69,58,0.35);
     padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top));
   }
   .alert-icon{
-    flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#D1495B;
-    margin-top:5px;box-shadow:0 0 8px 1.5px #D1495B;
+    flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#FF453A;
+    margin-top:5px;box-shadow:0 0 10px 2px rgba(255,69,58,0.6);
   }
   .alert-body{flex:1;min-width:0;}
-  .alert-title{font-size:12.5px;font-weight:700;color:#1A1A1A;margin:0 0 2px;}
-  .alert-desc{font-size:11.5px;color:#5A4A45;margin:0;line-height:1.5;}
+  .alert-title{font-size:12.5px;font-weight:700;color:var(--text);margin:0 0 2px;}
+  .alert-desc{font-size:11.5px;color:var(--text-muted);margin:0;line-height:1.5;}
   .alert-close{
-    flex:0 0 auto;background:none;border:none;color:#1A1A1A;font-size:18px;
-    line-height:1;padding:2px 4px;font-family:inherit;opacity:.55;
+    flex:0 0 auto;color:var(--text);font-size:18px;
+    line-height:1;padding:2px 4px;opacity:.55;
   }
 
+  /* ---------- header (frosted, sticky) ---------- */
   header{
     position:sticky;top:0;z-index:20;
-    background:linear-gradient(180deg,var(--bg) 70%,rgba(20,23,28,0));
-    padding:calc(18px + env(safe-area-inset-top)) 18px 10px;
+    background:rgba(5,5,7,0.62);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    backdrop-filter:blur(28px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    padding:calc(16px + env(safe-area-inset-top)) 18px 12px;
   }
   .eyebrow{
-    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--text-dim);margin:0 0 4px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text-dim);margin:0 0 4px;font-weight:600;
   }
-  h1{font-size:38px;font-weight:700;margin:0;line-height:1;letter-spacing:-.015em;}
+  h1{font-size:28px;font-weight:700;margin:0;line-height:1.15;letter-spacing:-.03em;}
   .meta-row{
     display:flex;align-items:center;justify-content:space-between;
-    margin-top:-8px;font-size:12px;color:var(--text-muted);
+    margin-top:4px;font-size:12px;color:var(--text-muted);
   }
-  .clock-box{
-    display:flex;flex-direction:column;align-items:flex-end;gap:2px;
-  }
-  .clock-date{font-size:11px;color:var(--text-dim);letter-spacing:.03em;}
-  .clock-time{font-size:16px;color:var(--text);font-weight:700;letter-spacing:.02em;}
+  .clock-box{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+  .clock-date{font-size:11px;color:var(--text-dim);letter-spacing:.02em;}
+  .clock-time{font-size:16px;color:var(--text);font-weight:700;letter-spacing:.01em;}
   .status-dot{
-    width:6px;height:6px;border-radius:50%;background:var(--accent);
+    width:6px;height:6px;border-radius:50%;background:#30D158;
     display:inline-block;margin-right:6px;
-    box-shadow:0 0 8px 1px var(--accent);
+    box-shadow:0 0 8px 1px rgba(48,209,88,0.7);
     animation:pulse 2.4s ease-in-out infinite;
   }
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @media (prefers-reduced-motion: reduce){
+    .status-dot{animation:none;}
+  }
 
-  /* ---------- range segmented control ---------- */
+  /* ---------- range segmented control (iOS style) ---------- */
   .range-tabs{
-    display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);
-    border-radius:11px;padding:3px;
+    display:flex;gap:3px;
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:100px;padding:3px;
   }
   .range-tab{
-    flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;
-    font-weight:600;color:var(--text-muted);background:transparent;border:none;
-    font-family:inherit;transition:background .15s,color .15s;
+    flex:1;text-align:center;padding:8px 0;border-radius:100px;font-size:13px;
+    font-weight:600;color:var(--text-muted);
+    transition:background .2s ease,color .2s ease;
   }
-  .range-tab.active{background:var(--surface-2);color:var(--text);}
+  .range-tab.active{
+    background:rgba(255,255,255,0.16);
+    color:var(--text);
+    box-shadow:0 2px 10px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.25);
+  }
 
-  /* ---------- dept grid (primary selector) ---------- */
-  .dept-grid-label{margin-top:16px;}
+  /* ---------- dept grid ---------- */
+  .dept-grid-label{margin-top:18px;}
   .dept-grid{
-    display:grid;grid-template-columns:repeat(2,1fr);gap:9px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
     padding:0 18px;
   }
   .dept-card{
-    grid-column:span 1;box-sizing:border-box;height:100%;
-    display:block;width:100%;padding:0;margin:0;border:none;background:none;
-    color:var(--text-muted);font-family:inherit;text-align:left;
+    grid-column:span 1;align-self:stretch;height:100%;
+    display:block;width:100%;text-align:left;
+    padding:15px 15px 13px;border-radius:var(--radius);
+    background:
+      linear-gradient(160deg, color-mix(in srgb, var(--dept-color,var(--blue)) 13%, transparent), transparent 55%),
+      var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+    color:var(--text-muted);
+    transition:border-color .2s ease,background .2s ease,transform .12s ease;
   }
-  .dept-card-inner{
-    box-sizing:border-box;height:100%;
-    display:flex;flex-direction:column;text-align:left;
-    padding:13px 13px 12px;border-radius:16px;
-    border:1px solid color-mix(in srgb, var(--dept-color,var(--accent)) 40%, var(--border));
-    background:color-mix(in srgb, var(--dept-color,var(--accent)) 16%, var(--surface));
-    transition:border-color .15s,background .15s,transform .12s;
+  .dept-card:active{transform:scale(.97);}
+  .dept-card.active{
+    background:
+      linear-gradient(160deg, color-mix(in srgb, var(--dept-color,var(--blue)) 26%, transparent), transparent 60%),
+      var(--glass-strong);
+    border-color:color-mix(in srgb, var(--dept-color,var(--blue)) 60%, var(--glass-border-strong));
+    box-shadow:
+      0 8px 32px color-mix(in srgb, var(--dept-color,var(--blue)) 18%, rgba(0,0,0,0.4)),
+      inset 0 0.5px 0 rgba(255,255,255,0.18);
   }
-  .dept-card.active .dept-card-inner{
-    background:color-mix(in srgb, var(--dept-color,var(--accent)) 34%, var(--surface));
-    border-color:var(--dept-color,var(--accent));
-    box-shadow:0 0 0 1px var(--dept-color,var(--accent)) inset;
-  }
-  .dept-card:active .dept-card-inner{transform:scale(.98);}
   .dept-card-header{
     display:grid;grid-template-columns:1fr auto;align-items:flex-start;gap:8px;
   }
   .dept-card-left{display:flex;flex-direction:column;gap:3px;min-width:0;}
   .dept-chart-cell{
-    grid-column:span 1;border-radius:16px;border:1px solid var(--border);
-    background:var(--surface);padding:12px 13px;
-    display:flex;flex-direction:column;justify-content:center;gap:7px;
+    grid-column:span 1;border-radius:var(--radius);
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+    padding:14px 15px;
+    display:flex;flex-direction:column;justify-content:center;gap:8px;
   }
-  .chart-row{display:flex;align-items:center;gap:7px;}
-  .chart-label{
-    font-size:10px;color:var(--text-dim);flex:0 0 24px;letter-spacing:.02em;
-  }
+  .chart-row{display:flex;align-items:center;gap:8px;}
+  .chart-label{font-size:10px;color:var(--text-dim);flex:0 0 24px;font-weight:600;}
   .chart-bar-track{
-    flex:1;height:5px;border-radius:100px;background:var(--surface-2);overflow:hidden;
+    flex:1;height:5px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:hidden;
   }
   .chart-bar-fill{
     display:block;height:100%;border-radius:100px;
     transition:width .3s ease;min-width:2px;
   }
-  .chart-value{
-    font-size:10.5px;color:var(--text-muted);flex:0 0 16px;text-align:right;
-  }
+  .chart-value{font-size:10.5px;color:var(--text-muted);flex:0 0 16px;text-align:right;}
   .dept-card-top{display:flex;align-items:center;gap:8px;}
   .dept-card .gel{
-    width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:var(--dept-color,var(--accent));
-    box-shadow:0 0 0 rgba(0,0,0,0);transition:box-shadow .15s;
+    width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--dept-color,var(--blue));
+    transition:box-shadow .2s;
   }
-  .dept-card.active .gel{box-shadow:0 0 9px 2px var(--dept-color,var(--accent));}
-  .dept-card-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
-  .dept-card-period{
-    font-size:10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
-    letter-spacing:.03em;opacity:.6;
-  }
-  .dept-card-breakdown{
-    display:flex;flex-direction:column;gap:3px;margin-top:8px;
-  }
+  .dept-card.active .gel{box-shadow:0 0 10px 2px color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);}
+  .dept-card-name{font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+  .dept-card-period{font-size:10.5px;color:var(--text-muted);font-weight:500;}
+  .dept-card-breakdown{display:flex;flex-direction:column;gap:4px;margin-top:10px;}
   .dept-card-breakdown-row{
     display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px;
   }
   .dept-card-breakdown-label{
     font-size:10.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    text-align:left;
   }
   .dept-card-breakdown-value{
-    font-size:10.5px;font-weight:700;color:var(--text);font-family:'IBM Plex Mono',monospace;
-    text-align:right;
+    font-size:10.5px;font-weight:700;color:var(--text);
+    font-variant-numeric:tabular-nums;text-align:right;
   }
-  .dept-card-stat{
-    flex:0 0 auto;display:flex;align-items:baseline;gap:3px;
-  }
+  .dept-card-stat{flex:0 0 auto;display:flex;align-items:baseline;gap:3px;}
   .dept-card-num{
-    font-size:26px;font-weight:800;line-height:1;
-    color:var(--dept-color,var(--accent));font-family:'IBM Plex Mono',monospace;
+    font-size:26px;font-weight:700;line-height:1;
+    color:var(--dept-color,var(--blue));
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
   }
-  .dept-card-unit{font-size:11.5px;font-weight:600;color:var(--text);}
+  .dept-card-unit{font-size:11.5px;font-weight:600;color:var(--text-muted);}
 
-  /* ---------- focus bar (selected dept + range) ---------- */
+  /* ---------- focus bar ---------- */
   .dept-focus-bar{
-    margin:20px 18px 0;padding-top:14px;border-top:1px solid var(--border);
-    display:flex;flex-direction:column;gap:10px;
+    margin:22px 18px 0;padding-top:16px;
+    border-top:1px solid rgba(255,255,255,0.07);
+    display:flex;flex-direction:column;gap:12px;
   }
   .dept-focus-name{
-    display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;
+    display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;letter-spacing:-.02em;
   }
   .dept-focus-name::before{
     content:'';width:9px;height:9px;border-radius:50%;
-    background:var(--dept-color,var(--accent));
-    box-shadow:0 0 8px 1.5px var(--dept-color,var(--accent));
+    background:var(--dept-color,var(--blue));
+    box-shadow:0 0 9px 2px color-mix(in srgb, var(--dept-color,var(--blue)) 60%, transparent);
   }
 
   /* ---------- content ---------- */
   main{padding:16px 18px 6px;}
   .section-label{
-    font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
-    margin:18px 2px 8px;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:-.01em;color:var(--text-muted);
+    margin:22px 2px 10px;font-weight:600;
   }
   .cat-card{
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-    margin-bottom:10px;overflow:hidden;border-left:3px solid var(--dept-color,var(--accent));
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+    margin-bottom:12px;overflow:hidden;position:relative;
   }
-  .cat-head{
-    display:block;width:100%;
-    padding:14px 15px;background:none;border:none;color:inherit;
-    font-family:inherit;text-align:left;
+  .cat-card::before{
+    content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;
+    border-radius:0 3px 3px 0;background:var(--dept-color,var(--blue));
+    opacity:.85;
   }
-  .cat-head-row{
-    display:flex;align-items:center;justify-content:space-between;
-  }
+  .cat-head{display:block;width:100%;padding:15px 16px;}
+  .cat-head-row{display:flex;align-items:center;justify-content:space-between;}
   .cat-head-left{display:flex;align-items:center;gap:8px;}
-  .cat-name{font-size:14.5px;font-weight:700;}
+  .cat-name{font-size:14.5px;font-weight:600;letter-spacing:-.02em;}
   .cat-right{display:flex;align-items:center;gap:10px;}
   .cat-count{font-size:13px;color:var(--text-muted);}
   .cat-count b{
-    color:var(--dept-color,var(--accent));font-size:17px;font-weight:700;
-    font-family:'IBM Plex Mono',monospace;margin-right:2px;
+    color:var(--dept-color,var(--blue));font-size:17px;font-weight:700;
+    font-variant-numeric:tabular-nums;margin-right:2px;
   }
   .chevron{
-    width:9px;height:9px;border-right:2px solid var(--text-dim);border-bottom:2px solid var(--text-dim);
-    transform:rotate(45deg);transition:transform .2s;margin-top:-3px;
+    width:8px;height:8px;border-right:1.5px solid var(--text-dim);border-bottom:1.5px solid var(--text-dim);
+    transform:rotate(45deg);transition:transform .25s ease;margin-top:-3px;
   }
   .cat-card.open .chevron{transform:rotate(-135deg);margin-top:3px;}
 
-  .cat-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
   .cat-card.open .cat-body{max-height:2000px;}
   .item{
-    padding:12px 15px 12px 15px;border-top:1px solid var(--border);
+    padding:13px 16px;border-top:1px solid rgba(255,255,255,0.06);
     display:flex;gap:10px;
   }
   .item-num{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dept-color,var(--accent));
-    padding-top:1px;flex:0 0 20px;
+    font-variant-numeric:tabular-nums;font-size:11px;font-weight:600;
+    color:var(--dept-color,var(--blue));padding-top:1px;flex:0 0 20px;
   }
   .item-title{font-size:13.5px;font-weight:600;margin:0 0 3px;}
   .item-content{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:0 0 6px;}
-  .item-foot{
-    font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;
-  }
+  .item-foot{font-size:11px;color:var(--text-dim);}
 
-  .empty-cat{
-    padding:22px 15px;text-align:center;color:var(--text-dim);font-size:12.5px;
-  }
+  .empty-cat{padding:22px 16px;text-align:center;color:var(--text-dim);font-size:12.5px;}
 
-  /* ---------- queue (공연예술과) ---------- */
   /* ---------- schedule calendar ---------- */
-  .calendar-wrap{margin:14px 18px 0;}
-  .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-  .calendar-month{font-size:14px;font-weight:700;color:var(--text);}
-  .calendar-dept-label{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;}
+  .calendar-wrap{
+    margin:16px 18px 0;padding:18px 16px 16px;
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+  }
+  .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .calendar-month{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+  .calendar-dept-label{font-size:11px;color:var(--text-dim);font-weight:500;}
   .calendar-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
-  .calendar-dow{text-align:center;font-size:10px;color:var(--text-dim);}
+  .calendar-dow{text-align:center;font-size:10px;color:var(--text-dim);font-weight:600;}
   .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
   .calendar-day-empty{aspect-ratio:1;}
   .calendar-day{
     aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-    font-size:11px;color:var(--text-muted);border-radius:8px;background:none;border:1px solid transparent;
+    font-size:11px;color:var(--text-muted);border-radius:12px;border:1px solid transparent;
+    transition:background .15s ease;
   }
   .calendar-day.today{
-    border-color:var(--dept-color,var(--accent));
-    background:color-mix(in srgb, var(--dept-color,var(--accent)) 14%, transparent);
+    border-color:color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);
+    background:color-mix(in srgb, var(--dept-color,var(--blue)) 18%, transparent);
     color:var(--text);font-weight:700;
+    box-shadow:0 0 14px color-mix(in srgb, var(--dept-color,var(--blue)) 22%, transparent);
   }
-  .calendar-day.selected:not(.today){background:var(--surface-2);color:var(--text);}
-  .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--accent));}
-  .calendar-day-detail{margin-top:14px;border-top:1px solid var(--border);padding-top:10px;}
+  .calendar-day.selected:not(.today){background:rgba(255,255,255,0.10);color:var(--text);}
+  .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--blue));}
+  .calendar-day-detail{margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px;}
   .calendar-day-detail-label{
-    font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
-    font-family:'IBM Plex Mono',monospace;margin:0 0 8px;
+    font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 10px;
   }
   .schedule-row{
     display:flex;align-items:center;gap:10px;
-    background:var(--surface);border:1px solid var(--border);
-    border-left:3px solid var(--dept-color,var(--accent));
-    border-radius:12px;padding:10px 12px;margin-bottom:8px;
+    background:rgba(255,255,255,0.045);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;padding:11px 12px;margin-bottom:8px;
   }
   .schedule-dday{
-    flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11px;
-    padding:4px 8px;border-radius:8px;
-    background:color-mix(in srgb, var(--dept-color,var(--accent)) 18%, transparent);
-    color:var(--dept-color,var(--accent));
+    flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;
+    padding:4px 9px;border-radius:100px;
+    background:color-mix(in srgb, var(--dept-color,var(--blue)) 20%, transparent);
+    color:var(--dept-color,var(--blue));
   }
   .schedule-info{flex:1;min-width:0;}
   .schedule-title{font-size:13px;font-weight:600;color:var(--text);margin:0 0 2px;}
   .schedule-meta{font-size:11px;color:var(--text-muted);margin:0;}
   .schedule-empty{
     font-size:12.5px;color:var(--text-dim);text-align:center;
-    padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px;background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.07);border-radius:14px;
   }
 
+  /* ---------- queue ---------- */
   .queue-card{
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-    padding:4px 0;margin-bottom:10px;
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+    padding:4px 0;margin-bottom:12px;
   }
   .queue-row{
     display:flex;align-items:center;justify-content:space-between;
-    padding:11px 15px;border-top:1px solid var(--border);
+    padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);
   }
   .queue-row:first-child{border-top:none;}
   .queue-left{display:flex;flex-direction:column;gap:2px;}
   .queue-title{font-size:13.5px;font-weight:600;}
-  .queue-type{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;}
+  .queue-type{font-size:11px;color:var(--text-dim);}
   .badge{
-    font-size:11px;font-weight:600;padding:4px 9px;border-radius:100px;
-    background:rgba(232,163,61,.14);color:var(--accent);white-space:nowrap;
+    font-size:11px;font-weight:600;padding:5px 10px;border-radius:100px;
+    background:rgba(10,132,255,0.16);color:#6CB8FF;white-space:nowrap;
+    border:1px solid rgba(10,132,255,0.25);
   }
-  .badge.ready{background:rgba(127,163,122,.16);color:#9BC996;}
+  .badge.ready{
+    background:rgba(48,209,88,0.14);color:#5CE07F;
+    border-color:rgba(48,209,88,0.25);
+  }
+
+  /* ---------- weekly briefing ---------- */
+  .briefing{display:block;padding:16px 18px 0;}
+  .briefing-card{
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+    padding:18px 16px;
+  }
+  .briefing-top{display:flex;align-items:center;gap:16px;}
+  .briefing-left{display:flex;align-items:center;gap:16px;min-width:0;flex:1;}
+
+  /* ---------- notice toast (하단 반투명 공지) ---------- */
+  .notice-toast{
+    position:fixed;z-index:100;
+    left:14px;right:14px;
+    bottom:calc(14px + env(safe-area-inset-bottom));
+    max-width:480px;margin:0 auto;
+    display:flex;align-items:flex-start;gap:11px;
+    background:rgba(250,250,252,0.86);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.55);
+    border-radius:18px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.45), inset 0 0.5px 0 rgba(255,255,255,0.8);
+    padding:13px 13px 13px 15px;
+    color:#1D1D1F;
+    animation:toastUp .45s cubic-bezier(.32,.72,.28,1) both;
+  }
+  @keyframes toastUp{
+    from{transform:translateY(calc(100% + 20px));opacity:0;}
+    to{transform:translateY(0);opacity:1;}
+  }
+  .notice-toast.hiding{
+    animation:toastDown .3s ease-in both;
+  }
+  @keyframes toastDown{
+    from{transform:translateY(0);opacity:1;}
+    to{transform:translateY(calc(100% + 20px));opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .notice-toast{animation:none;}
+    .notice-toast.hiding{animation:none;display:none;}
+  }
+  .notice-toast-icon{
+    flex:0 0 auto;width:26px;height:26px;border-radius:8px;
+    background:#FF9F0A;display:flex;align-items:center;justify-content:center;
+    font-size:14px;margin-top:1px;
+    box-shadow:0 2px 8px rgba(255,159,10,0.4);
+  }
+  .notice-toast-body{flex:1;min-width:0;}
+  .notice-toast-label{
+    font-size:11px;font-weight:700;color:#86868B;margin:0 0 2px;
+    letter-spacing:.01em;
+  }
+  .notice-toast-text{
+    font-size:13.5px;line-height:1.5;font-weight:500;margin:0;color:#1D1D1F;
+  }
+  .notice-toast-meta{font-size:10.5px;color:#86868B;margin:5px 0 0;}
+  .notice-toast-close{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+    background:rgba(0,0,0,0.07);
+    display:flex;align-items:center;justify-content:center;
+    color:#636369;font-size:14px;line-height:1;font-weight:600;
+    transition:background .15s;
+  }
+  .notice-toast-close:active{background:rgba(0,0,0,0.14);}
+  .ring-wrap{flex:0 0 auto;position:relative;width:86px;height:86px;}
+  .ring-wrap svg{transform:rotate(-90deg);display:block;}
+  .ring-track{fill:none;stroke:rgba(255,255,255,0.08);stroke-width:8;}
+  .ring-fill{
+    fill:none;stroke-width:8;stroke-linecap:round;
+    transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1), stroke .3s;
+  }
+  .ring-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:0;
+  }
+  .ring-pct{font-size:19px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+  .ring-sub{font-size:9px;color:var(--text-dim);font-weight:600;margin-top:2px;}
+  .briefing-info{flex:1;min-width:0;}
+  .briefing-title{font-size:14.5px;font-weight:700;margin:0 0 3px;letter-spacing:-.02em;}
+  .briefing-desc{font-size:12px;color:var(--text-muted);margin:0 0 10px;line-height:1.5;}
+  .dept-chips{display:flex;flex-wrap:wrap;gap:5px;}
+  .dept-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:100px;
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    color:var(--text-muted);
+  }
+  .dept-chip .chip-dot{width:5px;height:5px;border-radius:50%;background:#30D158;}
+  .dept-chip.missing{
+    background:rgba(255,69,58,0.10);border-color:rgba(255,69,58,0.22);color:#FF8A80;
+  }
+  .dept-chip.missing .chip-dot{background:#FF453A;box-shadow:0 0 6px rgba(255,69,58,0.6);}
+
+  .briefing-upcoming{
+    margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07);
+  }
+  .briefing-upcoming-label{
+    font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 9px;
+  }
+  .up-row{
+    display:flex;align-items:center;gap:10px;padding:7px 0;
+  }
+  .up-row + .up-row{border-top:1px solid rgba(255,255,255,0.05);}
+  .up-dday{
+    flex:0 0 52px;font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;
+    text-align:center;padding:4px 0;border-radius:100px;
+    background:color-mix(in srgb, var(--up-color,var(--blue)) 18%, transparent);
+    color:var(--up-color,var(--blue));
+  }
+  .up-info{flex:1;min-width:0;}
+  .up-title{
+    font-size:12.5px;font-weight:600;color:var(--text);margin:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .up-dept{
+    display:flex;align-items:center;gap:4px;
+    font-size:10.5px;color:var(--text-dim);margin-top:1px;
+  }
+  .up-dept::before{
+    content:'';width:5px;height:5px;border-radius:50%;flex:0 0 auto;
+    background:var(--up-color,var(--blue));
+  }
+  .up-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:8px 0 2px;}
 
   /* ---------- states ---------- */
-  .state-box{
-    text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;
-  }
+  .state-box{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
   .state-box .big{font-size:15px;color:var(--text);font-weight:600;margin-bottom:6px;}
   .retry-btn{
-    margin-top:14px;background:var(--surface-2);border:1px solid var(--border);
-    color:var(--text);padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;
-    font-family:inherit;
+    margin-top:14px;
+    background:rgba(255,255,255,0.10);
+    -webkit-backdrop-filter:blur(24px);
+    backdrop-filter:blur(24px);
+    border:1px solid var(--glass-border-strong);
+    color:var(--text);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;
   }
   .skeleton{
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-    height:56px;margin-bottom:10px;position:relative;overflow:hidden;
+    background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);
+    height:56px;margin-bottom:12px;position:relative;overflow:hidden;
   }
   .skeleton::after{
     content:'';position:absolute;inset:0;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);
     animation:shimmer 1.4s infinite;
   }
   @keyframes shimmer{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+  @media (prefers-reduced-motion: reduce){
+    .skeleton::after{animation:none;}
+  }
 </style>
 </head>
 <body>
@@ -343,7 +526,7 @@
 <div id="alertBanner"></div>
 
 <header>
-  <p class="eyebrow">CULTURAL AFFAIRS · CONTROL BOARD</p>
+  <p class="eyebrow">Cultural Affairs · Control Board</p>
   <h1>문화부 대시보드</h1>
   <div class="meta-row">
     <span><span class="status-dot"></span><span id="weekLabel">불러오는 중…</span></span>
@@ -354,7 +537,9 @@
   </div>
 </header>
 
-<p class="section-label dept-grid-label">부서 선택</p>
+<section class="briefing" id="briefing"></section>
+
+<p class="section-label dept-grid-label" style="padding:0 18px;margin-left:0;margin-right:0;">부서 선택</p>
 <div class="dept-grid" id="deptTabs"></div>
 
 <div class="dept-focus-bar">
@@ -373,6 +558,8 @@
   <div class="skeleton"></div>
   <div class="skeleton"></div>
 </main>
+
+<div id="noticeToast"></div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9xPO9SY27PLAVOHRRr61yz0-5nr8cTNgiMRIV79Xz2ilyN/exec';
@@ -465,22 +652,20 @@ function renderDeptTabs(){
         </div>`;
     }).join('');
     btn.innerHTML = `
-      <div class="dept-card-inner">
-        <div class="dept-card-header">
-          <div class="dept-card-left">
-            <div class="dept-card-top">
-              <span class="gel"></span>
-              <span class="dept-card-name">${dept}</span>
-            </div>
-            <span class="dept-card-period">${rangeLabelShort()}</span>
+      <div class="dept-card-header">
+        <div class="dept-card-left">
+          <div class="dept-card-top">
+            <span class="gel"></span>
+            <span class="dept-card-name">${dept}</span>
           </div>
-          <div class="dept-card-stat">
-            <span class="dept-card-num">${count}</span>
-            <span class="dept-card-unit">건</span>
-          </div>
+          <span class="dept-card-period">${rangeLabelShort()}</span>
         </div>
-        <div class="dept-card-breakdown">${breakdownRows}</div>
+        <div class="dept-card-stat">
+          <span class="dept-card-num">${count}</span>
+          <span class="dept-card-unit">건</span>
+        </div>
       </div>
+      <div class="dept-card-breakdown">${breakdownRows}</div>
     `;
     btn.onclick = ()=>{ state.dept = dept; state.openCats.clear(); render(); };
     wrap.appendChild(btn);
@@ -488,7 +673,7 @@ function renderDeptTabs(){
 
   const focusName = document.getElementById('deptFocusName');
   focusName.textContent = state.dept;
-  focusName.style.setProperty('--dept-color', `var(--dept-${state.dept})`);
+  focusName.style.setProperty('--dept-color', `var(--dept-${DEPT_COLOR_KEY[state.dept]})`);
 }
 
 function renderRangeTabs(){
@@ -516,7 +701,7 @@ setInterval(updateClock, 1000);
 function catCard(deptData, category, key){
   const bucket = deptData[state.range][category] || { count:0, items:[] };
   const isOpen = state.openCats.has(category);
-  const deptVar = `var(--dept-${state.dept})`;
+  const deptVar = `var(--dept-${DEPT_COLOR_KEY[state.dept]})`;
 
   const itemsHtml = bucket.items.length
     ? bucket.items.map((it,i)=>`
@@ -656,7 +841,7 @@ function renderSchedule(){
     : `<div class="schedule-empty">이 날 등록된 일정이 없습니다</div>`;
 
   wrap.innerHTML = `
-    <div class="calendar-wrap">
+    <div class="calendar-wrap" style="--dept-color:${deptVar}">
       <div class="calendar-header">
         <span class="calendar-month">${headerLabel}</span>
         <span class="calendar-dept-label mono">${state.dept}</span>
@@ -676,7 +861,139 @@ function renderSchedule(){
   });
 }
 
+function renderBriefing(){
+  const wrap = document.getElementById('briefing');
+  if(!state.data){ wrap.innerHTML=''; return; }
+
+  // ---- 보고율 링 ----
+  const unreported = state.data.unreportedDepartments || [];
+  const done = DEPTS.length - unreported.length;
+  const pct = Math.round((done / DEPTS.length) * 100);
+  const R = 39, C = 2 * Math.PI * R;
+  const offset = C * (1 - done / DEPTS.length);
+  const ringColor = pct === 100 ? '#30D158' : (pct >= 60 ? '#0A84FF' : '#FF9F0A');
+
+  const chips = DEPTS.map(dept=>{
+    const missing = unreported.includes(dept);
+    return `<span class="dept-chip ${missing?'missing':''}">
+      <span class="chip-dot"></span>${dept.slice(0,2)}
+    </span>`;
+  }).join('');
+
+  // ---- 전 부서 임박 일정 (D-day 기준 상위 3개) ----
+  const schedules = state.data.schedules || {};
+  const upcoming = [];
+  DEPTS.forEach(dept=>{
+    (schedules[dept] || []).forEach(it=>{
+      if(typeof it.dDay === 'number' && it.dDay >= 0){
+        upcoming.push({ ...it, dept });
+      }
+    });
+  });
+  upcoming.sort((a,b)=>a.dDay-b.dDay);
+  const top3 = upcoming.slice(0,3);
+
+  const upRows = top3.length
+    ? top3.map(it=>`
+        <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]})">
+          <span class="up-dday">${fmtDday(it.dDay)}</span>
+          <div class="up-info">
+            <p class="up-title">${escapeHtml(it.title||'')}</p>
+            <div class="up-dept">${it.dept}</div>
+          </div>
+        </div>`).join('')
+    : `<div class="up-empty">예정된 일정이 없습니다</div>`;
+
+  wrap.innerHTML = `
+    <div class="briefing-card">
+      <div class="briefing-top">
+        <div class="briefing-left">
+          <div class="ring-wrap">
+            <svg width="86" height="86" viewBox="0 0 86 86">
+              <circle class="ring-track" cx="43" cy="43" r="${R}"/>
+              <circle class="ring-fill" cx="43" cy="43" r="${R}"
+                stroke="${ringColor}"
+                stroke-dasharray="${C.toFixed(1)}"
+                stroke-dashoffset="${C.toFixed(1)}"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-pct mono" style="color:${ringColor}">${pct}%</span>
+              <span class="ring-sub">${done}/${DEPTS.length} 보고</span>
+            </div>
+          </div>
+          <div class="briefing-info">
+            <p class="briefing-title">${pct === 100 ? '이번 주 전 부서 보고 완료' : `미보고 ${unreported.length}개 부서`}</p>
+            <p class="briefing-desc">${state.data.currentWeek || ''} 기준 부서별 보고 현황입니다.</p>
+            <div class="dept-chips">${chips}</div>
+          </div>
+        </div>
+      </div>
+      <div class="briefing-upcoming">
+        <p class="briefing-upcoming-label">전 부서 임박 일정</p>
+        ${upRows}
+      </div>
+    </div>`;
+
+  // 링 채움 애니메이션 (레이아웃 반영 후 offset 전환)
+  requestAnimationFrame(()=>{
+    const fill = wrap.querySelector('.ring-fill');
+    if(fill) requestAnimationFrame(()=>{ fill.style.strokeDashoffset = offset.toFixed(1); });
+  });
+}
+
+/* ---------- 공지 토스트 ----------
+ * 페이지에 들어올 때마다 표시됨 (새로고침 = 다시 표시)
+ * X로 끄면 이번 방문 동안은 안 뜨지만,
+ * 그 사이 공지 "내용이 바뀌면" 새 공지로 간주하고 다시 표시됨
+ */
+let dismissedNoticeContent = null; // 메모리에만 저장 → 페이지를 다시 열면 초기화
+
+function renderNoticeToast(){
+  const wrap = document.getElementById('noticeToast');
+
+  // 테스트 모드: URL 뒤에 ?testNotice=1 을 붙이면 가짜 공지를 강제 표시
+  // (프론트 정상 여부를 백엔드와 무관하게 확인하는 용도)
+  const isTest = new URLSearchParams(location.search).get('testNotice') === '1';
+  const notice = isTest
+    ? { content:'테스트 공지입니다. 이 문구가 보이면 화면 쪽은 정상입니다.', date:new Date().toISOString(), author:'테스트' }
+    : (state.data && state.data.notice);
+
+  const content = notice && String(notice.content||'').trim();
+
+  // 공지가 없거나(시트에서 삭제됨) 이미 닫은 공지와 같으면 표시 안 함
+  if(!content || content === dismissedNoticeContent){
+    wrap.innerHTML = '';
+    return;
+  }
+
+  // 이미 같은 내용이 떠 있으면 (1분 자동 갱신 시) 다시 그리지 않음 — 애니메이션 재생 방지
+  if(wrap.dataset.showing === content) return;
+  wrap.dataset.showing = content;
+
+  wrap.innerHTML = `
+    <div class="notice-toast" role="status">
+      <div class="notice-toast-icon">📢</div>
+      <div class="notice-toast-body">
+        <p class="notice-toast-label">공지사항</p>
+        <p class="notice-toast-text">${escapeHtml(content)}</p>
+        <p class="notice-toast-meta">${fmtDate(notice.date)}${notice.author ? ' · '+escapeHtml(notice.author) : ''}</p>
+      </div>
+      <button class="notice-toast-close" id="noticeCloseBtn" aria-label="공지 닫기">✕</button>
+    </div>`;
+
+  document.getElementById('noticeCloseBtn').onclick = ()=>{
+    dismissedNoticeContent = content;
+    wrap.dataset.showing = '';
+    const toast = wrap.querySelector('.notice-toast');
+    toast.classList.add('hiding');
+    toast.addEventListener('animationend', ()=>{ wrap.innerHTML=''; }, { once:true });
+    // reduced-motion 환경 등 애니메이션이 없을 때 대비
+    setTimeout(()=>{ if(wrap.firstChild) wrap.innerHTML=''; }, 400);
+  };
+}
+
 function render(){
+  renderBriefing();
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
@@ -686,12 +1003,8 @@ function render(){
   if(!state.data){ return; }
 
   const deptData = state.data.departments[state.dept];
-  const categories = Object.keys(deptData[state.range]).length
-    ? Array.from(new Set([...Object.keys(deptData.weekly), ...Object.keys(deptData.monthly), ...Object.keys(deptData.yearly)]))
-    : [];
 
-  // fall back to full allowed category list order isn't available client-side,
-  // so just union all categories seen across ranges for this dept.
+  // union all categories seen across ranges for this dept.
   const allCats = Array.from(new Set([
     ...Object.keys(deptData.weekly),
     ...Object.keys(deptData.monthly),
@@ -767,6 +1080,7 @@ async function load(){
     state.data = await res.json();
     render();
     renderAlertBanner();
+    renderNoticeToast();
   }catch(err){
     console.error(err);
     showError();
