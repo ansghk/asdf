@@ -180,7 +180,20 @@
     box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
     padding:14px 15px;
     display:flex;flex-direction:column;justify-content:center;gap:8px;
+    cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;
+    transition:border-color .2s ease,background .2s ease,transform .12s ease;
   }
+  .dept-chart-cell:active{transform:scale(.97);}
+  .dept-chart-cell.active{
+    background:var(--glass-strong);
+    border-color:rgba(255,255,255,0.42);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5), inset 0 0.5px 0 rgba(255,255,255,0.2);
+  }
+  .dept-chart-hint{
+    font-size:10px;color:var(--text-dim);font-weight:600;text-align:center;
+    margin:2px 0 0;
+  }
+  .dept-chart-cell.active .dept-chart-hint{color:var(--text);}
   .chart-row{display:flex;align-items:center;gap:8px;}
   .chart-label{font-size:10px;color:var(--text-dim);flex:0 0 24px;font-weight:600;}
   .chart-bar-track{
@@ -393,6 +406,16 @@
   }
   .calendar-day.selected:not(.today){background:rgba(255,255,255,0.10);color:var(--text);}
   .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--blue));}
+  .calendar-day-dots{display:flex;gap:2px;align-items:center;justify-content:center;}
+  .calendar-day-dots .dot{width:4px;height:4px;border-radius:50%;}
+  .schedule-dept-tag{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:10px;color:var(--text-dim);margin-top:2px;
+  }
+  .schedule-dept-tag::before{
+    content:'';width:5px;height:5px;border-radius:50%;flex:0 0 auto;
+    background:var(--row-color,var(--blue));
+  }
   .calendar-day-detail{margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px;}
   .calendar-day-detail-label{
     font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 10px;
@@ -548,9 +571,34 @@
   .briefing-upcoming{
     margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07);
   }
-  .briefing-upcoming-label{
-    font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 9px;
+  .briefing-upcoming-toggle{
+    display:flex;align-items:center;gap:9px;width:100%;
+    padding:2px 0;
   }
+  .up-chevron{
+    width:7px;height:7px;flex:0 0 auto;
+    border-right:2px solid var(--text);border-bottom:2px solid var(--text);
+    transform:rotate(-45deg);              /* 닫힘: > */
+    transition:transform .25s ease;
+    margin-left:2px;
+  }
+  .briefing-upcoming.open .up-chevron{
+    transform:rotate(45deg);               /* 열림: v */
+    margin-top:-3px;
+  }
+  .briefing-upcoming-label{
+    font-size:11px;color:var(--text-dim);font-weight:600;margin:0;
+  }
+  .briefing-upcoming-count{
+    font-size:10.5px;color:var(--text-muted);font-weight:700;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);
+    border-radius:100px;padding:2px 8px;
+    font-variant-numeric:tabular-nums;
+  }
+  .briefing-upcoming-body{
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+  }
+  .briefing-upcoming.open .briefing-upcoming-body{max-height:600px;}
   .up-row{
     display:flex;align-items:center;gap:10px;padding:7px 0;
   }
@@ -558,8 +606,8 @@
   .up-dday{
     flex:0 0 52px;font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;
     text-align:center;padding:4px 0;border-radius:100px;
-    background:color-mix(in srgb, var(--up-color,var(--blue)) 18%, transparent);
-    color:var(--up-color,var(--blue));
+    background:color-mix(in srgb, var(--dday-color,var(--blue)) 26%, transparent);
+    color:color-mix(in srgb, var(--dday-color,var(--blue)) 88%, white);
   }
   .up-info{flex:1;min-width:0;}
   .up-title{
@@ -571,8 +619,9 @@
     font-size:10.5px;color:var(--text-dim);margin-top:1px;
   }
   .up-dept::before{
-    content:'';width:5px;height:5px;border-radius:50%;flex:0 0 auto;
+    content:'';width:6px;height:6px;border-radius:50%;flex:0 0 auto;
     background:var(--up-color,var(--blue));
+    box-shadow:0 0 6px color-mix(in srgb, var(--up-color,var(--blue)) 60%, transparent);
   }
   .up-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:8px 0 2px;}
 
@@ -701,11 +750,14 @@ const DEPT_DUTIES = {
   ]
 };
 
+const ALL_DEPTS = '전체'; // 통합 보기 모드 키
+
 let state = {
   range: 'weekly',
   dept: DEPTS[0],
   data: null,
-  openCats: new Set()
+  openCats: new Set(),
+  upcomingOpen: true
 };
 
 function fmtDate(iso){
@@ -748,8 +800,12 @@ function renderDeptChart(){
   }).join('');
 
   const cell = document.createElement('div');
-  cell.className = 'dept-chart-cell';
-  cell.innerHTML = rows;
+  cell.className = 'dept-chart-cell' + (state.dept === ALL_DEPTS ? ' active' : '');
+  cell.setAttribute('role','button');
+  cell.setAttribute('tabindex','0');
+  cell.innerHTML = rows + `<p class="dept-chart-hint">${state.dept === ALL_DEPTS ? '전체 부서 보는 중' : '눌러서 전체 부서 통합 보기'}</p>`;
+  cell.onclick = ()=>{ state.dept = ALL_DEPTS; state.openCats.clear(); render(); };
+  cell.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cell.onclick(); } };
   return cell;
 }
 
@@ -801,8 +857,13 @@ function renderDeptTabs(){
   });
 
   const focusName = document.getElementById('deptFocusName');
-  focusName.textContent = state.dept;
-  focusName.style.setProperty('--dept-color', `var(--dept-${DEPT_COLOR_KEY[state.dept]})`);
+  if(state.dept === ALL_DEPTS){
+    focusName.textContent = '전체 부서';
+    focusName.style.setProperty('--dept-color', 'var(--blue)');
+  } else {
+    focusName.textContent = state.dept;
+    focusName.style.setProperty('--dept-color', `var(--dept-${DEPT_COLOR_KEY[state.dept]})`);
+  }
 }
 
 function renderRangeTabs(){
@@ -827,10 +888,10 @@ function updateClock(){
 updateClock();
 setInterval(updateClock, 1000);
 
-function catCard(deptData, category, key){
+function catCard(dept, deptData, category, key){
   const bucket = deptData[state.range][category] || { count:0, items:[] };
-  const isOpen = state.openCats.has(category);
-  const deptVar = `var(--dept-${DEPT_COLOR_KEY[state.dept]})`;
+  const isOpen = state.openCats.has(key);
+  const deptVar = `var(--dept-${DEPT_COLOR_KEY[dept]})`;
 
   const itemsHtml = bucket.items.length
     ? bucket.items.map((it,i)=>`
@@ -861,7 +922,7 @@ function catCard(deptData, category, key){
 
 function queueSection(){
   const queue = (state.data.performanceQueue || []);
-  if(state.dept !== '공연예술과' || queue.length === 0) return '';
+  if((state.dept !== '공연예술과' && state.dept !== ALL_DEPTS) || queue.length === 0) return '';
   const rows = queue.map(q => `
     <div class="queue-row">
       <div class="queue-left">
@@ -896,8 +957,20 @@ function renderSchedule(){
   // 연간 보기에서는 캘린더 자체를 숨김
   if(state.range === 'yearly'){ wrap.innerHTML=''; return; }
 
-  const items = (state.data.schedules && state.data.schedules[state.dept]) || [];
-  const deptVar = `var(--dept-${DEPT_COLOR_KEY[state.dept]})`;
+  const isAll = state.dept === ALL_DEPTS;
+  const schedules = state.data.schedules || {};
+
+  // 통합 모드: 모든 부서 일정을 부서 정보와 함께 합침
+  let items = [];
+  if(isAll){
+    DEPTS.forEach(dept=>{
+      (schedules[dept] || []).forEach(it=>items.push({ ...it, dept }));
+    });
+  } else {
+    items = (schedules[state.dept] || []).map(it=>({ ...it, dept: state.dept }));
+  }
+
+  const deptVar = isAll ? 'var(--blue)' : `var(--dept-${DEPT_COLOR_KEY[state.dept]})`;
   const now = new Date();
   const todayKey = dateKey(now);
 
@@ -912,6 +985,21 @@ function renderSchedule(){
 
   if(state.selectedDate == null) state.selectedDate = todayKey;
 
+  // 날짜 셀의 점: 일반 모드는 단색 1개, 통합 모드는 부서별 색으로 최대 3개
+  function dayDots(key){
+    const evs = eventsByDate[key];
+    if(!evs) return '';
+    if(!isAll) return '<span class="calendar-day-dot"></span>';
+    const seen = [];
+    evs.forEach(ev=>{
+      const c = `var(--dept-${DEPT_COLOR_KEY[ev.dept]})`;
+      if(seen.indexOf(c) === -1) seen.push(c);
+    });
+    return '<span class="calendar-day-dots">' +
+      seen.slice(0,3).map(c=>`<span class="dot" style="background:${c}"></span>`).join('') +
+      '</span>';
+  }
+
   let headerLabel, cells;
 
   if(state.range === 'weekly'){
@@ -924,13 +1012,12 @@ function renderSchedule(){
     headerLabel = `${p(days[0].getMonth()+1)}.${p(days[0].getDate())} - ${p(days[6].getMonth()+1)}.${p(days[6].getDate())}`;
     cells = days.map(d=>{
       const key = dateKey(d);
-      const hasEvent = !!eventsByDate[key];
       const isToday = key === todayKey;
       const isSelected = key === state.selectedDate;
       return `
         <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:${deptVar}" data-key="${key}">
           <span>${d.getDate()}</span>
-          ${hasEvent ? '<span class="calendar-day-dot"></span>' : ''}
+          ${dayDots(key)}
         </button>`;
     }).join('');
   } else {
@@ -944,36 +1031,40 @@ function renderSchedule(){
     for(let day=1; day<=totalDays; day++){
       const d = new Date(year, month, day);
       const key = dateKey(d);
-      const hasEvent = !!eventsByDate[key];
       const isToday = key === todayKey;
       const isSelected = key === state.selectedDate;
       html += `
         <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:${deptVar}" data-key="${key}">
           <span>${day}</span>
-          ${hasEvent ? '<span class="calendar-day-dot"></span>' : ''}
+          ${dayDots(key)}
         </button>`;
     }
     cells = html;
   }
 
-  const selectedEvents = eventsByDate[state.selectedDate] || [];
+  const selectedEvents = (eventsByDate[state.selectedDate] || []).slice()
+    .sort((a,b)=>a.dDay-b.dDay);
   const [sy, sm, sd] = state.selectedDate.split('-');
   const detailRows = selectedEvents.length
-    ? selectedEvents.map(it => `
-        <div class="schedule-row" style="--dept-color:${deptVar}">
+    ? selectedEvents.map(it => {
+        const rowVar = `var(--dept-${DEPT_COLOR_KEY[it.dept]})`;
+        return `
+        <div class="schedule-row" style="--dept-color:${isAll ? rowVar : deptVar}">
           <span class="schedule-dday">${fmtDday(it.dDay)}</span>
           <div class="schedule-info">
             <p class="schedule-title">${escapeHtml(it.title||'')}</p>
             ${it.content ? `<p class="schedule-meta">${escapeHtml(it.content)}</p>` : ''}
+            ${isAll ? `<span class="schedule-dept-tag" style="--row-color:${rowVar}">${it.dept}</span>` : ''}
           </div>
-        </div>`).join('')
+        </div>`;
+      }).join('')
     : `<div class="schedule-empty">이 날 등록된 일정이 없습니다</div>`;
 
   wrap.innerHTML = `
     <div class="calendar-wrap" style="--dept-color:${deptVar}">
       <div class="calendar-header">
         <span class="calendar-month">${headerLabel}</span>
-        <span class="calendar-dept-label mono">${state.dept}</span>
+        <span class="calendar-dept-label mono">${isAll ? '전체 부서 통합' : state.dept}</span>
       </div>
       <div class="calendar-dow-row">
         ${['일','월','화','수','목','금','토'].map(d=>`<span class="calendar-dow">${d}</span>`).join('')}
@@ -1028,9 +1119,11 @@ function renderBriefing(){
   upcoming.sort((a,b)=>a.dDay-b.dDay);
   const top3 = upcoming.slice(0,3);
 
+  // 임박도 순서에 따른 배지 색: 1순위 빨강, 2순위 파랑, 3순위 회색
+  const DDAY_RANK_COLORS = ['#FF453A', '#64D2FF', '#98989F'];
   const upRows = top3.length
-    ? top3.map(it=>`
-        <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]})">
+    ? top3.map((it,i)=>`
+        <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]});--dday-color:${DDAY_RANK_COLORS[i] || '#98989F'}">
           <span class="up-dday">${fmtDday(it.dDay)}</span>
           <div class="up-info">
             <p class="up-title">${escapeHtml(it.title||'')}</p>
@@ -1063,11 +1156,21 @@ function renderBriefing(){
           </div>
         </div>
       </div>
-      <div class="briefing-upcoming">
-        <p class="briefing-upcoming-label">전 부서 임박 일정</p>
-        ${upRows}
+      <div class="briefing-upcoming ${state.upcomingOpen ? 'open' : ''}" id="briefingUpcoming">
+        <button class="briefing-upcoming-toggle" id="upcomingToggleBtn" aria-expanded="${state.upcomingOpen}">
+          <span class="up-chevron"></span>
+          <p class="briefing-upcoming-label">전 부서 임박 일정</p>
+          <span class="briefing-upcoming-count mono">${top3.length}</span>
+        </button>
+        <div class="briefing-upcoming-body">${upRows}</div>
       </div>
     </div>`;
+
+  document.getElementById('upcomingToggleBtn').onclick = ()=>{
+    state.upcomingOpen = !state.upcomingOpen;
+    document.getElementById('briefingUpcoming').classList.toggle('open', state.upcomingOpen);
+    document.getElementById('upcomingToggleBtn').setAttribute('aria-expanded', state.upcomingOpen);
+  };
 
   // 링 채움 애니메이션 (레이아웃 반영 후 offset 전환)
   requestAnimationFrame(()=>{
@@ -1181,20 +1284,25 @@ function render(){
   const main = document.getElementById('main');
   if(!state.data){ return; }
 
-  const deptData = state.data.departments[state.dept];
+  function deptSection(dept){
+    const deptData = state.data.departments[dept];
+    const allCats = Array.from(new Set([
+      ...Object.keys(deptData.weekly),
+      ...Object.keys(deptData.monthly),
+      ...Object.keys(deptData.yearly)
+    ]));
+    return `
+      <p class="section-label">${dept} · 분류별 현황</p>
+      ${allCats.length
+        ? allCats.map(c=>catCard(dept, deptData, c, dept + '|' + c)).join('')
+        : `<div class="state-box">이 부서에 등록된 분류가 아직 없습니다.</div>`}`;
+  }
 
-  // union all categories seen across ranges for this dept.
-  const allCats = Array.from(new Set([
-    ...Object.keys(deptData.weekly),
-    ...Object.keys(deptData.monthly),
-    ...Object.keys(deptData.yearly)
-  ]));
-
-  main.innerHTML = `
-    <p class="section-label">${state.dept} · 분류별 현황</p>
-    ${allCats.length ? allCats.map(c=>catCard(deptData,c,c)).join('') : `<div class="state-box">이 부서에 등록된 분류가 아직 없습니다.</div>`}
-    ${queueSection()}
-  `;
+  if(state.dept === ALL_DEPTS){
+    main.innerHTML = DEPTS.map(deptSection).join('') + queueSection();
+  } else {
+    main.innerHTML = deptSection(state.dept) + queueSection();
+  }
 
   main.querySelectorAll('[data-toggle]').forEach(btn=>{
     btn.onclick = ()=>{
