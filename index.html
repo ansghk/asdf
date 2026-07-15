@@ -144,7 +144,8 @@
   .dept-card{
     grid-column:span 1;align-self:stretch;height:100%;
     display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
-    width:100%;text-align:left;
+    width:100%;text-align:left;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;user-select:none;
     padding:15px 15px 13px;border-radius:var(--radius);
     background:
       linear-gradient(160deg, color-mix(in srgb, var(--dept-color,var(--blue)) 13%, transparent), transparent 55%),
@@ -197,6 +198,81 @@
   }
   .dept-card.active .gel{box-shadow:0 0 10px 2px color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);}
   .dept-card-name{font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+  .dept-info-btn{
+    flex:0 0 auto;height:22px;padding:0 9px;border-radius:100px;
+    display:flex;align-items:center;justify-content:center;gap:3px;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    font-size:10px;font-weight:600;color:var(--text-muted);
+    line-height:1;white-space:nowrap;
+    transition:background .15s, transform .1s;
+  }
+  .dept-info-btn:active{background:rgba(255,255,255,0.16);transform:scale(.92);}
+
+  /* ---------- duties modal (과별 업무 팝업) ---------- */
+  .duties-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.55);
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    animation:overlayIn .25s ease both;
+  }
+  @keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
+  .duties-modal{
+    width:100%;max-width:420px;max-height:min(78vh, 640px);
+    display:flex;flex-direction:column;
+    background:rgba(28,28,30,0.88);
+    -webkit-backdrop-filter:blur(32px) saturate(180%);
+    backdrop-filter:blur(32px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:24px;
+    box-shadow:0 24px 70px rgba(0,0,0,0.6), inset 0 0.5px 0 rgba(255,255,255,0.15);
+    overflow:hidden;
+    animation:modalIn .35s cubic-bezier(.32,.72,.28,1) both;
+  }
+  @keyframes modalIn{
+    from{transform:scale(.92) translateY(14px);opacity:0;}
+    to{transform:scale(1) translateY(0);opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .duties-overlay,.duties-modal{animation:none;}
+  }
+  .duties-head{
+    display:flex;align-items:center;gap:9px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .duties-head .gel{
+    width:10px;height:10px;border-radius:50%;background:var(--dept-color,var(--blue));
+    box-shadow:0 0 10px 2px color-mix(in srgb, var(--dept-color,var(--blue)) 60%, transparent);
+  }
+  .duties-title{flex:1;font-size:16.5px;font-weight:700;letter-spacing:-.02em;margin:0;}
+  .duties-sub{font-size:10.5px;color:var(--text-dim);font-weight:600;}
+  .duties-close{
+    flex:0 0 auto;width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-muted);font-size:14px;font-weight:600;line-height:1;
+    transition:background .15s;
+  }
+  .duties-close:active{background:rgba(255,255,255,0.16);}
+  .duties-body{overflow-y:auto;padding:6px 18px 18px;-webkit-overflow-scrolling:touch;}
+  .duty-item{
+    display:flex;gap:12px;padding:13px 0;
+  }
+  .duty-item + .duty-item{border-top:1px solid rgba(255,255,255,0.06);}
+  .duty-num{
+    flex:0 0 26px;height:26px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    background:color-mix(in srgb, var(--dept-color,var(--blue)) 18%, transparent);
+    color:var(--dept-color,var(--blue));
+    font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
+    margin-top:1px;
+  }
+  .duty-info{flex:1;min-width:0;}
+  .duty-title{font-size:14px;font-weight:700;margin:0 0 3px;letter-spacing:-.02em;}
+  .duty-desc{font-size:12.5px;color:var(--text-muted);line-height:1.55;margin:0;}
   .dept-card-period{font-size:10.5px;color:var(--text-muted);font-weight:500;}
   .dept-card-breakdown{display:flex;flex-direction:column;gap:4px;margin-top:10px;}
   .dept-card-breakdown-row{
@@ -562,6 +638,7 @@
 </main>
 
 <div id="noticeToast"></div>
+<div id="dutiesModalWrap"></div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9xPO9SY27PLAVOHRRr61yz0-5nr8cTNgiMRIV79Xz2ilyN/exec';
@@ -580,6 +657,45 @@ const DEPT_COLOR_KEY = {
   '사진과':     'photo',
   '의전과':     'protocol',
   '공연예술과': 'performance'
+};
+
+// 과별 핵심 업무 (💡 버튼 팝업에 표시)
+const DEPT_DUTIES = {
+  '문화기획과': [
+    { title:'기획안 연구·설계', desc:'문화부장 지시 사항을 연구하여 아이디어를 기획안(PPT)으로 설계·제시' },
+    { title:'연간 행사 계획 관리', desc:'연도별·분기별·월별 행사 업무 계획 수립 및 관리' },
+    { title:'주요 행사 기획·조연출', desc:'절기행사, 창립기념식, 평화행사(314·525·918) 등 행사 총감독(문화부장)의 조연출 수행' },
+    { title:'행사 사전 준비 개시', desc:'주요 행사 최소 50일 전(918 평화행사는 6개월 전) 업무 착수 및 일정 관리' },
+    { title:'제작 과정·회의 운영', desc:'창조 단계와 제작 단계별 회의 계획 수립, 분야별 제작 과정 관리' }
+  ],
+  '영상제작과': [
+    { title:'영상 콘텐츠 기획·제작', desc:'뉴스, 광고, 계몽 영상, 행사 하이라이트 등 내부·외부용 콘텐츠 제작 (외부용은 저작권·총회 승인 검토 필수)' },
+    { title:'예배·행사·교육 촬영', desc:'설교, 모임, 행사, 교육 영상 기록 및 풍경촬영 (담당 월 28일까지 보고)' },
+    { title:'방송 중계·송출 운영', desc:'예배·행사 실시간 중계, PD·TD·카메라 등 스탭 포지션별 선발·교육·투입' },
+    { title:'제작물 보고·자료 관리', desc:'총회 FTP 보고(월 3편 이상, 방문 촬영 2일 내), 원본 백업 및 아카이브 보관' },
+    { title:'방송·촬영 장비 관리', desc:'장비 점검·출납 관리, 연 1회 이상 장비목록 총회 보고' }
+  ],
+  '사진과': [
+    { title:'행사·예배 기록 촬영', desc:'총회장님 방문, 총회·지파 주관 행사, 예배를 식순에 맞게 촬영' },
+    { title:'선별·편집·결과물 보고', desc:'촬영본 선별·보정 후 식순별 폴더로 총회 서버에 3일 내 보고, 정기 활동 화보 제작' },
+    { title:'일상 기록·홍보 지원', desc:'모임, 교육, 봉사 등 교회의 크고 작은 순간을 상시 촬영하고, 홍보용 컷을 신속 선별·편집해 제공' },
+    { title:'자료 아카이빙·장비 관리', desc:'원본·사본 이중 백업, 촬영일지·자료목록 작성, 장비 점검·보관' },
+    { title:'인재 발굴·양성', desc:'인원 선발과 기본 교육과정 운영, 이수자를 협조 인원으로 활동시키며 양성' }
+  ],
+  '의전과': [
+    { title:'행사 의전 기획·운영', desc:'행사 주제·성격·규모에 따른 의전 전반 기획, 수행원 투입 배치와 현장 운영 (차량·식사·무전기 등 운영 지원 포함)' },
+    { title:'귀빈(VVIP) 의전', desc:'총회장님·주요 내외 귀빈 영접부터 환송까지 전담 수행, 서열·동선에 따른 의전 기획' },
+    { title:'안내·귀빈 서비스', desc:'행사장 동선·좌석 안내, 환영·환송 도열, 귀빈실 운영과 다과·식음료 서비스' },
+    { title:'수행원 교육·인원 관리', desc:'후보생·정기·행사 대비 교육 운영, 수행원 인원 관리 및 업무 능력 분석 (어린이 의전 선발·훈련 포함)' },
+    { title:'의전복·비품 관리', desc:'의전복 청결 상태 수시 점검, 비품대장 작성과 파손·분실 관리' }
+  ],
+  '공연예술과': [
+    { title:'예술팀 운영·관리', desc:'공연팀 인원 정비(정단원·연습단원·신입), 주 2~3회 연습 운영, 작품 완성도(%) 매주 확인' },
+    { title:'공연 기획·제작', desc:'행사·예배 공연의 콘셉트 기획부터 연출까지, 예산안·큐시트·타임테이블 작성과 스탭(기술·전문·행정) 운영' },
+    { title:'공연 준비 교육·리허설', desc:'주간 공연 준비 교육 진행, 공연 전 반복 리허설로 무대 완성도 확보' },
+    { title:'물품·소품 관리', desc:'공연 비품·소품 대장 작성과 대여·반납 관리, 월 1회 변경사항 정기 보고' },
+    { title:'주간 현황 보고', desc:'공연팀 현황·출석부·주간 업무를 주 1회 상위 보고, 공연 후 피드백 서면 정리' }
+  ]
 };
 
 let state = {
@@ -641,8 +757,10 @@ function renderDeptTabs(){
   wrap.appendChild(renderDeptChart());
 
   DEPTS.forEach(dept=>{
-    const btn = document.createElement('button');
+    const btn = document.createElement('div');
     btn.className = 'dept-card' + (state.dept===dept ? ' active':'');
+    btn.setAttribute('role','button');
+    btn.setAttribute('tabindex','0');
     btn.style.setProperty('--dept-color', `var(--dept-${DEPT_COLOR_KEY[dept]})`);
     const count = deptTotalCount(dept);
     const breakdownRows = (DEPT_CATEGORIES[dept] || []).map(cat=>{
@@ -659,6 +777,7 @@ function renderDeptTabs(){
           <div class="dept-card-top">
             <span class="gel"></span>
             <span class="dept-card-name">${dept}</span>
+            <button class="dept-info-btn" data-duties="${dept}" aria-label="${dept} 업무편람 보기">🌟업무편람</button>
           </div>
           <span class="dept-card-period">${rangeLabelShort()}</span>
         </div>
@@ -670,6 +789,11 @@ function renderDeptTabs(){
       <div class="dept-card-breakdown">${breakdownRows}</div>
     `;
     btn.onclick = ()=>{ state.dept = dept; state.openCats.clear(); render(); };
+    btn.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.onclick(); } };
+    btn.querySelector('.dept-info-btn').onclick = (e)=>{
+      e.stopPropagation();          // 카드 선택(부서 전환)은 발동시키지 않음
+      openDutiesModal(dept);
+    };
     wrap.appendChild(btn);
   });
 
@@ -998,6 +1122,50 @@ function renderNoticeToast(){
     // reduced-motion 환경 등 애니메이션이 없을 때 대비
     setTimeout(()=>{ if(wrap.firstChild) wrap.innerHTML=''; }, 400);
   };
+}
+
+/* ---------- 과별 업무 팝업 ---------- */
+function openDutiesModal(dept){
+  const wrap = document.getElementById('dutiesModalWrap');
+  const duties = DEPT_DUTIES[dept] || [];
+  const deptVar = `var(--dept-${DEPT_COLOR_KEY[dept]})`;
+
+  const rows = duties.map((d,i)=>`
+    <div class="duty-item">
+      <span class="duty-num">${i+1}</span>
+      <div class="duty-info">
+        <p class="duty-title">${escapeHtml(d.title)}</p>
+        <p class="duty-desc">${escapeHtml(d.desc)}</p>
+      </div>
+    </div>`).join('');
+
+  wrap.innerHTML = `
+    <div class="duties-overlay" id="dutiesOverlay">
+      <div class="duties-modal" style="--dept-color:${deptVar}" role="dialog" aria-label="${dept} 담당 업무">
+        <div class="duties-head">
+          <span class="gel"></span>
+          <p class="duties-title">${dept}<br><span class="duties-sub">🌟 업무편람</span></p>
+          <button class="duties-close" id="dutiesCloseBtn" aria-label="닫기">✕</button>
+        </div>
+        <div class="duties-body">${rows}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('dutiesCloseBtn').onclick = closeDutiesModal;
+  // 팝업 바깥(어두운 영역) 클릭 시 닫기
+  document.getElementById('dutiesOverlay').onclick = (e)=>{
+    if(e.target.id === 'dutiesOverlay') closeDutiesModal();
+  };
+  document.addEventListener('keydown', dutiesEscHandler);
+}
+
+function dutiesEscHandler(e){
+  if(e.key === 'Escape') closeDutiesModal();
+}
+
+function closeDutiesModal(){
+  document.getElementById('dutiesModalWrap').innerHTML = '';
+  document.removeEventListener('keydown', dutiesEscHandler);
 }
 
 function render(){
