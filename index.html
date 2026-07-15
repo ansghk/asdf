@@ -191,13 +191,16 @@
     transition:width .3s ease;min-width:2px;
   }
   .chart-value{font-size:10.5px;color:var(--text-muted);flex:0 0 16px;text-align:right;}
-  .dept-card-top{display:flex;align-items:center;gap:8px;}
+  .dept-card-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:6px;}
   .dept-card .gel{
     width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--dept-color,var(--blue));
     transition:box-shadow .2s;
   }
   .dept-card.active .gel{box-shadow:0 0 10px 2px color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);}
-  .dept-card-name{font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+  .dept-card-name{
+    font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:-.02em;
+    white-space:nowrap;
+  }
   .dept-info-btn{
     flex:0 0 auto;height:22px;padding:0 9px;border-radius:100px;
     display:flex;align-items:center;justify-content:center;gap:3px;
