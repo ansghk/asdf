@@ -217,6 +217,11 @@
     margin-top:4px;font-size:12px;color:var(--text-muted);
   }
   .clock-box{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+  .visit-top{
+    font-size:9px;font-weight:500;
+    color:var(--text-dim);opacity:.45;
+    letter-spacing:.02em;margin-bottom:1px;
+  }
   .clock-date{font-size:11px;color:var(--text-dim);letter-spacing:.02em;}
   .clock-time{font-size:16px;color:var(--text);font-weight:700;letter-spacing:.01em;}
   .status-dot{
@@ -742,12 +747,6 @@
   }
   .up-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:8px 0 2px;}
 
-  /* ---------- 하단 방문 통계 (은은하게) ---------- */
-  .visit-footer{
-    text-align:center;font-size:10.5px;color:var(--text-dim);
-    padding:20px 18px 4px;letter-spacing:.01em;
-  }
-
   /* ---------- states ---------- */
   .state-box{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
   .state-box .big{font-size:15px;color:var(--text);font-weight:600;margin-bottom:6px;}
@@ -789,6 +788,7 @@
         <button class="theme-opt" data-theme="dark">🌙 Dark</button>
       </div>
       <div class="clock-box">
+        <span id="visitTop" class="mono visit-top"></span>
         <span id="clockDate" class="mono clock-date"></span>
         <span id="clockTime" class="mono clock-time"></span>
       </div>
@@ -817,8 +817,6 @@
   <div class="skeleton"></div>
   <div class="skeleton"></div>
 </main>
-
-<div class="visit-footer" id="visitFooter"></div>
 
 <div id="noticeToast"></div>
 <div id="dutiesModalWrap"></div>
@@ -859,11 +857,10 @@ function logVisit(){
 }
 
 function renderVisitFooter(){
-  const el = document.getElementById('visitFooter');
+  const el = document.getElementById('visitTop');
   const t = state.data && state.data.visitsToday;
-  const total = state.data && state.data.visitsTotal;
   if(t == null){ el.textContent = ''; return; }
-  el.textContent = `방문 ${t}(오늘) / ${total} 누적`;
+  el.textContent = `오늘 ${t}명 조회`;
 }
 
 logVisit();
