@@ -697,11 +697,11 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9x
 
 const DEPTS = ['문화기획과','영상제작과','사진과','의전과','공연예술과'];
 const DEPT_CATEGORIES = {
-  '문화기획과': ['기획PPT제작', '데이터피드백현황'],
+  '문화기획과': ['기획PPT제작', '데이터피드백현황', '기타업무'],
   '영상제작과': ['제작물', '중계현황', '스탭투입현황', '과모임'],
-  '사진과':     ['행사촬영', '인재모집업무'],
+  '사진과':     ['행사촬영', '인재모집업무', '기타업무'],
   '의전과':     ['투입행사', '과업무', '과모임'],
-  '공연예술과': ['주간공연준비교육']
+  '공연예술과': ['주간공연준비교육', '기타업무']
 };
 const DEPT_COLOR_KEY = {
   '문화기획과': 'culture',
@@ -754,7 +754,7 @@ const ALL_DEPTS = '전체'; // 통합 보기 모드 키
 
 let state = {
   range: 'weekly',
-  dept: DEPTS[0],
+  dept: null,   // 시작 시 아무 부서도 선택하지 않음
   data: null,
   openCats: new Set(),
   upcomingOpen: true
@@ -803,8 +803,8 @@ function renderDeptChart(){
   cell.className = 'dept-chart-cell' + (state.dept === ALL_DEPTS ? ' active' : '');
   cell.setAttribute('role','button');
   cell.setAttribute('tabindex','0');
-  cell.innerHTML = rows + `<p class="dept-chart-hint">${state.dept === ALL_DEPTS ? '전체 부서 보는 중' : '눌러서 전체 부서 통합 보기'}</p>`;
-  cell.onclick = ()=>{ state.dept = ALL_DEPTS; state.openCats.clear(); render(); };
+  cell.innerHTML = rows + `<p class="dept-chart-hint">${state.dept === ALL_DEPTS ? '전체 부서 보는 중 · 다시 누르면 닫힘' : '눌러서 전체 부서 통합 보기'}</p>`;
+  cell.onclick = ()=>{ state.dept = (state.dept === ALL_DEPTS) ? null : ALL_DEPTS; state.openCats.clear(); render(); };
   cell.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cell.onclick(); } };
   return cell;
 }
@@ -847,7 +847,7 @@ function renderDeptTabs(){
       </div>
       <div class="dept-card-breakdown">${breakdownRows}</div>
     `;
-    btn.onclick = ()=>{ state.dept = dept; state.openCats.clear(); render(); };
+    btn.onclick = ()=>{ state.dept = (state.dept === dept) ? null : dept; state.openCats.clear(); render(); };  // 같은 카드 재클릭 시 닫힘
     btn.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.onclick(); } };
     btn.querySelector('.dept-info-btn').onclick = (e)=>{
       e.stopPropagation();          // 카드 선택(부서 전환)은 발동시키지 않음
@@ -856,11 +856,16 @@ function renderDeptTabs(){
     wrap.appendChild(btn);
   });
 
+  const focusBar = document.querySelector('.dept-focus-bar');
   const focusName = document.getElementById('deptFocusName');
-  if(state.dept === ALL_DEPTS){
+  if(!state.dept){
+    focusBar.style.display = 'none';
+  } else if(state.dept === ALL_DEPTS){
+    focusBar.style.display = '';
     focusName.textContent = '전체 부서';
     focusName.style.setProperty('--dept-color', 'var(--blue)');
   } else {
+    focusBar.style.display = '';
     focusName.textContent = state.dept;
     focusName.style.setProperty('--dept-color', `var(--dept-${DEPT_COLOR_KEY[state.dept]})`);
   }
@@ -875,7 +880,7 @@ function renderRangeTabs(){
 
 function renderMeta(){
   if(!state.data) return;
-  const labelMap = { weekly: state.data.currentWeek, monthly: state.data.currentMonth, yearly: state.data.currentYear };
+  const labelMap = { weekly: (state.data.currentWeekLabel || state.data.currentWeek) + ' 주간', monthly: state.data.currentMonth, yearly: state.data.currentYear };
   document.getElementById('weekLabel').textContent = labelMap[state.range] + ' 기준';
 }
 
@@ -953,6 +958,7 @@ function startOfWeek(date){
 function renderSchedule(){
   const wrap = document.getElementById('scheduleSection');
   if(!state.data){ wrap.innerHTML=''; return; }
+  if(!state.dept){ wrap.innerHTML=''; return; }  // 부서 미선택 시 캘린더 숨김
 
   // 연간 보기에서는 캘린더 자체를 숨김
   if(state.range === 'yearly'){ wrap.innerHTML=''; return; }
@@ -983,7 +989,12 @@ function renderSchedule(){
     eventsByDate[key].push(it);
   });
 
-  if(state.selectedDate == null) state.selectedDate = todayKey;
+  // 날짜가 바뀌면(자정 경과, 새로운 주·월 포함) 선택일을 오늘로 자동 이동
+  // → 일요일이 오면 주간 캘린더가 새 주로, 1일이 되면 월간 캘린더가 새 달로 자연스럽게 전환됨
+  if(state.selectedDate == null || state.lastTodayKey !== todayKey){
+    state.selectedDate = todayKey;
+    state.lastTodayKey = todayKey;
+  }
 
   // 날짜 셀의 점: 일반 모드는 단색 1개, 통합 모드는 부서별 색으로 최대 3개
   function dayDots(key){
@@ -1091,7 +1102,7 @@ function renderBriefing(){
   const pct = Math.round((done / DEPTS.length) * 100);
   const R = 39, C = 2 * Math.PI * R;
   const offset = C * (1 - done / DEPTS.length);
-  const ringColor = pct === 100 ? '#30D158' : (pct >= 60 ? '#0A84FF' : '#FF9F0A');
+  const ringColor = pct < 50 ? '#FF453A' : '#0A84FF';  // 50% 미만 빨강, 50% 이상 파랑
 
   const chipOf = dept => {
     const missing = unreported.includes(dept);
@@ -1151,7 +1162,7 @@ function renderBriefing(){
           </div>
           <div class="briefing-info">
             <p class="briefing-title">${pct === 100 ? '이번 주 전 부서 보고 완료' : `미보고 ${unreported.length}개 부서`}</p>
-            <p class="briefing-desc">${state.data.currentWeek || ''} 기준 부서별 보고 현황입니다.</p>
+            <p class="briefing-desc">이번 주(${state.data.currentWeekLabel || state.data.currentWeek || ''}) 부서별 보고 현황입니다.</p>
             <div class="dept-chips">${chips}</div>
           </div>
         </div>
@@ -1296,6 +1307,11 @@ function render(){
       ${allCats.length
         ? allCats.map(c=>catCard(dept, deptData, c, dept + '|' + c)).join('')
         : `<div class="state-box">이 부서에 등록된 분류가 아직 없습니다.</div>`}`;
+  }
+
+  if(!state.dept){
+    main.innerHTML = `<div class="state-box"><p class="big">부서를 선택해주세요</p>위의 부서 카드를 누르면 캘린더와 분류별 상세 현황이 표시됩니다.</div>`;
+    return;
   }
 
   if(state.dept === ALL_DEPTS){
