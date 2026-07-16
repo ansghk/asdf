@@ -32,6 +32,121 @@
     --dept-protocol:#30D158;     /* green */
     --dept-performance:#FF453A;  /* red */
   }
+  /* ================= LIGHT MODE =================
+     레이아웃·구조는 동일, 색만 교체 (body.light) */
+  body.light{
+    --bg:#F2F2F7;
+    --text:#1D1D1F;
+    --text-muted:#6E6E73;
+    --text-dim:#98989D;
+    --blue:#007AFF;
+    --glass:rgba(255,255,255,0.78);
+    --glass-strong:rgba(255,255,255,0.95);
+    --glass-border:rgba(0,0,0,0.07);
+    --glass-border-strong:rgba(0,0,0,0.16);
+    --glass-shadow:0 8px 28px rgba(0,0,0,0.07);
+    /* Apple 라이트 팔레트 */
+    --dept-culture:#FF9500;
+    --dept-video:#0A84FF;
+    --dept-photo:#AF52DE;
+    --dept-protocol:#34C759;
+    --dept-performance:#FF3B30;
+  }
+  body.light::before{
+    background:
+      radial-gradient(600px 420px at 15% -5%, rgba(255,149,0,0.10), transparent 65%),
+      radial-gradient(560px 460px at 100% 12%, rgba(0,122,255,0.08), transparent 65%),
+      radial-gradient(680px 560px at 50% 110%, rgba(175,82,222,0.06), transparent 70%);
+  }
+  body.light header{
+    background:rgba(242,242,247,0.75);
+    border-bottom:1px solid rgba(0,0,0,0.06);
+  }
+  body.light .dept-card{
+    background:rgba(255,255,255,0.85);
+    border-color:rgba(0,0,0,0.06);
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  }
+  body.light .dept-card.active{
+    /* 라이트 모드: 과 컬러 실선 + 퍼지는 링 + 컬러 그림자 */
+    background:color-mix(in srgb, var(--dept-color,var(--blue)) 5%, #FFFFFF);
+    border-color:color-mix(in srgb, var(--dept-color,var(--blue)) 85%, transparent);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--dept-color,var(--blue)) 16%, transparent),
+      0 10px 32px color-mix(in srgb, var(--dept-color,var(--blue)) 30%, transparent),
+      0 2px 10px rgba(0,0,0,0.05);
+  }
+  body.light .dept-chart-cell{
+    background:rgba(255,255,255,0.85);
+    border-color:rgba(0,0,0,0.06);
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  }
+  body.light .dept-chart-cell.active{
+    background:#FFFFFF;border-color:rgba(0,0,0,0.3);
+    box-shadow:0 8px 28px rgba(0,0,0,0.12);
+  }
+  body.light .chart-bar-track{background:rgba(0,0,0,0.07);}
+  body.light .range-tabs{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.06);}
+  body.light .range-tab.active{
+    background:#FFFFFF;
+    box-shadow:0 2px 8px rgba(0,0,0,0.12);
+  }
+  body.light .dept-chip{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.08);}
+  body.light .dept-chip.missing{background:rgba(255,59,48,0.10);border-color:rgba(255,59,48,0.25);color:#D70015;}
+  body.light .ring-track{stroke:rgba(0,0,0,0.08);}
+  body.light .briefing-upcoming{border-top-color:rgba(0,0,0,0.07);}
+  body.light .briefing-upcoming-count{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+  body.light .up-row + .up-row{border-top-color:rgba(0,0,0,0.05);}
+  body.light .dept-info-btn{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.1);}
+  body.light .dept-focus-bar{border-top-color:rgba(0,0,0,0.08);}
+  body.light .cat-card::before{opacity:1;}
+  body.light .item{border-top-color:rgba(0,0,0,0.06);}
+  body.light .calendar-day.selected:not(.today){background:rgba(0,0,0,0.06);}
+  body.light .calendar-day-detail{border-top-color:rgba(0,0,0,0.07);}
+  body.light .schedule-row{background:rgba(0,0,0,0.028);border-color:rgba(0,0,0,0.07);}
+  body.light .schedule-empty{background:rgba(0,0,0,0.028);border-color:rgba(0,0,0,0.07);}
+  body.light .queue-row{border-top-color:rgba(0,0,0,0.06);}
+  body.light .duties-modal{
+    background:rgba(255,255,255,0.94);
+    border-color:rgba(0,0,0,0.1);
+    box-shadow:0 24px 70px rgba(0,0,0,0.25);
+  }
+  body.light .duties-head{border-bottom-color:rgba(0,0,0,0.08);}
+  body.light .duty-item + .duty-item{border-top-color:rgba(0,0,0,0.06);}
+  body.light .duties-close{background:rgba(0,0,0,0.06);}
+  body.light .duties-overlay{background:rgba(0,0,0,0.35);}
+  body.light .retry-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);}
+  body.light .skeleton::after{background:linear-gradient(90deg,transparent,rgba(0,0,0,0.04),transparent);}
+  /* 라이트 모드 공지 토스트: 다크 글래스로 반전시켜 대비 확보 */
+  body.light .notice-toast{
+    background:rgba(28,28,30,0.92);
+    border-color:rgba(255,255,255,0.14);
+    box-shadow:0 14px 44px rgba(0,0,0,0.35), inset 0 0.5px 0 rgba(255,255,255,0.15);
+    color:#F5F5F7;
+  }
+  body.light .notice-toast-label{color:#98989F;}
+  body.light .notice-toast-text{color:#F5F5F7;}
+  body.light .notice-toast-meta{color:#98989F;}
+  body.light .notice-toast-close{background:rgba(255,255,255,0.14);color:#D1D1D6;}
+  body.light .notice-toast-close:active{background:rgba(255,255,255,0.24);}
+
+  /* ---------- 테마 토글 ---------- */
+  .meta-right{display:flex;align-items:center;gap:12px;}
+  .theme-toggle{
+    display:flex;gap:2px;padding:2px;border-radius:100px;
+    background:var(--glass);border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  }
+  .theme-opt{
+    padding:4px 10px;border-radius:100px;
+    font-size:10.5px;font-weight:600;color:var(--text-muted);
+    display:flex;align-items:center;gap:3px;white-space:nowrap;
+    transition:background .15s,color .15s;
+  }
+  .theme-opt.active{background:rgba(255,255,255,0.16);color:var(--text);}
+  body.light .theme-toggle{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.06);}
+  body.light .theme-opt.active{background:#FFFFFF;box-shadow:0 1px 6px rgba(0,0,0,0.12);}
+
   *{box-sizing:border-box;letter-spacing:-0.01em;}
   html,body{margin:0;padding:0;}
   button{
@@ -668,9 +783,15 @@
   <h1>문화부 대시보드</h1>
   <div class="meta-row">
     <span><span class="status-dot"></span><span id="weekLabel">불러오는 중…</span></span>
-    <div class="clock-box">
-      <span id="clockDate" class="mono clock-date"></span>
-      <span id="clockTime" class="mono clock-time"></span>
+    <div class="meta-right">
+      <div class="theme-toggle" id="themeToggle">
+        <button class="theme-opt" data-theme="light">☀️ Light</button>
+        <button class="theme-opt" data-theme="dark">🌙 Dark</button>
+      </div>
+      <div class="clock-box">
+        <span id="clockDate" class="mono clock-date"></span>
+        <span id="clockTime" class="mono clock-time"></span>
+      </div>
     </div>
   </div>
 </header>
@@ -704,6 +825,31 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9xPO9SY27PLAVOHRRr61yz0-5nr8cTNgiMRIV79Xz2ilyN/exec';
+
+/* ---------- 테마 (다크/라이트) ---------- */
+const THEME_KEY = 'dashboardTheme';
+
+function applyTheme(theme){
+  document.body.classList.toggle('light', theme === 'light');
+  document.querySelectorAll('.theme-opt').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
+  try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
+}
+
+(function initTheme(){
+  let saved = 'dark';
+  try{ saved = localStorage.getItem(THEME_KEY) || 'dark'; }catch(e){}
+  // DOM 준비 후 적용
+  const run = ()=>{
+    applyTheme(saved);
+    document.querySelectorAll('.theme-opt').forEach(btn=>{
+      btn.onclick = ()=>applyTheme(btn.dataset.theme);
+    });
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
 
 /* ---------- 방문 기록 (익명) ----------
  * 페이지를 새로 열 때마다 1회 기록 (1분 자동 갱신은 세지 않음)
@@ -865,7 +1011,6 @@ function renderDeptTabs(){
             <span class="dept-card-name">${dept}</span>
           </div>
           <button class="dept-info-btn" data-duties="${dept}" aria-label="${dept} 업무편람 보기">🌟업무편람</button>
-          <span class="dept-card-statlabel">${rangeLabelShort()} 기준</span>
         </div>
         <div class="dept-card-stat">
           <span class="dept-card-num mono">${count}</span>
