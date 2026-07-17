@@ -780,7 +780,22 @@
     box-shadow:var(--glass-shadow);
   }
   body.light .ms-panel{background:rgba(255,255,255,0.85);border-color:rgba(0,0,0,0.06);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
-  .ms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .ms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;width:100%;}
+  .ms-head-left{display:flex;align-items:center;gap:9px;min-width:0;}
+  .ms-chevron{
+    width:7px;height:7px;flex:0 0 auto;
+    border-right:2px solid var(--text);border-bottom:2px solid var(--text);
+    transform:rotate(-45deg);              /* 닫힘: > */
+    transition:transform .25s ease;
+    margin-left:2px;
+  }
+  .ms-panel.open .ms-chevron{
+    transform:rotate(45deg);               /* 열림: v */
+    margin-top:-3px;
+  }
+  .ms-panel:not(.open) .ms-body{display:none;}
+  .ms-panel:not(.open){padding-bottom:16px;}
+  .ms-panel:not(.open) .ms-head{margin-bottom:0;}
   .ms-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
   .ms-title .ms-dot{width:8px;height:8px;border-radius:50%;background:var(--dept-color,var(--blue));box-shadow:0 0 8px color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);}
   .ms-badge{
@@ -1012,7 +1027,8 @@ let state = {
   dept: null,   // 시작 시 아무 부서도 선택하지 않음
   data: null,
   openCats: new Set(),
-  upcomingOpen: true
+  upcomingOpen: true,
+  msCollapsed: new Set()   // 접어둔 마일스톤 패널의 부서명
 };
 
 function fmtDate(iso){
@@ -1640,12 +1656,18 @@ function milestoneSection(dept){
       }).join('')
     : `<div class="ms-empty">아직 등록된 목표가 없습니다. 아래에서 이번 달 목표를 추가해보세요.</div>`;
 
+  const isOpen = !state.msCollapsed.has(dept);
+
   return `
-    <div class="ms-panel" style="--dept-color:var(--dept-${colorKey})" data-ms-panel="${dept}">
-      <div class="ms-head">
-        <p class="ms-title"><span class="ms-dot"></span>🎯 ${dept} 월간 마일스톤</p>
+    <div class="ms-panel${isOpen ? ' open' : ''}" style="--dept-color:var(--dept-${colorKey})" data-ms-panel="${dept}">
+      <button class="ms-head" data-ms-toggle="${dept}" aria-expanded="${isOpen}">
+        <span class="ms-head-left">
+          <span class="ms-chevron"></span>
+          <span class="ms-title"><span class="ms-dot"></span>🎯 ${dept} 월간 마일스톤</span>
+        </span>
         <span class="ms-badge">${goals.length ? doneCount + ' / ' + goals.length + ' 달성' : '공유 목표'}</span>
-      </div>
+      </button>
+      <div class="ms-body">
       ${rows}
       <div class="ms-form">
         <input class="ms-input ms-in-title" data-ms-in="title" placeholder="목표 지표명 입력 (예: 완료된 공연)" maxlength="40">
@@ -1658,12 +1680,22 @@ function milestoneSection(dept){
         <input class="ms-input ms-in-desc" data-ms-in="desc" placeholder="행동 지침 설명 (예: 본무대 연출 세팅 완료)" maxlength="80">
         <button class="ms-add-btn" data-ms-add="${dept}">목표등록</button>
       </div>
+      </div>
     </div>`;
 }
 
 function bindMilestoneEvents(){
   document.querySelectorAll('[data-ms-panel]').forEach(panel => {
     const dept = panel.dataset.msPanel;
+
+    // 접기/펼치기 (화면 전체를 다시 그리지 않아 입력 내용이 보존됨)
+    const toggle = panel.querySelector('[data-ms-toggle]');
+    toggle.onclick = ()=>{
+      const nowOpen = !panel.classList.contains('open');
+      panel.classList.toggle('open', nowOpen);
+      toggle.setAttribute('aria-expanded', nowOpen);
+      if(nowOpen) state.msCollapsed.delete(dept); else state.msCollapsed.add(dept);
+    };
 
     panel.querySelectorAll('[data-ms-plus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msPlus, +1));
     panel.querySelectorAll('[data-ms-minus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msMinus, -1));
