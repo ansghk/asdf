@@ -771,6 +771,88 @@
   @media (prefers-reduced-motion: reduce){
     .skeleton::after{animation:none;}
   }
+  /* ---------- 월간 마일스톤 (부서별 목표) ---------- */
+  .ms-panel{
+    background:var(--glass);border:1px solid var(--glass-border);
+    border-radius:var(--radius);padding:18px 18px 14px;margin:16px 18px 0;
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    box-shadow:var(--glass-shadow);
+  }
+  body.light .ms-panel{background:rgba(255,255,255,0.85);border-color:rgba(0,0,0,0.06);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+  .ms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .ms-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
+  .ms-title .ms-dot{width:8px;height:8px;border-radius:50%;background:var(--dept-color,var(--blue));box-shadow:0 0 8px color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);}
+  .ms-badge{
+    font-size:10px;font-weight:600;color:var(--text-muted);
+    padding:3px 9px;border-radius:100px;
+    background:var(--glass);border:1px solid var(--glass-border);white-space:nowrap;
+  }
+  body.light .ms-badge{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.08);}
+  .ms-row{padding:12px 0 4px;}
+  .ms-row + .ms-row{border-top:1px solid var(--glass-border);}
+  body.light .ms-row + .ms-row{border-top-color:rgba(0,0,0,0.06);}
+  .ms-row-top{display:flex;align-items:center;gap:10px;}
+  .ms-del{
+    flex:0 0 auto;font-size:13px;opacity:.4;padding:4px;line-height:1;
+    transition:opacity .15s;
+  }
+  .ms-del:active{opacity:.9;}
+  .ms-info{flex:1;min-width:0;}
+  .ms-name{font-size:13px;font-weight:700;margin:0;}
+  .ms-desc{font-size:11px;color:var(--text-muted);margin:2px 0 0;line-height:1.4;}
+  .ms-counter{flex:0 0 auto;display:flex;align-items:center;gap:8px;}
+  .ms-btn{
+    width:28px;height:28px;border-radius:50%;
+    background:var(--glass);border:1px solid var(--glass-border);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;color:var(--text);
+    transition:background .12s, transform .08s;
+  }
+  .ms-btn:active{background:var(--glass-strong);transform:scale(0.92);}
+  body.light .ms-btn{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.1);}
+  .ms-btn:disabled{opacity:.3;pointer-events:none;}
+  .ms-count{font-size:13px;font-weight:700;min-width:64px;text-align:center;white-space:nowrap;}
+  .ms-count .cur{color:var(--dept-color,var(--blue));}
+  .ms-track{
+    height:5px;border-radius:100px;background:rgba(255,255,255,0.08);
+    margin-top:10px;overflow:hidden;
+  }
+  body.light .ms-track{background:rgba(0,0,0,0.07);}
+  .ms-fill{
+    height:100%;border-radius:100px;
+    background:var(--dept-color,var(--blue));
+    box-shadow:0 0 10px color-mix(in srgb, var(--dept-color,var(--blue)) 60%, transparent);
+    transition:width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .ms-fill.done{background:#30D158;box-shadow:0 0 10px rgba(48,209,88,0.6);}
+  .ms-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:16px 0 10px;}
+  .ms-form{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;
+    border-top:1px solid var(--glass-border);
+  }
+  body.light .ms-form{border-top-color:rgba(0,0,0,0.06);}
+  .ms-input{
+    background:var(--glass);border:1px solid var(--glass-border);
+    border-radius:12px;padding:9px 12px;font:inherit;font-size:12px;
+    color:var(--text);outline:none;min-width:0;
+  }
+  .ms-input::placeholder{color:var(--text-dim);}
+  .ms-input:focus{border-color:var(--glass-border-strong);}
+  body.light .ms-input{background:rgba(0,0,0,0.035);border-color:rgba(0,0,0,0.1);}
+  .ms-in-title{flex:1 1 180px;}
+  .ms-in-target{flex:0 0 64px;text-align:center;}
+  .ms-in-unit{flex:0 0 64px;text-align:center;}
+  .ms-in-desc{flex:1 1 100%;}
+  .ms-add-btn{
+    flex:0 0 auto;margin-left:auto;
+    background:var(--dept-color,var(--blue));color:#fff;
+    border-radius:12px;padding:9px 18px;font-size:12.5px;font-weight:700;
+    transition:opacity .15s, transform .08s;
+  }
+  .ms-add-btn:active{opacity:.85;transform:scale(0.97);}
+  .ms-add-btn:disabled{opacity:.4;pointer-events:none;}
+  .ms-syncing{font-size:10px;color:var(--text-dim);}
 </style>
 </head>
 <body>
@@ -809,6 +891,8 @@
     <button class="range-tab" data-range="yearly">연간</button>
   </div>
 </div>
+
+<div id="milestoneSection"></div>
 
 <div id="scheduleSection"></div>
 
@@ -1454,11 +1538,165 @@ function closeDutiesModal(){
   document.removeEventListener('keydown', dutiesEscHandler);
 }
 
+/* ---------- 월간 마일스톤 (부서별 목표, 구글시트 연동) ---------- */
+let msBusy = false; // 요청 중 중복 클릭 방지
+
+function goalsFor(dept){
+  const g = state.data && state.data.goals;
+  return (g && g[dept]) ? g[dept] : [];
+}
+
+async function msRequest(params){
+  const qs = Object.entries(params)
+    .map(([k,v]) => k + '=' + encodeURIComponent(v))
+    .join('&');
+  const res = await fetch(API_URL + '?' + qs);
+  if(!res.ok) throw new Error('bad status');
+  return res.json();
+}
+
+function msRefresh(){
+  // 서버 반영 후 최신 데이터로 동기화 (조용히)
+  fetch(API_URL).then(r=>r.json()).then(d=>{ state.data = d; render(); }).catch(()=>{});
+}
+
+async function msAddGoal(dept, title, target, unit, desc, btn){
+  if(msBusy) return;
+  msBusy = true;
+  if(btn) btn.disabled = true;
+  try{
+    await msRequest({ action:'goalAdd', dept:dept, title:title, target:target, unit:unit, desc:desc });
+    // 낙관적 반영 (서버 새로고침 전 즉시 표시)
+    if(!state.data.goals) state.data.goals = {};
+    if(!state.data.goals[dept]) state.data.goals[dept] = [];
+    state.data.goals[dept].push({ id:'tmp-' + Date.now(), title:title, desc:desc, current:0, target:Number(target), unit:unit });
+    render();
+    msRefresh();
+  }catch(e){
+    alert('목표 등록에 실패했습니다. 네트워크를 확인해주세요.');
+  }finally{
+    msBusy = false;
+  }
+}
+
+async function msUpdateGoal(dept, id, delta){
+  const goal = goalsFor(dept).find(g => String(g.id) === String(id));
+  if(!goal) return;
+  const next = Math.max(0, Number(goal.current) + delta);
+  if(next === Number(goal.current)) return;
+  goal.current = next; // 낙관적 반영
+  render();
+  try{
+    await msRequest({ action:'goalUpdate', id:id, delta:delta });
+  }catch(e){
+    goal.current = Math.max(0, next - delta); // 실패 시 되돌림
+    render();
+  }
+}
+
+async function msDeleteGoal(dept, id, title){
+  if(!confirm('"' + title + '" 목표를 삭제할까요?\n모든 사람의 대시보드에서 사라집니다.')) return;
+  const list = goalsFor(dept);
+  const idx = list.findIndex(g => String(g.id) === String(id));
+  if(idx !== -1) list.splice(idx, 1); // 낙관적 반영
+  render();
+  try{
+    await msRequest({ action:'goalDelete', id:id });
+    msRefresh();
+  }catch(e){
+    alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    msRefresh();
+  }
+}
+
+function milestoneSection(dept){
+  const goals = goalsFor(dept);
+  const colorKey = DEPT_COLOR_KEY[dept];
+  const doneCount = goals.filter(g => Number(g.current) >= Number(g.target)).length;
+
+  const rows = goals.length
+    ? goals.map(g => {
+        const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
+        const pct = Math.min(100, Math.round(cur / tgt * 100));
+        const done = cur >= tgt;
+        const unit = escapeHtml(g.unit || '건');
+        return `
+        <div class="ms-row">
+          <div class="ms-row-top">
+            <button class="ms-del" data-ms-del="${g.id}" data-ms-title="${escapeHtml(g.title)}" aria-label="삭제">🗑️</button>
+            <div class="ms-info">
+              <p class="ms-name">${done ? '✅ ' : ''}${escapeHtml(g.title)}</p>
+              ${g.desc ? `<p class="ms-desc">${escapeHtml(g.desc)}</p>` : ''}
+            </div>
+            <div class="ms-counter">
+              <button class="ms-btn" data-ms-minus="${g.id}" ${cur <= 0 ? 'disabled' : ''}>−</button>
+              <span class="ms-count mono"><span class="cur">${cur}</span> / ${tgt} ${unit}</span>
+              <button class="ms-btn" data-ms-plus="${g.id}">+</button>
+            </div>
+          </div>
+          <div class="ms-track"><div class="ms-fill${done ? ' done' : ''}" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')
+    : `<div class="ms-empty">아직 등록된 목표가 없습니다. 아래에서 이번 달 목표를 추가해보세요.</div>`;
+
+  return `
+    <div class="ms-panel" style="--dept-color:var(--dept-${colorKey})" data-ms-panel="${dept}">
+      <div class="ms-head">
+        <p class="ms-title"><span class="ms-dot"></span>🎯 ${dept} 월간 마일스톤</p>
+        <span class="ms-badge">${goals.length ? doneCount + ' / ' + goals.length + ' 달성' : '공유 목표'}</span>
+      </div>
+      ${rows}
+      <div class="ms-form">
+        <input class="ms-input ms-in-title" data-ms-in="title" placeholder="목표 지표명 입력 (예: 완료된 공연)" maxlength="40">
+        <input class="ms-input ms-in-target mono" data-ms-in="target" type="number" min="1" max="999" placeholder="목표" value="4">
+        <select class="ms-input ms-in-unit" data-ms-in="unit">
+          <option value="건">건</option><option value="명">명</option><option value="회">회</option><option value="편">편</option><option value="%">%</option>
+        </select>
+        <input class="ms-input ms-in-desc" data-ms-in="desc" placeholder="행동 지침 설명 (예: 본무대 연출 세팅 완료)" maxlength="80">
+        <button class="ms-add-btn" data-ms-add="${dept}">목표등록</button>
+      </div>
+    </div>`;
+}
+
+function bindMilestoneEvents(){
+  document.querySelectorAll('[data-ms-panel]').forEach(panel => {
+    const dept = panel.dataset.msPanel;
+
+    panel.querySelectorAll('[data-ms-plus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msPlus, +1));
+    panel.querySelectorAll('[data-ms-minus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msMinus, -1));
+    panel.querySelectorAll('[data-ms-del]').forEach(b => b.onclick = ()=> msDeleteGoal(dept, b.dataset.msDel, b.dataset.msTitle));
+
+    const addBtn = panel.querySelector('[data-ms-add]');
+    addBtn.onclick = ()=>{
+      const get = k => panel.querySelector('[data-ms-in="' + k + '"]');
+      const title = get('title').value.trim();
+      const target = Number(get('target').value);
+      const unit = get('unit').value;
+      const desc = get('desc').value.trim();
+      if(!title){ get('title').focus(); return; }
+      if(!target || target < 1){ get('target').focus(); return; }
+      msAddGoal(dept, title, target, unit, desc, addBtn);
+    };
+  });
+}
+
 function render(){
   renderBriefing();
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
+
+  // 월간 마일스톤 (캘린더 위에 표시)
+  const msWrap = document.getElementById('milestoneSection');
+  if(!state.dept || !state.data){
+    msWrap.innerHTML = '';
+  } else if(state.dept === ALL_DEPTS){
+    msWrap.innerHTML = DEPTS.map(milestoneSection).join('');
+  } else {
+    msWrap.innerHTML = milestoneSection(state.dept);
+  }
+  bindMilestoneEvents();
+
   renderSchedule();
 
   const main = document.getElementById('main');
@@ -1545,11 +1783,19 @@ function renderAlertBanner(){
 }
 
 async function load(){
-  document.getElementById('main').innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+  // 스켈레톤은 최초 로딩 때만 표시 (1분 자동 갱신 시 화면 깜빡임/입력 초기화 방지)
+  if(!state.data){
+    document.getElementById('main').innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+  }
   try{
     const res = await fetch(API_URL);
     if(!res.ok) throw new Error('bad status');
     state.data = await res.json();
+    // 목표 입력 중에는 화면을 다시 그리지 않음 (입력 내용 보호)
+    if(document.activeElement && document.activeElement.closest && document.activeElement.closest('.ms-form')){
+      renderVisitFooter();
+      return;
+    }
     render();
     renderAlertBanner();
     renderNoticeToast();
