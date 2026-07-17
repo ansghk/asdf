@@ -840,9 +840,10 @@
   .ms-input::placeholder{color:var(--text-dim);}
   .ms-input:focus{border-color:var(--glass-border-strong);}
   body.light .ms-input{background:rgba(0,0,0,0.035);border-color:rgba(0,0,0,0.1);}
-  .ms-in-title{flex:1 1 180px;}
-  .ms-in-target{flex:0 0 64px;text-align:center;}
-  .ms-in-unit{flex:0 0 64px;text-align:center;}
+  .ms-in-title{flex:1 1 160px;}
+  .ms-num-group{flex:0 0 auto;display:flex;gap:8px;}
+  .ms-in-target{flex:0 0 60px;width:60px;text-align:center;}
+  .ms-in-unit{flex:0 0 62px;width:62px;text-align:center;}
   .ms-in-desc{flex:1 1 100%;}
   .ms-add-btn{
     flex:0 0 auto;margin-left:auto;
@@ -880,6 +881,8 @@
 
 <section class="briefing" id="briefing"></section>
 
+<div id="milestoneSection"></div>
+
 <p class="section-label dept-grid-label" style="padding:0 18px;margin-left:0;margin-right:0;">부서 선택</p>
 <div class="dept-grid" id="deptTabs"></div>
 
@@ -891,8 +894,6 @@
     <button class="range-tab" data-range="yearly">연간</button>
   </div>
 </div>
-
-<div id="milestoneSection"></div>
 
 <div id="scheduleSection"></div>
 
@@ -1648,10 +1649,12 @@ function milestoneSection(dept){
       ${rows}
       <div class="ms-form">
         <input class="ms-input ms-in-title" data-ms-in="title" placeholder="목표 지표명 입력 (예: 완료된 공연)" maxlength="40">
-        <input class="ms-input ms-in-target mono" data-ms-in="target" type="number" min="1" max="999" placeholder="목표" value="4">
-        <select class="ms-input ms-in-unit" data-ms-in="unit">
-          <option value="건">건</option><option value="명">명</option><option value="회">회</option><option value="편">편</option><option value="%">%</option>
-        </select>
+        <div class="ms-num-group">
+          <input class="ms-input ms-in-target mono" data-ms-in="target" type="number" min="1" max="999" placeholder="목표" value="4">
+          <select class="ms-input ms-in-unit" data-ms-in="unit">
+            <option value="건">건</option><option value="명">명</option><option value="회">회</option><option value="편">편</option><option value="%">%</option>
+          </select>
+        </div>
         <input class="ms-input ms-in-desc" data-ms-in="desc" placeholder="행동 지침 설명 (예: 본무대 연출 세팅 완료)" maxlength="80">
         <button class="ms-add-btn" data-ms-add="${dept}">목표등록</button>
       </div>
