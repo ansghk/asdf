@@ -563,6 +563,29 @@
     border:1px solid rgba(255,255,255,0.07);border-radius:14px;
   }
 
+  /* ---------- 월말 통합 보고 캘린더 ---------- */
+  .report-cal{
+    margin:16px 18px 0;padding:18px 16px 16px;
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    box-shadow:var(--glass-shadow), inset 0 0.5px 0 rgba(255,255,255,0.10);
+  }
+  .report-cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;row-gap:4px;}
+  .report-cal-title{font-size:14px;font-weight:700;letter-spacing:-.02em;}
+  .report-cal-month{font-size:11px;color:var(--text-dim);font-weight:600;}
+  .report-summary-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+  .report-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:100px;
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    color:var(--text-muted);
+  }
+  .report-chip .chip-dot{width:5px;height:5px;border-radius:50%;background:var(--chip-color,var(--blue));}
+  body.light .report-chip{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.08);}
+
   /* ---------- queue ---------- */
   .queue-card{
     background:var(--glass);
@@ -869,6 +892,44 @@
   .ms-add-btn:active{opacity:.85;transform:scale(0.97);}
   .ms-add-btn:disabled{opacity:.4;pointer-events:none;}
   .ms-syncing{font-size:10px;color:var(--text-dim);}
+
+  /* ---------- 지난 마일스톤 기록 (월간 자동 리셋 보관함) ---------- */
+  .ms-archive{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);}
+  body.light .ms-archive{border-top-color:rgba(0,0,0,0.06);}
+  .ms-archive-toggle{
+    display:flex;align-items:center;gap:7px;width:100%;
+    font-size:11.5px;font-weight:600;color:var(--text-muted);padding:2px 0;
+  }
+  .ms-archive-chevron{
+    width:6px;height:6px;border-right:1.5px solid var(--text-dim);border-bottom:1.5px solid var(--text-dim);
+    transform:rotate(-45deg);transition:transform .18s ease;flex:0 0 auto;
+  }
+  .ms-archive.open .ms-archive-chevron{transform:rotate(45deg);}
+  .ms-archive-body{display:none;margin-top:10px;flex-direction:column;gap:2px;}
+  .ms-archive.open .ms-archive-body{display:flex;}
+  .ms-archive-nav{
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  body.light .ms-archive-nav{border-bottom-color:rgba(0,0,0,0.06);}
+  .ms-archive-nav-btn{
+    width:26px;height:26px;border-radius:8px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;line-height:1;color:var(--text);
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    transition:opacity .15s, transform .08s;
+  }
+  body.light .ms-archive-nav-btn{background:rgba(0,0,0,0.045);border-color:rgba(0,0,0,0.08);}
+  .ms-archive-nav-btn:active{transform:scale(.92);}
+  .ms-archive-nav-btn:disabled{opacity:.3;pointer-events:none;}
+  .ms-archive-nav-label{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--text);min-width:120px;text-align:center;}
+  .ms-archive-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:14px 0 6px;}
+  .ms-archive-row{
+    display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-muted);
+    padding:5px 0;
+  }
+  .ms-archive-row-title{flex:1;min-width:0;color:var(--text);}
+  .ms-archive-row-count{flex:0 0 auto;color:var(--text-dim);}
   /* 모바일: 입력칸 글자가 16px 미만이면 iOS가 포커스 시 강제 확대함 → 16px로 방지 */
   @media (max-width: 700px){
     .ms-input{font-size:16px;padding:10px 12px;}
@@ -1034,7 +1095,9 @@ let state = {
   data: null,
   openCats: new Set(),
   upcomingOpen: true,
-  msCollapsed: new Set()   // 접어둔 마일스톤 패널의 부서명
+  msCollapsed: new Set(),  // 접어둔 마일스톤 패널의 부서명
+  msArchiveOpen: new Set(), // 지난 기록을 펼쳐둔 부서명
+  msArchiveMonth: {}        // 부서별로 지난 기록 뷰어가 보고 있는 월(YYYY-MM)
 };
 
 function fmtDate(iso){
@@ -1632,6 +1695,128 @@ async function msDeleteGoal(dept, id, title){
   }
 }
 
+/* ---------- 월간 마일스톤 자동 리셋 + 지난 기록 보관 ----------
+   매월 1일이 지나면(이 브라우저가 감지하는 즉시), 그 시점까지 쌓인 목표를
+   1) 이 브라우저의 localStorage에 "지난 기록"으로 저장해두고
+   2) 공유 목표(구글시트)에서는 삭제해서 모두의 화면이 새 달로 리셋되게 함.
+   ⚠️ 저장은 이 파일(프론트엔드) 안에서만 이뤄지는 로컬 보관이라, 같은 브라우저에서만 "지난 기록"이
+      보입니다. 팀 전체가 공유해서 봐야 한다면 이 스냅샷을 API_URL 백엔드(구글 Apps Script)에도
+      함께 저장하도록 확장하는 게 좋습니다. */
+const MS_ARCHIVE_KEY = 'cultureDashboard_msArchive_v1';
+const MS_LAST_MONTH_KEY = 'cultureDashboard_msLastMonth_v1';
+
+function monthKeyOf(date){
+  const d = date || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+function msArchiveLoad(){
+  try{
+    const raw = localStorage.getItem(MS_ARCHIVE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+
+function msArchiveSave(archive){
+  try{ localStorage.setItem(MS_ARCHIVE_KEY, JSON.stringify(archive)); }catch(e){}
+}
+
+let msResetBusy = false; // 리셋 처리 중 중복 실행 방지 (60초 폴링이 겹치는 경우 대비)
+
+async function checkMonthlyMilestoneReset(){
+  if(!state.data || !state.data.goals) return;
+  if(msResetBusy) return;
+
+  const nowKey = monthKeyOf();
+  let lastKey = null;
+  try{ lastKey = localStorage.getItem(MS_LAST_MONTH_KEY); }catch(e){}
+
+  if(lastKey === null){
+    // 이 브라우저에서 처음 확인하는 경우: 기존 목표를 지우지 않고 현재 월만 기록해둠
+    try{ localStorage.setItem(MS_LAST_MONTH_KEY, nowKey); }catch(e){}
+    return;
+  }
+
+  if(lastKey === nowKey) return; // 아직 같은 달이면 아무 것도 하지 않음
+
+  // ── 달이 바뀜(예: 7월 → 8월): 지난달 목표를 로컬에 보관하고, 공유 목표(구글시트)에서 삭제 ──
+  // 삭제는 공유 API를 호출하므로, 이 체크를 가장 먼저 실행한 브라우저 한 대가 리셋하면
+  // 다른 모든 사람의 화면도 다음 새로고침/폴링(최대 1분 이내) 때 동일하게 8월의 빈 목록으로 보입니다.
+  msResetBusy = true;
+  try{
+    const archive = msArchiveLoad();
+    const snapshot = {};
+    DEPTS.forEach(dept=>{
+      const goals = goalsFor(dept);
+      if(goals.length) snapshot[dept] = goals.map(g => ({ ...g }));
+    });
+    if(Object.keys(snapshot).length){
+      // 같은 달 기록이 이미 있어도 덮어쓰지 않고 부서별로 합쳐서 누적 보관
+      const existing = archive[lastKey] || {};
+      archive[lastKey] = { ...existing, ...snapshot };
+      msArchiveSave(archive);
+    }
+
+    const deleteJobs = [];
+    DEPTS.forEach(dept=>{
+      goalsFor(dept).forEach(g=>{
+        deleteJobs.push(msRequest({ action:'goalDelete', id:g.id }).catch(()=>{}));
+      });
+      state.data.goals[dept] = []; // 화면 즉시 반영 (낙관적)
+    });
+    await Promise.all(deleteJobs);
+
+    try{ localStorage.setItem(MS_LAST_MONTH_KEY, nowKey); }catch(e){}
+  } finally {
+    msResetBusy = false;
+  }
+}
+
+function shiftMonthKey(monthKey, delta){
+  const [y, m] = monthKey.split('-').map(Number);
+  return monthKeyOf(new Date(y, (m - 1) + delta, 1));
+}
+
+function msArchiveSection(dept){
+  const archive = msArchiveLoad();
+  const isOpen = state.msArchiveOpen.has(dept);
+
+  const nowKey = monthKeyOf();
+  if(!state.msArchiveMonth[dept]) state.msArchiveMonth[dept] = shiftMonthKey(nowKey, -1); // 기본값: 지난달부터 보기
+  const viewKey = state.msArchiveMonth[dept];
+
+  const goals = (archive[viewKey] && archive[viewKey][dept]) || [];
+  const doneCount = goals.filter(g => Number(g.current) >= Number(g.target)).length;
+
+  const rows = goals.length
+    ? goals.map(g=>{
+        const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
+        const done = cur >= tgt;
+        const unit = escapeHtml(g.unit || '건');
+        return `<div class="ms-archive-row">${done ? '✅' : '▫️'} <span class="ms-archive-row-title">${escapeHtml(g.title)}</span><span class="ms-archive-row-count mono">${cur} / ${tgt} ${unit}</span></div>`;
+      }).join('')
+    : `<div class="ms-archive-empty">이 달의 기록이 없습니다.</div>`;
+
+  const [vy, vm] = viewKey.split('-');
+  const canGoNext = viewKey < nowKey; // 진행 중인 이번 달까지는 다음달 버튼으로 넘어가지 않음
+
+  return `
+    <div class="ms-archive${isOpen ? ' open' : ''}" data-ms-archive-panel="${dept}">
+      <button class="ms-archive-toggle" data-ms-archive-toggle="${dept}" aria-expanded="${isOpen}">
+        <span class="ms-archive-chevron"></span>
+        <span>지난 마일스톤 기록 보기</span>
+      </button>
+      <div class="ms-archive-body">
+        <div class="ms-archive-nav">
+          <button class="ms-archive-nav-btn" data-ms-archive-prev="${dept}" aria-label="이전 달">‹</button>
+          <span class="ms-archive-nav-label mono">${vy}.${vm}${goals.length ? ` · ${doneCount}/${goals.length} 달성` : ''}</span>
+          <button class="ms-archive-nav-btn" data-ms-archive-next="${dept}" aria-label="다음 달" ${canGoNext ? '' : 'disabled'}>›</button>
+        </div>
+        ${rows}
+      </div>
+    </div>`;
+}
+
 function milestoneSection(dept){
   const goals = goalsFor(dept);
   const colorKey = DEPT_COLOR_KEY[dept];
@@ -1686,6 +1871,7 @@ function milestoneSection(dept){
         <input class="ms-input ms-in-desc" data-ms-in="desc" placeholder="행동 지침 설명 (예: 본무대 연출 세팅 완료)" maxlength="80">
         <button class="ms-add-btn" data-ms-add="${dept}">목표등록</button>
       </div>
+      ${msArchiveSection(dept)}
       </div>
     </div>`;
 }
@@ -1702,6 +1888,31 @@ function bindMilestoneEvents(){
       toggle.setAttribute('aria-expanded', nowOpen);
       if(nowOpen) state.msCollapsed.delete(dept); else state.msCollapsed.add(dept);
     };
+
+    const archivePanel = panel.querySelector('[data-ms-archive-panel]');
+    if(archivePanel){
+      const archiveToggle = archivePanel.querySelector('[data-ms-archive-toggle]');
+      archiveToggle.onclick = ()=>{
+        const nowOpen = !archivePanel.classList.contains('open');
+        archivePanel.classList.toggle('open', nowOpen);
+        archiveToggle.setAttribute('aria-expanded', nowOpen);
+        if(nowOpen) state.msArchiveOpen.add(dept); else state.msArchiveOpen.delete(dept);
+      };
+
+      const prevBtn = archivePanel.querySelector('[data-ms-archive-prev]');
+      if(prevBtn) prevBtn.onclick = ()=>{
+        state.msArchiveMonth[dept] = shiftMonthKey(state.msArchiveMonth[dept] || monthKeyOf(), -1);
+        state.msArchiveOpen.add(dept); // 이동하면서 자동으로 펼쳐진 상태 유지
+        render();
+      };
+      const nextBtn = archivePanel.querySelector('[data-ms-archive-next]');
+      if(nextBtn) nextBtn.onclick = ()=>{
+        if(nextBtn.disabled) return;
+        state.msArchiveMonth[dept] = shiftMonthKey(state.msArchiveMonth[dept] || monthKeyOf(), +1);
+        state.msArchiveOpen.add(dept);
+        render();
+      };
+    }
 
     panel.querySelectorAll('[data-ms-plus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msPlus, +1));
     panel.querySelectorAll('[data-ms-minus]').forEach(b => b.onclick = ()=> msUpdateGoal(dept, b.dataset.msMinus, -1));
@@ -1721,22 +1932,138 @@ function bindMilestoneEvents(){
   });
 }
 
+/* ---------- 월말 통합 보고 캘린더 (전체 부서 통합 보기 전용) ---------- */
+function monthlyReportItems(){
+  const itemsByDate = {};
+  const deptCounts = {};
+  let total = 0;
+  DEPTS.forEach(dept=>{
+    const deptData = state.data.departments[dept];
+    const bucket = (deptData && deptData.monthly) || {};
+    let deptTotal = 0;
+    Object.keys(bucket).forEach(category=>{
+      const cat = bucket[category] || {};
+      (cat.items || []).forEach(it=>{
+        if(!it.date) return;
+        const d = new Date(it.date);
+        if(isNaN(d)) return;
+        const key = dateKey(d);
+        if(!itemsByDate[key]) itemsByDate[key] = [];
+        itemsByDate[key].push({ ...it, dept, category });
+        deptTotal++; total++;
+      });
+    });
+    deptCounts[dept] = deptTotal;
+  });
+  return { itemsByDate, deptCounts, total };
+}
+
+function renderMonthlyReportSection(){
+  if(!state.data) return '';
+  const { itemsByDate, deptCounts, total } = monthlyReportItems();
+
+  const now = new Date();
+  const todayKey = dateKey(now);
+  if(state.reportSelectedDate == null || state.reportLastTodayKey !== todayKey){
+    state.reportSelectedDate = todayKey;
+    state.reportLastTodayKey = todayKey;
+  }
+
+  const year = now.getFullYear(), month = now.getMonth();
+  const firstDow = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+
+  function dayDots(key){
+    const evs = itemsByDate[key];
+    if(!evs || !evs.length) return '';
+    const seen = [];
+    evs.forEach(ev=>{
+      const c = `var(--dept-${DEPT_COLOR_KEY[ev.dept]})`;
+      if(seen.indexOf(c) === -1) seen.push(c);
+    });
+    return '<span class="calendar-day-dots">' +
+      seen.slice(0,3).map(c=>`<span class="dot" style="background:${c}"></span>`).join('') +
+      '</span>';
+  }
+
+  let cells = '';
+  for(let i=0;i<firstDow;i++) cells += `<span class="calendar-day-empty"></span>`;
+  for(let day=1; day<=totalDays; day++){
+    const d = new Date(year, month, day);
+    const key = dateKey(d);
+    const isToday = key === todayKey;
+    const isSelected = key === state.reportSelectedDate;
+    cells += `
+      <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:var(--blue)" data-report-key="${key}">
+        <span>${day}</span>
+        ${dayDots(key)}
+      </button>`;
+  }
+
+  const summaryChips = DEPTS.map(dept=>{
+    const c = deptCounts[dept] || 0;
+    return `<span class="report-chip" style="--chip-color:var(--dept-${DEPT_COLOR_KEY[dept]})"><span class="chip-dot"></span>${dept.slice(0,2)} <b class="mono">${c}</b></span>`;
+  }).join('');
+
+  const selectedItems = (itemsByDate[state.reportSelectedDate] || []).slice()
+    .sort((a,b)=> DEPTS.indexOf(a.dept) - DEPTS.indexOf(b.dept));
+  const [sy, sm, sd] = state.reportSelectedDate.split('-');
+
+  const detailRows = selectedItems.length
+    ? selectedItems.map(it=>{
+        const rowVar = `var(--dept-${DEPT_COLOR_KEY[it.dept]})`;
+        return `
+        <div class="schedule-row" style="--dept-color:${rowVar}">
+          <div class="schedule-info">
+            <p class="schedule-title">${escapeHtml(it.title||'(제목 없음)')}</p>
+            ${it.content ? `<p class="schedule-meta">${escapeHtml(it.content)}</p>` : ''}
+            <span class="schedule-dept-tag" style="--row-color:${rowVar}">${escapeHtml(it.dept)} · ${escapeHtml(it.category)}${it.reporter ? ' · '+escapeHtml(it.reporter) : ''}</span>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="schedule-empty">이 날 등록된 보고 항목이 없습니다</div>`;
+
+  return `
+    <div class="report-cal">
+      <div class="report-cal-head">
+        <span class="report-cal-title">🗓️ 월말 통합 보고 캘린더</span>
+        <span class="report-cal-month mono">${escapeHtml(state.data.currentMonth || '')} · 총 ${total}건</span>
+      </div>
+      <div class="report-summary-row">${summaryChips}</div>
+      <div class="calendar-dow-row">
+        ${['일','월','화','수','목','금','토'].map(d=>`<span class="calendar-dow">${d}</span>`).join('')}
+      </div>
+      <div class="calendar-grid">${cells}</div>
+      <div class="calendar-day-detail">
+        <p class="calendar-day-detail-label">${sm}.${sd} 보고 내역</p>
+        ${detailRows}
+      </div>
+    </div>`;
+}
+
+function bindReportCalendarEvents(){
+  document.querySelectorAll('[data-report-key]').forEach(btn=>{
+    btn.onclick = ()=>{ state.reportSelectedDate = btn.dataset.reportKey; render(); };
+  });
+}
+
 function render(){
   renderBriefing();
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
 
-  // 월간 마일스톤 (캘린더 위에 표시)
+  // 월간 마일스톤 (캘린더 위에 표시) / 전체 부서 통합 보기에서는 월말 통합 보고 캘린더로 대체
   const msWrap = document.getElementById('milestoneSection');
   if(!state.dept || !state.data){
     msWrap.innerHTML = '';
   } else if(state.dept === ALL_DEPTS){
-    msWrap.innerHTML = DEPTS.map(milestoneSection).join('');
+    msWrap.innerHTML = renderMonthlyReportSection();
+    bindReportCalendarEvents();
   } else {
     msWrap.innerHTML = milestoneSection(state.dept);
+    bindMilestoneEvents();
   }
-  bindMilestoneEvents();
 
   renderSchedule();
 
@@ -1832,6 +2159,7 @@ async function load(){
     const res = await fetch(API_URL);
     if(!res.ok) throw new Error('bad status');
     state.data = await res.json();
+    await checkMonthlyMilestoneReset(); // 월이 바뀌었으면 지난달 목표를 보관하고 공유 목표를 리셋
     // 목표 입력 중에는 화면을 다시 그리지 않음 (입력 내용 보호)
     if(document.activeElement && document.activeElement.closest && document.activeElement.closest('.ms-form')){
       renderVisitFooter();
