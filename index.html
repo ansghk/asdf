@@ -530,6 +530,9 @@
   .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--blue));}
   .calendar-day-dots{display:flex;gap:2px;align-items:center;justify-content:center;}
   .calendar-day-dots .dot{width:4px;height:4px;border-radius:50%;}
+  .calendar-day-items{display:flex;flex-direction:column;gap:3px;margin-top:6px;}
+  .calendar-day-item{font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .calendar-day-item .item-dot{width:6px;height:6px;border-radius:50%;background:var(--item-color);flex-shrink:0;}
   .schedule-dept-tag{
     display:inline-flex;align-items:center;gap:4px;
     font-size:10px;color:var(--text-dim);margin-top:2px;
@@ -1973,17 +1976,15 @@ function renderMonthlyReportSection(){
   const firstDow = new Date(year, month, 1).getDay();
   const totalDays = new Date(year, month + 1, 0).getDate();
 
-  function dayDots(key){
+  function dayTitles(key){
     const evs = itemsByDate[key];
     if(!evs || !evs.length) return '';
-    const seen = [];
-    evs.forEach(ev=>{
-      const c = `var(--dept-${DEPT_COLOR_KEY[ev.dept]})`;
-      if(seen.indexOf(c) === -1) seen.push(c);
-    });
-    return '<span class="calendar-day-dots">' +
-      seen.slice(0,3).map(c=>`<span class="dot" style="background:${c}"></span>`).join('') +
-      '</span>';
+    return '<div class="calendar-day-items">' +
+      evs.map(ev=>{
+        const c = `var(--dept-${DEPT_COLOR_KEY[ev.dept]})`;
+        return `<div class="calendar-day-item" style="--item-color:${c}"><span class="item-dot"></span>${escapeHtml(ev.title||'(제목 없음)')}</div>`;
+      }).join('') +
+      '</div>';
   }
 
   let cells = '';
@@ -1996,7 +1997,7 @@ function renderMonthlyReportSection(){
     cells += `
       <button class="calendar-day ${isToday?'today':''} ${isSelected?'selected':''}" style="--dept-color:var(--blue)" data-report-key="${key}">
         <span>${day}</span>
-        ${dayDots(key)}
+        ${dayTitles(key)}
       </button>`;
   }
 
