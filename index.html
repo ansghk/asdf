@@ -748,7 +748,7 @@
   }
   .briefing-upcoming.open .briefing-upcoming-body{max-height:600px;}
   .up-row{
-    display:flex;align-items:center;gap:10px;padding:7px 0;
+    display:flex;align-items:flex-start;gap:10px;padding:10px 0;
   }
   .up-row + .up-row{border-top:1px solid rgba(255,255,255,0.05);}
   .up-dday{
@@ -756,6 +756,16 @@
     text-align:center;padding:4px 0;border-radius:100px;
     background:color-mix(in srgb, var(--dday-color,var(--blue)) 26%, transparent);
     color:color-mix(in srgb, var(--dday-color,var(--blue)) 88%, white);
+  }
+  .up-info{flex:1;min-width:0;}
+  .up-title{
+    font-size:13px;font-weight:500;color:var(--text-primary);margin:0 0 2px;
+  }
+  .up-desc-inline{
+    font-size:11px;color:var(--text-muted);margin-left:4px;
+  }
+  .up-dept{
+    font-size:11px;color:var(--text-secondary);margin:0;
   }
   .up-info{flex:1;min-width:0;}
   .up-title{
@@ -1479,7 +1489,7 @@ function renderBriefing(){
         <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]});--dday-color:${DDAY_RANK_COLORS[i] || '#98989F'}">
           <span class="up-dday">${fmtDday(it.dDay)}</span>
           <div class="up-info">
-            <p class="up-title">${escapeHtml(it.title||'')}</p>
+            <p class="up-title">${escapeHtml(it.title||'')}${it.content ? ' <span class="up-desc-inline">· ' + escapeHtml(it.content) + '</span>' : ''}</p>
             <div class="up-dept">${it.dept}</div>
           </div>
         </div>`).join('')
