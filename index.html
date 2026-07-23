@@ -511,14 +511,15 @@
   .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .calendar-month{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
   .calendar-dept-label{font-size:11px;color:var(--text-dim);font-weight:500;}
-  .calendar-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+  .calendar-dow-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:4px;}
   .calendar-dow{text-align:center;font-size:10px;color:var(--text-dim);font-weight:600;}
-  .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;}
   .calendar-day-empty{aspect-ratio:1;}
   .calendar-day{
     aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     font-size:11px;color:var(--text-muted);border-radius:12px;border:1px solid transparent;
     transition:background .15s ease;
+    min-width:0;overflow:hidden;
   }
   .calendar-day.today{
     border-color:color-mix(in srgb, var(--dept-color,var(--blue)) 70%, transparent);
@@ -530,8 +531,8 @@
   .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--blue));}
   .calendar-day-dots{display:flex;gap:2px;align-items:center;justify-content:center;}
   .calendar-day-dots .dot{width:4px;height:4px;border-radius:50%;}
-  .calendar-day-items{display:flex;flex-direction:column;gap:3px;margin-top:6px;}
-  .calendar-day-item{font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .calendar-day-items{display:flex;flex-direction:column;gap:3px;margin-top:6px;width:100%;min-width:0;}
+  .calendar-day-item{font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:100%;}
   .calendar-day-item .item-dot{width:6px;height:6px;border-radius:50%;background:var(--item-color);flex-shrink:0;}
   .schedule-dept-tag{
     display:inline-flex;align-items:center;gap:4px;
