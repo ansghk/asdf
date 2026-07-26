@@ -31,6 +31,7 @@
     --dept-photo:#BF5AF2;        /* purple */
     --dept-protocol:#30D158;     /* green */
     --dept-performance:#FF453A;  /* red */
+    --dept-etc:#AC8E68;          /* brown, 기타보고(디자인업무·부장업무 등) 전용 — 전체 탭에서만 사용, 카드는 없음 */
   }
   /* ================= LIGHT MODE =================
      레이아웃·구조는 동일, 색만 교체 (body.light) */
@@ -51,6 +52,7 @@
     --dept-photo:#AF52DE;
     --dept-protocol:#34C759;
     --dept-performance:#FF3B30;
+    --dept-etc:#A2845E;
   }
   body.light::before{
     background:
@@ -1101,6 +1103,15 @@ const DEPT_DUTIES = {
   ]
 };
 
+// ★ 기타보고: 5개 과 소속이 아닌 업무(디자인업무, 부장업무 등) 기록용.
+// DEPTS(부서 카드 목록)에는 절대 넣지 않는다 → 카드/미보고알림/마일스톤 대상에서 제외됨.
+// 대신 데이터는 백엔드 Reports 시트에 그대로 쌓이므로, "전체 부서" 통합 보기(ALL_DEPTS)에서만
+// 노출되도록 ALL_DEPT_LIST를 따로 둔다.
+const ETC_DEPT = '기타보고';
+DEPT_CATEGORIES[ETC_DEPT] = ['디자인업무', '부장업무', '기타'];
+DEPT_COLOR_KEY[ETC_DEPT] = 'etc';
+const ALL_DEPT_LIST = [...DEPTS, ETC_DEPT]; // "전체" 탭 집계 전용 (카드 렌더링에는 사용하지 않음)
+
 const ALL_DEPTS = '전체'; // 통합 보기 모드 키
 
 let state = {
@@ -1124,13 +1135,17 @@ function fmtDate(iso){
 
 function deptTotalCount(dept){
   if(!state.data) return 0;
-  const bucket = state.data.departments[dept][state.range];
+  const deptData = state.data.departments[dept];
+  if(!deptData) return 0;
+  const bucket = deptData[state.range];
   return Object.values(bucket).reduce((sum,c)=>sum + (c.count||0), 0);
 }
 
 function catCount(dept, category){
   if(!state.data) return 0;
-  const bucket = state.data.departments[dept][state.range];
+  const deptData = state.data.departments[dept];
+  if(!deptData) return 0;
+  const bucket = deptData[state.range];
   return (bucket[category] && bucket[category].count) || 0;
 }
 
@@ -1139,6 +1154,8 @@ function rangeLabelShort(){
 }
 
 function renderDeptChart(){
+  // ★ 이 미리보기 막대차트("부서 선택" 카드)에는 기타보고를 집계하지 않는다.
+  // 기타보고 데이터는 월말 통합 보고 캘린더와 "전체" 탭 상세 리스트에서만 노출됨 (ALL_DEPT_LIST 사용처 참고).
   const max = Math.max(1, ...DEPTS.map(d=>deptTotalCount(d)));
   const rows = DEPTS.map(dept=>{
     const count = deptTotalCount(dept);
@@ -1951,7 +1968,7 @@ function monthlyReportItems(){
   const itemsByDate = {};
   const deptCounts = {};
   let total = 0;
-  DEPTS.forEach(dept=>{
+  ALL_DEPT_LIST.forEach(dept=>{
     const deptData = state.data.departments[dept];
     const bucket = (deptData && deptData.monthly) || {};
     let deptTotal = 0;
@@ -2012,13 +2029,13 @@ function renderMonthlyReportSection(){
       </button>`;
   }
 
-  const summaryChips = DEPTS.map(dept=>{
+  const summaryChips = ALL_DEPT_LIST.map(dept=>{
     const c = deptCounts[dept] || 0;
     return `<span class="report-chip" style="--chip-color:var(--dept-${DEPT_COLOR_KEY[dept]})"><span class="chip-dot"></span>${dept.slice(0,2)} <b class="mono">${c}</b></span>`;
   }).join('');
 
   const selectedItems = (itemsByDate[state.reportSelectedDate] || []).slice()
-    .sort((a,b)=> DEPTS.indexOf(a.dept) - DEPTS.indexOf(b.dept));
+    .sort((a,b)=> ALL_DEPT_LIST.indexOf(a.dept) - ALL_DEPT_LIST.indexOf(b.dept));
   const [sy, sm, sd] = state.reportSelectedDate.split('-');
 
   const detailRows = selectedItems.length
@@ -2083,7 +2100,7 @@ function render(){
   if(!state.data){ return; }
 
   function deptSection(dept){
-    const deptData = state.data.departments[dept];
+    const deptData = state.data.departments[dept] || { weekly:{}, monthly:{}, yearly:{} };
     const allCats = Array.from(new Set([
       ...Object.keys(deptData.weekly),
       ...Object.keys(deptData.monthly),
@@ -2102,7 +2119,7 @@ function render(){
   }
 
   if(state.dept === ALL_DEPTS){
-    main.innerHTML = DEPTS.map(deptSection).join('') + queueSection();
+    main.innerHTML = ALL_DEPT_LIST.map(deptSection).join('') + queueSection();
   } else {
     main.innerHTML = deptSection(state.dept) + queueSection();
   }
