@@ -348,6 +348,62 @@
   }
   .dept-info-btn:active{background:rgba(255,255,255,0.16);transform:scale(.92);}
 
+  /* ---------- 마일스톤 진행 게이지 (부서 카드 하단) ----------
+   * 목표 1개 = 칸 1개. 각 칸이 그 목표의 진행률만큼 채워지고,
+   * 전체 진행률에 따라 램프 색/발광/퍼센트가 함께 변한다.
+   */
+  .ms-gauge{
+    --lamp:#8E8E93;
+    margin-top:12px;padding-top:10px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    display:flex;flex-direction:column;gap:7px;
+  }
+  body.light .ms-gauge{border-top-color:rgba(0,0,0,0.07);}
+  .ms-gauge-top{display:flex;align-items:center;gap:6px;min-width:0;}
+  .ms-gauge-bulb{
+    width:10px;height:10px;border-radius:50%;flex:0 0 auto;
+    background:var(--lamp);
+    box-shadow:0 0 9px 2px color-mix(in srgb, var(--lamp) 70%, transparent);
+  }
+  .ms-gauge-label{
+    font-size:10px;font-weight:700;color:var(--text-muted);
+    letter-spacing:-.01em;white-space:nowrap;
+  }
+  .ms-gauge-stat{
+    margin-left:auto;flex:0 0 auto;
+    font-size:11px;font-weight:800;color:var(--lamp);
+    font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em;
+    text-shadow:0 0 11px color-mix(in srgb, var(--lamp) 50%, transparent);
+  }
+  .ms-gauge-track{display:flex;gap:3px;height:8px;}
+  .ms-seg{
+    flex:1 1 0;min-width:0;height:100%;border-radius:100px;
+    background:rgba(255,255,255,0.10);overflow:hidden;
+  }
+  body.light .ms-seg{background:rgba(0,0,0,0.09);}
+  .ms-seg-fill{
+    display:block;height:100%;border-radius:100px;background:var(--lamp);
+    box-shadow:0 0 9px color-mix(in srgb, var(--lamp) 75%, transparent);
+    transition:width .45s cubic-bezier(.4,0,.2,1);
+  }
+  /* 상태별 색 */
+  .ms-gauge.none .ms-gauge-bulb{box-shadow:none;opacity:.55;}
+  .ms-gauge.none .ms-gauge-stat{color:var(--text-dim);text-shadow:none;font-weight:700;}
+  .ms-gauge.low {--lamp:#FF453A;}   /* 0~33%  : 적색 */
+  .ms-gauge.mid {--lamp:#FF9F0A;}   /* 34~66% : 주황 */
+  .ms-gauge.high{--lamp:#64D2FF;}   /* 67~99% : 하늘 */
+  .ms-gauge.done{--lamp:#30D158;}   /* 전부 달성: 녹색 + 점멸 */
+  .ms-gauge.done .ms-gauge-label{color:#5CE07F;}
+  .ms-gauge.done .ms-gauge-bulb{animation:lampPulse 1.9s ease-in-out infinite;}
+  @keyframes lampPulse{
+    0%,100%{box-shadow:0 0 8px 2px color-mix(in srgb, var(--lamp) 55%, transparent);transform:scale(1);}
+    50%     {box-shadow:0 0 16px 4px color-mix(in srgb, var(--lamp) 90%, transparent);transform:scale(1.2);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ms-gauge.done .ms-gauge-bulb{animation:none;}
+    .ms-seg-fill{transition:none;}
+  }
+
   /* ---------- duties modal (과별 업무 팝업) ---------- */
   .duties-overlay{
     position:fixed;inset:0;z-index:200;
@@ -1153,6 +1209,59 @@ function rangeLabelShort(){
   return { weekly:'이번 주', monthly:'이번 달', yearly:'올해' }[state.range];
 }
 
+/* ---------- 마일스톤 진행 게이지 계산 ----------
+ * 목표 1개당 칸 1개를 만들고, 각 칸을 그 목표의 진행률만큼 채운다.
+ * 전체 진행률(누적 현재값 / 누적 목표값)로 램프 색을 정한다.
+ *   목표 미등록 → 회색 / 0~33% 적색 / 34~66% 주황 / 67~99% 하늘 / 전부 달성 → 녹색 점멸
+ */
+function msGaugeFor(dept){
+  const goals = goalsFor(dept);
+
+  if(!goals.length){
+    return {
+      cls: 'none',
+      stat: '목표 없음',
+      segs: '<span class="ms-seg"></span>',
+      title: dept + ' · 이번 달 마일스톤이 등록되지 않았습니다'
+    };
+  }
+
+  let sumCur = 0, sumTarget = 0, done = 0;
+  const segs = goals.slice(0, 8).map(g=>{
+    const tgt = Math.max(1, Number(g.target) || 1);
+    const cur = Math.min(Math.max(0, Number(g.current) || 0), tgt);
+    sumCur += cur; sumTarget += tgt;
+    if(cur >= tgt) done++;
+    const p = Math.round(cur / tgt * 100);
+    return `<span class="ms-seg"><span class="ms-seg-fill" style="width:${p}%"></span></span>`;
+  }).join('');
+
+  const pct = Math.round(sumCur / sumTarget * 100);
+  const allDone = done === goals.length;
+  const cls = allDone ? 'done' : (pct >= 67) ? 'high' : (pct >= 34) ? 'mid' : 'low';
+
+  return {
+    cls: cls,
+    stat: (allDone ? '✓ ' : '') + done + '/' + goals.length + ' · ' + pct + '%',
+    segs: segs,
+    title: dept + ' · 마일스톤 ' + done + '/' + goals.length + ' 달성 (전체 진행률 ' + pct + '%)'
+  };
+}
+
+/* 부서 카드 하단에 붙는 게이지 마크업 */
+function msGaugeHtml(dept){
+  const g = msGaugeFor(dept);
+  return `
+      <div class="ms-gauge ${g.cls}" title="${g.title}">
+        <div class="ms-gauge-top">
+          <span class="ms-gauge-bulb"></span>
+          <span class="ms-gauge-label">마일스톤</span>
+          <span class="ms-gauge-stat mono">${g.stat}</span>
+        </div>
+        <div class="ms-gauge-track">${g.segs}</div>
+      </div>`;
+}
+
 function renderDeptChart(){
   // ★ 이 미리보기 막대차트("부서 선택" 카드)에는 기타보고를 집계하지 않는다.
   // 기타보고 데이터는 월말 통합 보고 캘린더와 "전체" 탭 상세 리스트에서만 노출됨 (ALL_DEPT_LIST 사용처 참고).
@@ -1216,6 +1325,7 @@ function renderDeptTabs(){
         </div>
       </div>
       <div class="dept-card-breakdown">${breakdownRows}</div>
+      ${msGaugeHtml(dept)}
     `;
     btn.onclick = ()=>{ state.dept = (state.dept === dept) ? null : dept; state.openCats.clear(); render(); };  // 같은 카드 재클릭 시 닫힘
     btn.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.onclick(); } };
