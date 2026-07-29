@@ -1010,69 +1010,117 @@
   }
 
 
-  /* ================= 주간 회의 모드 ================= */
-  .meeting-launch{
-    display:inline-flex;align-items:center;justify-content:center;gap:6px;
-    margin-top:12px;padding:9px 14px;border-radius:100px;
-    background:linear-gradient(135deg,rgba(10,132,255,.92),rgba(191,90,242,.86));
-    color:#fff;font-size:12px;font-weight:800;box-shadow:0 8px 24px rgba(10,132,255,.22);
+  
+  /* ================= 주간 회의모드 ================= */
+  .mode-switch{display:flex;gap:3px;padding:3px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);margin-bottom:8px;width:max-content}
+  .mode-btn{padding:7px 14px;border-radius:100px;font-size:12px;font-weight:700;color:var(--text-muted)}
+  .mode-btn.active{color:#fff;background:linear-gradient(135deg,#0A84FF,#315BFF);box-shadow:0 5px 18px rgba(10,132,255,.35)}
+  #meetingMode{display:none;padding:18px;max-width:1400px;margin:0 auto}
+  body.meeting-active #meetingMode{display:block}
+  body.meeting-active #normalDashboard{display:none}
+  body.meeting-active header{position:relative}
+  .meeting-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:5px 0 18px}
+  .meeting-title{font-size:30px;font-weight:800;margin:0 0 5px;letter-spacing:-.04em}
+  .meeting-sub{font-size:13px;color:var(--text-muted);margin:0}
+  .meeting-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .meeting-btn{padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);font-size:12px;font-weight:700}
+  .meeting-btn.primary{background:#0A84FF;color:#fff;border-color:#0A84FF}
+  .meeting-btn.danger{color:#FF6961;border-color:rgba(255,69,58,.35)}
+  .meeting-grid{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:14px;align-items:start}
+  .meeting-col{display:flex;flex-direction:column;gap:14px}
+  .meeting-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:16px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
+  .meeting-card h3{font-size:14px;margin:0 0 13px;display:flex;align-items:center;justify-content:space-between}
+  .meeting-kpis{grid-column:1/-1;display:grid;grid-template-columns:1.45fr repeat(3,1fr);gap:12px}
+  .meeting-kpi{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:18px;min-height:128px}
+  .kpi-label{font-size:11px;color:var(--text-muted);margin-bottom:10px}.kpi-num{font-size:32px;font-weight:800}.kpi-note{font-size:11px;color:var(--text-dim);margin-top:7px}
+  .progress-big{display:flex;align-items:center;gap:18px}.progress-ring{--p:0;width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#0A84FF calc(var(--p)*1%),rgba(255,255,255,.08) 0);position:relative}.progress-ring:after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--bg)}.progress-ring b{z-index:1;font-size:21px}
+  .report-order{display:flex;flex-direction:column;gap:8px}.report-dept{width:100%;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:11px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid transparent}.report-dept.active{border-color:var(--dept-color);background:color-mix(in srgb,var(--dept-color) 11%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--dept-color) 22%,transparent)}.report-rank{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--dept-color) 20%,transparent);color:var(--dept-color);font-weight:800;font-size:12px}.report-name{font-size:13px;font-weight:700}.report-pct{font-size:11px;color:var(--dept-color);font-weight:800}
+  .timer{font-size:35px;font-weight:800;letter-spacing:.03em;margin:5px 0 13px}.timer-controls{display:flex;gap:7px}.timer-controls button{flex:1;text-align:center;padding:8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:11px;font-weight:700}
+  .dept-report-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.dept-report-head h2{font-size:23px;margin:0}.dept-report-progress{height:7px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden}.dept-report-progress span{display:block;height:100%;background:var(--dept-color);border-radius:100px}
+  .status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}.status-box{padding:13px;border-radius:15px;background:rgba(255,255,255,.035);min-height:105px}.status-box b{font-size:13px}.status-box ul{margin:8px 0 0;padding-left:17px;color:var(--text-muted);font-size:11px;line-height:1.7}
+  .meeting-textarea,.meeting-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:11px;font:inherit;font-size:13px;outline:none}.meeting-textarea{min-height:100px;resize:vertical}.meeting-input:focus,.meeting-textarea:focus{border-color:#0A84FF}
+  .check-list{display:flex;flex-direction:column;gap:8px}.check-row{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--glass-border)}.check-row:first-child{border-top:0}.check-row input{margin-top:2px;accent-color:#0A84FF}.check-row span{font-size:12px;line-height:1.45;flex:1}.remove-line{opacity:.45;font-size:13px}
+  .add-line{display:flex;gap:7px;margin-top:9px}.add-line .meeting-input{flex:1}.add-line button{padding:0 12px;border-radius:11px;background:#0A84FF;color:white;font-weight:800}
+  .delay-row,.agenda-row{display:flex;gap:9px;align-items:center;padding:9px 0;border-top:1px solid var(--glass-border);font-size:12px}.delay-row:first-child,.agenda-row:first-child{border-top:0}.dday{color:#FF6961;font-weight:800;min-width:34px}.dept-pill{font-size:10px;padding:3px 7px;border-radius:100px;background:color-mix(in srgb,var(--pill) 18%,transparent);color:var(--pill);margin-left:auto}
+  .meeting-bottom{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.meeting-finish{grid-column:1/-1;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#087BFF,#315BFF);color:white;text-align:center;font-weight:800;font-size:14px}
+  .meeting-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 16px;background:rgba(30,30,32,.95);border:1px solid rgba(255,255,255,.15);border-radius:100px;z-index:500;font-size:12px;display:none}
+  body.light .progress-ring:after{background:#F2F2F7} body.light .meeting-textarea,body.light .meeting-input{background:rgba(0,0,0,.035)}
+  @media(max-width:950px){.meeting-grid{grid-template-columns:230px 1fr}.meeting-col.right{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr)}.meeting-kpis{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){#meetingMode{padding:13px}.meeting-hero{display:block}.meeting-actions{justify-content:flex-start;margin-top:12px}.meeting-title{font-size:26px}.meeting-grid{display:block}.meeting-col,.meeting-card,.meeting-kpis{margin-bottom:12px}.meeting-kpis{display:grid;grid-template-columns:1fr 1fr}.meeting-kpis .meeting-kpi:first-child{grid-column:1/-1}.meeting-col.right{display:block}.status-grid{grid-template-columns:1fr}.meeting-bottom{display:block}.meeting-bottom .meeting-card{margin-bottom:12px}.mode-switch{margin-top:9px}.meta-row{align-items:flex-start}.meta-right{flex-wrap:wrap;justify-content:flex-end}}
+
+
+
+  /* ================= 주간 말씀 준비 ================= */
+  #sermonPrep{display:none;padding:18px;max-width:1400px;margin:0 auto}
+  body.prep-active #sermonPrep{display:block}
+  body.prep-active #normalDashboard,body.prep-active #meetingMode{display:none}
+  .prep-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin:4px 0 18px}
+  .prep-title{font-size:30px;font-weight:800;margin:0 0 5px;letter-spacing:-.04em}
+  .prep-sub{font-size:13px;color:var(--text-muted);margin:0}
+  .prep-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:14px;align-items:start}
+  .prep-main,.prep-side{display:flex;flex-direction:column;gap:14px}
+  .prep-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:17px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
+  .prep-card h3{font-size:14px;margin:0 0 12px}.prep-card h4{font-size:12px;margin:0 0 8px;color:var(--text-muted)}
+  .prep-overview{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .prep-field{display:flex;flex-direction:column;gap:7px}.prep-label{font-size:11px;color:var(--text-muted);font-weight:700}
+  .prep-input,.prep-textarea,.prep-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:11px 12px;font:inherit;font-size:13px;outline:none}
+  .prep-textarea{min-height:110px;resize:vertical;line-height:1.55}.prep-textarea.tall{min-height:220px}.prep-input:focus,.prep-textarea:focus,.prep-select:focus{border-color:#8B5CF6;box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+  .prep-structure{display:flex;flex-direction:column;gap:8px}.prep-structure-row{display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center}.prep-num{width:30px;height:30px;border-radius:9px;background:rgba(139,92,246,.15);color:#B79BFF;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+  .prep-history-row{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--glass-border);font-size:12px}.prep-history-row:first-child{border-top:0}.prep-history-meta{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .prep-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border:1px solid var(--glass-border);background:var(--glass);border-radius:16px;margin-top:14px}.prep-saved{font-size:11px;color:#30D158}.prep-start{padding:12px 18px;border-radius:13px;background:linear-gradient(135deg,#7C3AED,#4F46E5);color:#fff;font-weight:800;font-size:13px}
+  .education-panel{grid-column:1/-1;border-color:rgba(139,92,246,.55);box-shadow:0 0 24px rgba(139,92,246,.12)}
+  .education-grid{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px}.education-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.18);border-radius:14px;padding:13px}.education-box h4{margin:0 0 8px;color:#C4B5FD;font-size:12px}.education-box p{margin:0;color:var(--text);font-size:12.5px;line-height:1.55;white-space:pre-wrap}
+  body.light .prep-input,body.light .prep-textarea,body.light .prep-select{background:rgba(0,0,0,.035)}
+  @media(max-width:900px){.prep-layout{grid-template-columns:1fr}.prep-overview{grid-template-columns:1fr 1fr 1fr}.education-grid{grid-template-columns:1fr}}
+  @media(max-width:700px){#sermonPrep{padding:13px}.prep-hero{display:block}.prep-hero .meeting-actions{margin-top:12px;justify-content:flex-start}.prep-title{font-size:26px}.prep-overview{grid-template-columns:1fr}.prep-history-row{grid-template-columns:82px 1fr}.prep-history-row button{display:none}.prep-savebar{align-items:flex-start;flex-direction:column}.prep-start{width:100%;text-align:center}.prep-input,.prep-textarea,.prep-select{font-size:16px}}
+
+
+  /* 공용 회의 데이터 - 기본모드 */
+  .shared-followup{margin:16px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .shared-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--glass-shadow)}
+  .shared-card h3{margin:0 0 10px;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}.shared-list{display:flex;flex-direction:column;gap:8px}.shared-item{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-top:1px solid var(--glass-border);font-size:12px}.shared-item:first-child{border-top:0}.shared-item input{accent-color:#30D158;margin-top:3px;width:17px;height:17px;flex:0 0 auto}.shared-item-body{flex:1;min-width:0}.shared-item-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.shared-dept-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:100px;background:color-mix(in srgb,var(--badge-color,#0A84FF) 15%,transparent);color:var(--badge-color,#0A84FF);font-size:9.5px;font-weight:800;white-space:nowrap}.shared-meta{font-size:10px;color:var(--text-dim);margin-top:4px}.sync-state{font-size:10px;color:#30D158;white-space:nowrap}.shared-empty{padding:12px 2px;color:var(--text-dim);font-size:11.5px}.shared-scope{margin:16px 18px 0;font-size:11px;color:var(--text-muted);font-weight:700}
+
+  /* 완료 항목 직관적 표시 + 지난 회의록 */
+  .shared-item.is-done .shared-item-title b{
+    text-decoration:line-through;
+    text-decoration-thickness:1.5px;
+    text-decoration-color:currentColor;
+    color:var(--text-dim);
+    opacity:.7;
   }
-  .meeting-launch:active{transform:scale(.97)}
-  .meeting-overlay{position:fixed;inset:0;z-index:500;background:#07070a;color:#f5f5f7;display:none;overflow:auto}
-  .meeting-overlay.open{display:block}
-  .meeting-shell{min-height:100vh;max-width:1180px;margin:0 auto;padding:24px 28px 36px;display:flex;flex-direction:column}
-  .meeting-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .meeting-brand{font-size:12px;color:#98989f;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-  .meeting-progress{flex:1;max-width:520px;height:6px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
-  .meeting-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#0A84FF,#BF5AF2);transition:width .3s ease}
-  .meeting-close{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.09);display:grid;place-items:center;font-size:20px}
-  .meeting-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:34px 0}
-  .meeting-slide{width:100%;display:none}.meeting-slide.active{display:block;animation:meetingIn .25s ease both}
-  @keyframes meetingIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  .meeting-kicker{font-size:13px;color:#98989f;font-weight:700;margin-bottom:8px}
-  .meeting-title{font-size:clamp(34px,6vw,72px);font-weight:850;letter-spacing:-.055em;line-height:1.04;margin:0}
-  .meeting-subtitle{font-size:16px;color:#98989f;margin-top:12px}
-  .meeting-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:34px}
-  .meeting-card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:22px;min-height:140px}
-  .meeting-card-label{font-size:12px;color:#98989f;font-weight:700}
-  .meeting-card-value{font-size:42px;font-weight:850;letter-spacing:-.04em;margin-top:12px}
-  .meeting-card-note{font-size:12px;color:#636369;margin-top:8px}
-  .meeting-dept-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
-  .meeting-dept-dot{width:13px;height:13px;border-radius:50%;display:inline-block;margin-right:9px;background:var(--meeting-color,#0A84FF);box-shadow:0 0 18px var(--meeting-color,#0A84FF)}
-  .meeting-page-no{font-size:15px;color:#98989f;font-weight:700;white-space:nowrap}
-  .meeting-columns{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:30px}
-  .meeting-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:26px;padding:24px}
-  .meeting-panel-title{font-size:14px;font-weight:800;margin-bottom:18px}
-  .meeting-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .meeting-metric{padding:16px;border-radius:18px;background:rgba(255,255,255,.045)}
-  .meeting-metric strong{display:block;font-size:28px;margin-top:7px}
-  .meeting-metric span{font-size:11px;color:#98989f}
-  .meeting-category{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
-  .meeting-category:first-child{border-top:0}.meeting-category b{font-size:14px}.meeting-category span{font-size:14px;color:var(--meeting-color,#64D2FF);font-weight:800}
-  .meeting-note{width:100%;min-height:150px;resize:vertical;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(0,0,0,.2);color:#fff;padding:15px;font:inherit;font-size:14px;outline:none}
-  .meeting-note:focus{border-color:var(--meeting-color,#0A84FF)}
-  .meeting-action-row{display:flex;gap:8px;margin-top:10px}
-  .meeting-action-input{flex:1;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(0,0,0,.22);color:#fff;padding:11px 13px;font:inherit;font-size:13px;outline:none}
-  .meeting-action-add{padding:0 15px;border-radius:14px;background:var(--meeting-color,#0A84FF);font-size:12px;font-weight:800;color:#fff}
-  .meeting-action-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .meeting-action-item{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.05);font-size:13px}
-  .meeting-action-item input{accent-color:#30D158}
-  .meeting-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .meeting-nav button{padding:12px 18px;border-radius:100px;background:rgba(255,255,255,.09);font-size:13px;font-weight:800}
-  .meeting-nav .primary{background:#f5f5f7;color:#111}
-  .meeting-tip{font-size:11px;color:#636369;text-align:center}
-  .meeting-summary-list{margin-top:26px;display:grid;gap:10px}
-  .meeting-summary-row{display:grid;grid-template-columns:140px 1fr 100px;align-items:center;gap:14px;padding:15px 18px;border-radius:18px;background:rgba(255,255,255,.05)}
-  .meeting-summary-row b{font-size:14px}.meeting-summary-row span{font-size:13px;color:#98989f}.meeting-summary-row em{font-style:normal;text-align:right;font-weight:850}
-  .meeting-finish-actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
-  .meeting-finish-actions button{padding:12px 17px;border-radius:14px;background:rgba(255,255,255,.09);font-size:13px;font-weight:800}
-  .meeting-finish-actions .save{background:#30D158;color:#071208}
-  @media(max-width:760px){
-    .meeting-shell{padding:18px 16px 26px}.meeting-grid{grid-template-columns:repeat(2,1fr)}
-    .meeting-columns{grid-template-columns:1fr}.meeting-metrics{grid-template-columns:repeat(3,1fr)}
-    .meeting-card{min-height:115px;padding:17px}.meeting-card-value{font-size:32px}
-    .meeting-summary-row{grid-template-columns:1fr auto}.meeting-summary-row span{grid-column:1/-1}.meeting-tip{display:none}
+  .shared-item.is-done .shared-meta{color:#30D158;}
+  .shared-item.is-done .shared-dept-badge{opacity:.58;filter:saturate(.65);}
+  .shared-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .archive-open-btn{padding:8px 12px;border-radius:11px;background:var(--glass);border:1px solid var(--glass-border);font-size:11px;font-weight:800;color:var(--text);}
+  .archive-open-btn:active{transform:scale(.97)}
+  .meeting-archive-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.58);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:18px;}
+  .meeting-archive-modal{width:min(760px,100%);max-height:min(84vh,820px);overflow:hidden;display:flex;flex-direction:column;background:rgba(28,28,30,.96);border:1px solid rgba(255,255,255,.14);border-radius:24px;box-shadow:0 28px 90px rgba(0,0,0,.6);}
+  body.light .meeting-archive-modal{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.1);}
+  .archive-modal-head{display:flex;align-items:center;gap:12px;padding:18px;border-bottom:1px solid var(--glass-border);}
+  .archive-modal-head h2{margin:0;font-size:20px;flex:1;}
+  .archive-close{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--glass);font-size:16px;}
+  .archive-filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 18px;border-bottom:1px solid var(--glass-border);}
+  .archive-select{width:100%;padding:11px 12px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);font:inherit;font-size:13px;outline:none;}
+  body.light .archive-select{background:rgba(0,0,0,.035);}
+  .archive-body{padding:16px 18px 22px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .archive-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;color:var(--text-muted);font-size:12px;}
+  .archive-section{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:14px;margin-top:10px;}
+  .archive-section h3{margin:0 0 10px;font-size:13px;}
+  .archive-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-top:1px solid var(--glass-border);font-size:12px;line-height:1.5;}
+  .archive-row:first-child{border-top:0}.archive-row.done .archive-row-text{text-decoration:line-through;color:var(--text-dim);opacity:.72;}
+  .archive-status{flex:0 0 auto;width:18px;text-align:center}.archive-row-text{flex:1;min-width:0}.archive-empty{padding:28px 10px;text-align:center;color:var(--text-dim);font-size:12px;}
+  .archive-minutes{white-space:pre-wrap;font-size:12px;line-height:1.7;color:var(--text-muted);max-height:280px;overflow:auto;}
+  @media(max-width:767px){.shared-head-actions{width:100%;justify-content:space-between}.archive-open-btn{flex:1;text-align:center}.archive-filters{grid-template-columns:1fr}.meeting-archive-overlay{padding:0;align-items:flex-end}.meeting-archive-modal{border-radius:24px 24px 0 0;max-height:90vh}.archive-modal-head{padding:16px}.archive-body{padding:14px 14px 24px}.archive-select{font-size:16px}}
+
+  @media(max-width:767px){
+    header{padding-left:14px;padding-right:14px}.eyebrow{font-size:9px}h1{font-size:22px}.theme-toggle{display:none}.mode-switch{width:100%;display:grid;grid-template-columns:1fr 1fr}.mode-btn{text-align:center;padding:9px 6px}
+    .shared-followup{grid-template-columns:1fr;margin:12px 13px 0}.shared-card{padding:14px}
+    #meetingMode,#sermonPrep{padding:12px 12px 90px}.meeting-hero,.prep-hero{margin-top:0}.meeting-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.meeting-actions .meeting-btn,.meeting-actions .prep-start{text-align:center}
+    .meeting-kpis{grid-template-columns:1fr 1fr}.meeting-kpi{min-height:105px;padding:14px}.kpi-num{font-size:26px}.progress-ring{width:76px;height:76px}.progress-big{gap:12px}
+    .report-order{display:grid;grid-template-columns:1fr}.report-dept{min-height:52px}.meeting-card{border-radius:18px;padding:14px}.meeting-input,.meeting-textarea{font-size:16px}.add-line button{min-width:48px}.check-row{padding:12px 0}.check-row input{width:20px;height:20px}.check-row span{font-size:14px}
+    .meeting-finish{position:sticky;bottom:10px;z-index:10;box-shadow:0 10px 30px rgba(10,132,255,.35)}
   }
+  @media(min-width:1200px){#meetingMode,#sermonPrep{max-width:1480px}.meeting-grid{grid-template-columns:280px minmax(560px,1fr) 330px}.meeting-card{padding:18px}.prep-layout{grid-template-columns:minmax(0,1.65fr) minmax(340px,.75fr)}}
 
 </style>
 </head>
@@ -1083,6 +1131,10 @@
 <header>
   <p class="eyebrow">Cultural Affairs · Control Board</p>
   <h1>문화부 대시보드</h1>
+  <div class="mode-switch" id="modeSwitch">
+    <button class="mode-btn active" data-mode="normal">⌂ 기본모드</button>
+    <button class="mode-btn" data-mode="meeting">👥 주간 회의모드</button>
+  </div>
   <div class="meta-row">
     <span><span class="status-dot"></span><span id="weekLabel">불러오는 중…</span></span>
     <div class="meta-right">
@@ -1097,10 +1149,11 @@
       </div>
     </div>
   </div>
-  <button class="meeting-launch" id="meetingLaunch">▶ 주간 회의모드</button>
 </header>
 
+<div id="normalDashboard">
 <section class="briefing" id="briefing"></section>
+<div id="sharedFollowup"></div>
 
 <div id="milestoneSection"></div>
 
@@ -1126,23 +1179,12 @@
 
 <div id="noticeToast"></div>
 <div id="dutiesModalWrap"></div>
-
-
-<div class="meeting-overlay" id="meetingOverlay" aria-hidden="true">
-  <div class="meeting-shell">
-    <div class="meeting-topbar">
-      <div class="meeting-brand">Cultural Affairs · Weekly Review</div>
-      <div class="meeting-progress"><div class="meeting-progress-fill" id="meetingProgressFill"></div></div>
-      <button class="meeting-close" id="meetingClose" aria-label="회의모드 닫기">×</button>
-    </div>
-    <div class="meeting-stage" id="meetingStage"></div>
-    <div class="meeting-nav">
-      <button id="meetingPrev">← 이전</button>
-      <div class="meeting-tip">키보드 ← → 방향키로도 이동할 수 있습니다</div>
-      <button class="primary" id="meetingNext">다음 →</button>
-    </div>
-  </div>
 </div>
+
+<section id="sermonPrep"></section>
+<section id="meetingMode"></section>
+<div class="meeting-toast" id="meetingToast"></div>
+<div id="meetingArchiveHost"></div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9xPO9SY27PLAVOHRRr61yz0-5nr8cTNgiMRIV79Xz2ilyN/exec';
@@ -2272,9 +2314,11 @@ function bindReportCalendarEvents(){
 
 function render(){
   renderBriefing();
+  if(document.body.classList.contains('meeting-active')) renderMeetingMode();
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
+  renderSharedFollowup();
 
   // 월간 마일스톤 (캘린더 위에 표시) / 전체 부서 통합 보기에서는 월말 통합 보고 캘린더로 대체
   const msWrap = document.getElementById('milestoneSection');
@@ -2386,9 +2430,11 @@ async function load(){
     // 목표 입력 중에는 화면을 다시 그리지 않음 (입력 내용 보호)
     if(document.activeElement && document.activeElement.closest && document.activeElement.closest('.ms-form')){
       renderVisitFooter();
+  renderSharedFollowup();
       return;
     }
     render();
+    renderSharedFollowup();
     renderAlertBanner();
     renderNoticeToast();
     renderVisitFooter();
@@ -2399,90 +2445,147 @@ async function load(){
 }
 
 
-/* ================= 주간 회의 모드 로직 ================= */
-const MEETING_COLORS = {
-  '문화기획과':'#FF9F0A','영상제작과':'#64D2FF','사진과':'#BF5AF2','의전과':'#30D158','공연예술과':'#FF453A'
-};
-const meetingState = { index:0, notes:{}, actions:{} };
 
-function meetingDeptStats(dept){
-  const fallback = {
-    '문화기획과':[12,10,{'기획PPT제작':3,'데이터피드백현황':4,'기타업무':5}],
-    '영상제작과':[18,16,{'제작물':7,'중계현황':4,'스탭투입현황':3,'과모임':2,'총회/지파업무':2}],
-    '사진과':[13,12,{'행사촬영':8,'인재모집업무':2,'기타업무':3}],
-    '의전과':[11,9,{'투입행사':5,'과업무':3,'과모임':2,'의전과제':1}],
-    '공연예술과':[10,8,{'주간공연준비교육':6,'기타업무':4}]
-  }[dept];
-  let cats={}, total=0;
+/* ================= 주간 말씀 준비 ================= */
+const SERMON_KEY='cultureSermonPrepV1';
+let sermonState={date:'',time:'20:00',audience:'문화부 전체',duration:'30~40분',topic:'',scripture:'',message:'',main:'',application:'',structure:['도입','본문 설명','적용 Point','결론','기도 제목'],references:'',savedAt:'',history:[]};
+function loadSermonState(){try{sermonState={...sermonState,...JSON.parse(localStorage.getItem(SERMON_KEY)||'{}')}}catch(e){}if(state.data?.sharedSermon)sermonState={...sermonState,...state.data.sharedSermon};if(!sermonState.date){const d=new Date();sermonState.date=d.toISOString().slice(0,10)}}
+let sermonSaveTimer=null;function saveSermonState(show=false){sermonState.savedAt=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});try{localStorage.setItem(SERMON_KEY,JSON.stringify(sermonState))}catch(e){}clearTimeout(sermonSaveTimer);sermonSaveTimer=setTimeout(async()=>{try{await apiAction('sermonSave',{data:JSON.stringify(sermonState)});if(show)showMeetingToast('말씀 준비 내용이 공용으로 저장되었습니다.')}catch(e){if(show)showMeetingToast('서버 저장 실패: 네트워크를 확인해주세요.')}renderPrepSaved()},show?0:700);renderPrepSaved()}
+function updateSermon(k,v){sermonState[k]=v;saveSermonState(false)}
+function renderPrepSaved(){const e=document.getElementById('prepSaved');if(e)e.textContent=sermonState.savedAt?`자동 저장됨 ${sermonState.savedAt}`:'입력 내용 자동 저장'}
+function renderSermonPrep(){const el=document.getElementById('sermonPrep');if(!el)return;const hist=sermonState.history||[];el.innerHTML=`<div class="prep-hero"><div><h1 class="prep-title">📖 주간 말씀 준비</h1><p class="prep-sub">이번 주 교육을 위해 말씀을 준비하고 기록합니다. 준비한 내용은 회의모드의 오늘의 교육에 자동 반영됩니다.</p></div><div class="meeting-actions"><button class="meeting-btn" onclick="saveSermonState(true)">준비 내용 저장</button><button class="prep-start" onclick="startActualMeeting()">회의모드 시작하기 →</button></div></div><div class="prep-layout"><div class="prep-card prep-overview"><div class="prep-field"><span class="prep-label">교육 일시</span><div style="display:flex;gap:7px"><input type="date" class="prep-input" value="${escapeHtml(sermonState.date)}" oninput="updateSermon('date',this.value)"><input type="time" class="prep-input" value="${escapeHtml(sermonState.time)}" oninput="updateSermon('time',this.value)"></div></div><div class="prep-field"><span class="prep-label">교육 대상</span><input class="prep-input" value="${escapeHtml(sermonState.audience)}" oninput="updateSermon('audience',this.value)"></div><div class="prep-field"><span class="prep-label">예상 시간</span><input class="prep-input" value="${escapeHtml(sermonState.duration)}" oninput="updateSermon('duration',this.value)"></div></div><div class="prep-main"><div class="prep-card"><div class="prep-field"><span class="prep-label">말씀 주제</span><input class="prep-input" maxlength="80" placeholder="이번 주 교육의 주제를 입력하세요" value="${escapeHtml(sermonState.topic)}" oninput="updateSermon('topic',this.value)"></div></div><div class="prep-card"><div class="prep-field"><span class="prep-label">말씀 본문</span><textarea class="prep-textarea" placeholder="성경 말씀 본문을 입력하세요" oninput="updateSermon('scripture',this.value)">${escapeHtml(sermonState.scripture)}</textarea></div></div><div class="prep-card"><div class="prep-field"><span class="prep-label">핵심 메시지</span><textarea class="prep-textarea" placeholder="이번 교육에서 반드시 전달할 한 문장을 기록하세요" oninput="updateSermon('message',this.value)">${escapeHtml(sermonState.message)}</textarea></div></div><div class="prep-card"><div class="prep-field"><span class="prep-label">주요 내용</span><textarea class="prep-textarea tall" placeholder="한 주 동안 떠오르는 말씀, 설명, 사례, 교육 내용을 자유롭게 기록하세요" oninput="updateSermon('main',this.value)">${escapeHtml(sermonState.main)}</textarea></div></div><div class="prep-card"><div class="prep-field"><span class="prep-label">오늘의 적용 질문</span><textarea class="prep-textarea" placeholder="교육 후 구성원에게 던질 질문이나 실천 항목을 기록하세요" oninput="updateSermon('application',this.value)">${escapeHtml(sermonState.application)}</textarea></div></div></div><div class="prep-side"><div class="prep-card"><h3>말씀 구조</h3><div class="prep-structure">${sermonState.structure.map((x,i)=>`<div class="prep-structure-row"><span class="prep-num">${i+1}</span><input class="prep-input" value="${escapeHtml(x)}" oninput="sermonState.structure[${i}]=this.value;saveSermonState(false)"></div>`).join('')}</div></div><div class="prep-card"><h3>참고 자료</h3><textarea class="prep-textarea" placeholder="참고 링크, 책, 영상, 이미지 메모를 기록하세요" oninput="updateSermon('references',this.value)">${escapeHtml(sermonState.references)}</textarea></div><div class="prep-card"><h3><span>지난주 말씀 기록</span></h3>${hist.slice(-3).reverse().map(h=>`<div class="prep-history-row"><b>${escapeHtml(h.date||'날짜 미정')}</b><span class="prep-history-meta">${escapeHtml(h.topic||'제목 없음')} · ${escapeHtml(h.message||'')}</span><button class="meeting-btn" onclick="restoreSermonHistory('${h.id}')">보기</button></div>`).join('')||'<div class="kpi-note">저장된 지난 말씀 기록이 없습니다.</div>'}</div></div></div><div class="prep-savebar"><div><b>TIP</b> 한 주 동안 생각나는 내용을 계속 기록하면 회의 당일 교육 준비가 훨씬 쉬워집니다.<div class="prep-saved" id="prepSaved"></div></div><button class="prep-start" onclick="startActualMeeting()">회의모드 시작하기 →</button></div>`;renderPrepSaved()}
+function archiveCurrentSermon(){if(!sermonState.topic&&!sermonState.message)return;const id=Date.now().toString();const item={id,date:sermonState.date,topic:sermonState.topic,message:sermonState.message,scripture:sermonState.scripture,main:sermonState.main,application:sermonState.application};sermonState.history=[...(sermonState.history||[]).filter(x=>x.date!==item.date),item].slice(-20);saveSermonState(false)}
+function restoreSermonHistory(id){const h=(sermonState.history||[]).find(x=>x.id===id);if(!h)return;sermonState={...sermonState,...h};saveSermonState(false);renderSermonPrep()}
+function openSermonPrep(){document.body.classList.remove('meeting-active');document.body.classList.add('prep-active');document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='meeting'));renderSermonPrep();window.scrollTo({top:0,behavior:'smooth'})}
+function startActualMeeting(){archiveCurrentSermon();document.body.classList.remove('prep-active');document.body.classList.add('meeting-active');renderMeetingMode();try{localStorage.setItem('dashboardViewMode','meeting')}catch(e){}window.scrollTo({top:0,behavior:'smooth'})}
+
+/* ================= 주간 회의모드 ================= */
+const MEETING_KEY='cultureMeetingModeV1';
+let meetingState={deptIndex:0,seconds:0,running:false,timer:null,decisions:[],next:[],notes:''};
+function loadMeetingState(){try{meetingState={...meetingState,...JSON.parse(localStorage.getItem(MEETING_KEY)||'{}'),running:false,timer:null}}catch(e){}if(state.data?.sharedMeeting)meetingState={...meetingState,...state.data.sharedMeeting,running:false,timer:null}}
+let meetingSaveTimer=null;function saveMeetingState(immediate=false){const x={...meetingState,running:false,timer:null,sermon:sermonState};try{localStorage.setItem(MEETING_KEY,JSON.stringify(x))}catch(e){}clearTimeout(meetingSaveTimer);meetingSaveTimer=setTimeout(async()=>{try{await apiAction('meetingSave',{data:JSON.stringify(x)});renderSharedFollowup()}catch(e){console.error(e)}},immediate?0:650)}
+function meetingColor(dept){return `var(--dept-${DEPT_COLOR_KEY[dept]})`}
+function weeklyCount(dept){if(!state.data?.departments?.[dept]?.weekly)return 0;return Object.values(state.data.departments[dept].weekly).reduce((a,c)=>a+(c.count||0),0)}
+function deptProgress(dept){const g=msGaugeFor(dept);const m=(g.stat.match(/(\d+)%/)||[])[1];return m?Number(m):Math.min(100,weeklyCount(dept)*12)}
+function itemSamples(dept,limit=4){const b=state.data?.departments?.[dept]?.weekly||{};let out=[];Object.entries(b).forEach(([cat,v])=>{(v.items||[]).forEach(i=>out.push(i.title||i.content||cat))});return out.slice(0,limit)}
+function listEditor(type,title,icon){const arr=meetingState[type]||[];return `<div class="meeting-card"><h3><span>${icon} ${title}</span><small>${arr.length}건</small></h3><div class="check-list">${arr.map((x,i)=>`<label class="check-row"><input type="checkbox" ${x.done?'checked':''} onchange="meetingToggle('${type}',${i},this.checked)"><span><span class="shared-dept-badge" style="--badge-color:${meetingColor(x.dept||'전체')}">${escapeHtml(x.dept||'전체')}</span> ${escapeHtml(x.text)}</span><button class="remove-line" onclick="meetingRemove('${type}',${i})">×</button></label>`).join('')||'<div class="kpi-note">등록된 항목이 없습니다.</div>'}</div><div class="kpi-note" style="margin-top:8px">현재 보고 중인 <b>${escapeHtml(DEPTS[meetingState.deptIndex]||DEPTS[0])}</b> 항목으로 저장됩니다.</div><div class="add-line"><input class="meeting-input" id="add-${type}" placeholder="항목 입력"><button onclick="meetingAdd('${type}')">+</button></div></div>`}
+function renderMeetingMode(){
+ const el=document.getElementById('meetingMode');if(!el)return;const dept=DEPTS[meetingState.deptIndex]||DEPTS[0];const counts=DEPTS.map(weeklyCount);const total=counts.reduce((a,b)=>a+b,0);const pcts=DEPTS.map(deptProgress);const overall=Math.round(pcts.reduce((a,b)=>a+b,0)/Math.max(1,pcts.length));const done=Math.round(total*overall/100), delayed=Math.max(0,Math.round(total*.08));const samples=itemSamples(dept,7);const complete=samples.slice(0,Math.ceil(samples.length*.55)),doing=samples.slice(complete.length,complete.length+2),late=samples.slice(complete.length+2);
+ el.innerHTML=`<div class="meeting-hero"><div><h1 class="meeting-title">👥 주간 회의모드</h1><p class="meeting-sub">이번 주 현황을 한눈에 확인하고, 부서별 보고와 결정사항을 기록합니다.</p></div><div class="meeting-actions"><button class="meeting-btn" onclick="copyMeetingMinutes()">회의록 복사</button><button class="meeting-btn primary" onclick="saveMeetingNow()">회의록 저장</button></div></div><div class="meeting-grid">
+ <div class="meeting-kpis"><div class="meeting-kpi"><div class="kpi-label">이번 주 전체 진행률</div><div class="progress-big"><div class="progress-ring" style="--p:${overall}"><b>${overall}%</b></div><div><div>전체 업무 <b>${total}건</b></div><div class="kpi-note">완료 ${done} · 진행 ${Math.max(0,total-done-delayed)} · 지연 ${delayed}</div></div></div></div><div class="meeting-kpi"><div class="kpi-label">이번 주 주요 일정</div><div class="kpi-num">${state.data?.schedules?.length||0}<small>건</small></div><div class="kpi-note">등록 일정 기준</div></div><div class="meeting-kpi"><div class="kpi-label">회의 결정사항</div><div class="kpi-num">${meetingState.decisions.length}<small>건</small></div><div class="kpi-note">체크 및 추가 가능</div></div><div class="meeting-kpi"><div class="kpi-label">다음 주 준비</div><div class="kpi-num">${meetingState.next.length}<small>건</small></div><div class="kpi-note">회의 후 액션 아이템</div></div></div>
+ <div class="meeting-col"><div class="meeting-card"><h3>✳ 보고 순서 <small>${meetingState.deptIndex+1}/5</small></h3><div class="report-order">${DEPTS.map((d,i)=>`<button class="report-dept ${i===meetingState.deptIndex?'active':''}" style="--dept-color:${meetingColor(d)}" onclick="selectMeetingDept(${i})"><span class="report-rank">${i+1}</span><span class="report-name">${d}</span><span class="report-pct">${deptProgress(d)}%</span></button>`).join('')}</div></div><div class="meeting-card"><h3>회의 진행 타이머</h3><div class="timer mono" id="meetingTimer">${formatTimer(meetingState.seconds)}</div><div class="timer-controls"><button onclick="toggleMeetingTimer()">${meetingState.running?'일시정지':'시작'}</button><button onclick="resetMeetingTimer()">초기화</button></div></div></div>
+ <div class="meeting-col"><div class="meeting-card" style="--dept-color:${meetingColor(dept)}"><div class="dept-report-head"><h2>${dept} 보고</h2><button class="meeting-btn" onclick="nextMeetingDept()">다음 과 →</button></div><div class="kpi-note">진행률 ${deptProgress(dept)}% · 이번 주 ${weeklyCount(dept)}건</div><div class="dept-report-progress"><span style="width:${deptProgress(dept)}%"></span></div><div class="status-grid"><div class="status-box"><b style="color:#30D158">✓ 완료</b><ul>${complete.map(x=>`<li>${escapeHtml(x)}</li>`).join('')||'<li>등록 업무 없음</li>'}</ul></div><div class="status-box"><b style="color:#64D2FF">○ 진행중</b><ul>${doing.map(x=>`<li>${escapeHtml(x)}</li>`).join('')||'<li>확인 필요</li>'}</ul></div><div class="status-box"><b style="color:#FF6961">! 지연</b><ul>${late.map(x=>`<li>${escapeHtml(x)}</li>`).join('')||'<li>지연 없음</li>'}</ul></div></div></div><div class="meeting-card"><h3>📣 특이사항 / 요청사항</h3><textarea class="meeting-textarea" placeholder="부서 보고 중 핵심 요청사항을 기록하세요" oninput="meetingState.notes=this.value;saveMeetingState()">${escapeHtml(meetingState.notes||'')}</textarea></div></div>
+ <div class="meeting-col right">${listEditor('decisions','회의 결정사항','⚖️')}<div class="meeting-card"><h3>⏰ 지연업무 TOP 5</h3>${DEPTS.slice(0,5).map((d,i)=>`<div class="delay-row"><span class="dday">D+${5-i}</span><span>${escapeHtml(itemSamples(d,1)[0]||'업무 확인 필요')}</span><span class="dept-pill" style="--pill:${meetingColor(d)}">${d}</span></div>`).join('')}</div></div>
+ <div class="meeting-card education-panel"><h3><span>📖 오늘의 교육 <small style="color:var(--text-muted)">문화부장 말씀</small></span><button class="meeting-btn" onclick="openSermonPrep()">말씀 준비보기</button></h3><div class="education-grid"><div class="education-box"><h4>이번 주 말씀</h4><p><b>주제</b> ${escapeHtml(sermonState.topic||'미입력')}\n<b>본문</b> ${escapeHtml(sermonState.scripture||'미입력')}\n<b>교육 일시</b> ${escapeHtml(sermonState.date||'미정')} ${escapeHtml(sermonState.time||'')}</p></div><div class="education-box"><h4>핵심 메시지</h4><p>${escapeHtml(sermonState.message||'핵심 메시지를 입력해주세요.')}</p></div><div class="education-box"><h4>오늘의 적용 질문</h4><p>${escapeHtml(sermonState.application||'적용 질문을 입력해주세요.')}</p></div></div></div>
+ <div class="meeting-bottom">${listEditor('next','다음 주 중점 업무','🚀')}<div class="meeting-card"><h3>📝 회의 요약</h3><div class="agenda-row"><span>회의 일시</span><b style="margin-left:auto">${new Date().toLocaleString('ko-KR')}</b></div><div class="agenda-row"><span>보고 부서</span><b style="margin-left:auto">5개 과</b></div><div class="agenda-row"><span>결정사항</span><b style="margin-left:auto">${meetingState.decisions.length}건</b></div><div class="agenda-row"><span>다음 주 액션</span><b style="margin-left:auto">${meetingState.next.length}건</b></div><div class="agenda-row"><span>진행 시간</span><b style="margin-left:auto">${formatTimer(meetingState.seconds)}</b></div></div><button class="meeting-finish" onclick="finishMeeting()">✓ 회의 종료 및 회의록 생성</button></div></div>`;
+}
+function formatTimer(s){return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(x=>String(x).padStart(2,'0')).join(':')}
+function startTick(){clearInterval(meetingState.timer);if(meetingState.running)meetingState.timer=setInterval(()=>{meetingState.seconds++;const e=document.getElementById('meetingTimer');if(e)e.textContent=formatTimer(meetingState.seconds);saveMeetingState()},1000)}
+function toggleMeetingTimer(){meetingState.running=!meetingState.running;startTick();renderMeetingMode()}
+function resetMeetingTimer(){meetingState.running=false;clearInterval(meetingState.timer);meetingState.seconds=0;saveMeetingState();renderMeetingMode()}
+function selectMeetingDept(i){meetingState.deptIndex=i;saveMeetingState();renderMeetingMode()}
+function nextMeetingDept(){meetingState.deptIndex=(meetingState.deptIndex+1)%DEPTS.length;saveMeetingState();renderMeetingMode()}
+function meetingAdd(type){const e=document.getElementById('add-'+type);const t=e?.value.trim();if(!t)return;const dept=DEPTS[meetingState.deptIndex]||DEPTS[0];(meetingState[type]||=[]).push({text:t,done:false,dept});saveMeetingState();renderMeetingMode()}
+function meetingRemove(type,i){meetingState[type].splice(i,1);saveMeetingState();renderMeetingMode()}
+function meetingToggle(type,i,v){meetingState[type][i].done=v;saveMeetingState()}
+function meetingText(){const line=a=>a.map((x,i)=>`${i+1}. [${x.dept||'전체'}] ${x.done?'[완료] ':'[ ] '}${x.text}`).join('\n')||'없음';return `[문화부 주간 회의록]\n일시: ${new Date().toLocaleString('ko-KR')}\n진행시간: ${formatTimer(meetingState.seconds)}\n\n■ 오늘의 교육\n주제: ${sermonState.topic||'미입력'}\n본문: ${sermonState.scripture||'미입력'}\n핵심 메시지: ${sermonState.message||'미입력'}\n\n■ 특이사항/요청사항\n${meetingState.notes||'없음'}\n\n■ 결정사항\n${line(meetingState.decisions)}\n\n■ 다음 주 중점 업무\n${line(meetingState.next)}`}
+async function copyMeetingMinutes(){try{await navigator.clipboard.writeText(meetingText());showMeetingToast('회의록을 복사했습니다.')}catch(e){showMeetingToast('복사 권한을 확인해주세요.')}}
+async function saveMeetingNow(){saveMeetingState(true);showMeetingToast('공용 회의록으로 저장 중입니다.')}
+async function finishMeeting(){
+  meetingState.running=false;clearInterval(meetingState.timer);
+  meetingState.status='완료';
+  meetingState.completedAt=new Date().toISOString();
+  meetingState.minutes=meetingText();
+  if(state.data)state.data.sharedMeeting={...meetingState,running:false,timer:null};
+  saveMeetingState(true);
+  await copyMeetingMinutes();
+  showMeetingToast('회의를 종료했습니다. 기본모드와 지난 회의록에 반영됩니다.');
+  setTimeout(async()=>{setDashboardMode('normal');await refreshMeetingArchive();renderSharedFollowup()},900)
+}
+function showMeetingToast(t){const e=document.getElementById('meetingToast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2200)}
+function setDashboardMode(mode){document.body.classList.remove('meeting-active','prep-active');document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));try{localStorage.setItem('dashboardViewMode',mode)}catch(e){}if(mode==='meeting'){document.body.classList.add('prep-active');renderSermonPrep()}else{renderSharedFollowup()}}
+
+async function apiAction(action,params={}){const q=new URLSearchParams({action,...params});const r=await fetch(API_URL+'?'+q.toString(),{cache:'no-store'});const t=await r.text();try{return JSON.parse(t)}catch(e){return {ok:t==='ok',raw:t}}}
+function normalizeSharedMeeting(raw){
+  const base=raw&&typeof raw==='object'?raw:{};
+  const fix=arr=>(Array.isArray(arr)?arr:[]).map(x=>typeof x==='string'?{text:x,done:false,dept:'전체'}:{...x,text:String(x.text||''),done:!!x.done,dept:x.dept||'전체'});
+  return {...base,decisions:fix(base.decisions),next:fix(base.next)};
+}
+function getSharedMeeting(){
+  const server=state.data?.sharedMeeting;
+  const local=meetingState;
+  const chosen=(server&&(server.decisions?.length||server.next?.length))?server:local;
+  return normalizeSharedMeeting(chosen||{});
+}
+function getMeetingArchiveData(){
+  const server=Array.isArray(state.data?.meetingArchive)?state.data.meetingArchive:[];
+  let local=[];try{local=JSON.parse(localStorage.getItem('cultureMeetingArchiveV1')||'[]')}catch(e){}
+  const current=getSharedMeeting();
+  const currentFinished=current.status==='완료'?( [{id:current.id||current.completedAt||'current',status:'완료',startedAt:current.startedAt||'',endedAt:current.completedAt||'',seconds:current.seconds||0,decisions:current.decisions||[],next:current.next||[],minutes:current.minutes||meetingText()}] ):[];
+  const all=[...server,...currentFinished,...local];
+  const seen=new Set();
+  return all.filter(x=>{const k=String(x.id||x.endedAt||x.startedAt||x.minutes||'');if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(b.endedAt||b.startedAt||0)-new Date(a.endedAt||a.startedAt||0));
+}
+async function refreshMeetingArchive(){
   try{
-    const bucket=state.data?.departments?.[dept]?.weekly || {};
-    Object.entries(bucket).forEach(([k,v])=>{const n=Number(v?.count||0);cats[k]=n;total+=n;});
-  }catch(e){}
-  if(!total){ total=fallback[0]; cats=fallback[2]; }
-  const completed=Math.max(0, Math.min(total, fallback[1] + Math.max(0,total-fallback[0])));
-  return {total,completed,pending:Math.max(0,total-completed),rate:Math.round(completed/Math.max(1,total)*100),cats};
+    const r=await apiAction('meetingLoad');
+    if(r?.archive&&state.data)state.data.meetingArchive=r.archive;
+    if(r?.meeting&&state.data)state.data.sharedMeeting=r.meeting;
+  }catch(e){console.warn('회의 이력 갱신 실패',e)}
 }
-function meetingSaveLocal(){
-  try{localStorage.setItem('culturalMeetingData',JSON.stringify({notes:meetingState.notes,actions:meetingState.actions,updatedAt:new Date().toISOString()}));}catch(e){}
+function archiveWeekLabel(item){
+  const d=new Date(item.endedAt||item.startedAt||Date.now());
+  if(isNaN(d))return '날짜 미정';
+  const sun=new Date(d);sun.setDate(d.getDate()-d.getDay());
+  const sat=new Date(sun);sat.setDate(sun.getDate()+6);
+  const f=x=>`${x.getMonth()+1}.${x.getDate()}`;
+  return `${d.getFullYear()}년 ${f(sun)}–${f(sat)}`;
 }
-function meetingLoadLocal(){
-  try{const d=JSON.parse(localStorage.getItem('culturalMeetingData')||'{}');meetingState.notes=d.notes||{};meetingState.actions=d.actions||{};}catch(e){}
+function renderSharedFollowup(){
+  const el=document.getElementById('sharedFollowup');if(!el)return;
+  const m=getSharedMeeting();
+  const selected=state.dept||ALL_DEPTS;
+  const matches=x=>selected===ALL_DEPTS||x.dept==='전체'||x.dept===selected;
+  const decisions=m.decisions.filter(matches),next=m.next.filter(matches);
+  const archiveCount=getMeetingArchiveData().length;
+  if(!decisions.length&&!next.length&&!archiveCount){el.innerHTML='';return}
+  const originalIndex=(type,item)=>m[type].findIndex(x=>x===item||[x.text,x.dept].join('|')===[item.text,item.dept].join('|'));
+  const rows=(arr,type)=>arr.map(item=>{const i=originalIndex(type,item);return `<label class="shared-item ${item.done?'is-done':''}"><input type="checkbox" ${item.done?'checked':''} onchange="sharedToggle('${type}',${i},this.checked)"><span class="shared-item-body"><span class="shared-item-title"><b>${escapeHtml(item.text)}</b><span class="shared-dept-badge" style="--badge-color:${meetingColor(item.dept)}">${escapeHtml(item.dept)}</span></span><div class="shared-meta">${type==='next'?'지난 회의에서 정한 이번 주 중점 업무':'최근 회의 결정사항'}${item.done?' · 완료됨':' · 진행 확인 필요'}</div></span></label>`}).join('')||'<div class="shared-empty">이 부서에 등록된 내용이 없습니다.</div>';
+  const scope=selected===ALL_DEPTS?'전체 부서':selected;
+  el.innerHTML=`<div class="shared-scope"><div class="shared-head-actions"><span>${escapeHtml(scope)} · 회의 후속 업무</span><button class="archive-open-btn" onclick="openMeetingArchive('${escapeHtml(scope)}')">🗂 지난 회의록 보기${archiveCount?` · ${archiveCount}회`:''}</button></div></div><div class="shared-followup"><div class="shared-card"><h3><span>🚀 이번 주 중점 업무</span><span class="sync-state">${next.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(next,'next')}</div></div><div class="shared-card"><h3><span>⚖️ 최근 회의 결정사항</span><span class="sync-state">${decisions.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(decisions,'decisions')}</div></div></div>`
 }
-function meetingSlides(){
-  const stats=DEPTS.map(d=>({dept:d,...meetingDeptStats(d)}));
-  const total=stats.reduce((a,b)=>a+b.total,0), completed=stats.reduce((a,b)=>a+b.completed,0), pending=total-completed;
-  const overall=Math.round(completed/Math.max(1,total)*100);
-  const intro=`<section class="meeting-slide" data-slide="0">
-    <div class="meeting-kicker">주간 정량 피드백 · 전체 현황</div><h2 class="meeting-title">문화부 주간회의</h2>
-    <p class="meeting-subtitle">${escapeHtml(state.data?.currentWeekLabel||state.data?.currentWeek||'이번 주')} · 5개 과 정량 리뷰</p>
-    <div class="meeting-grid">
-      <div class="meeting-card"><div class="meeting-card-label">전체 보고 업무</div><div class="meeting-card-value">${total}</div><div class="meeting-card-note">5개 과 주간 합계</div></div>
-      <div class="meeting-card"><div class="meeting-card-label">완료 추정</div><div class="meeting-card-value">${completed}</div><div class="meeting-card-note">회의 시 확인 가능</div></div>
-      <div class="meeting-card"><div class="meeting-card-label">미확인·진행</div><div class="meeting-card-value">${pending}</div><div class="meeting-card-note">과별 점검 대상</div></div>
-      <div class="meeting-card"><div class="meeting-card-label">전체 완료율</div><div class="meeting-card-value">${overall}%</div><div class="meeting-card-note">주간 리뷰 기준</div></div>
-    </div></section>`;
-  const deptSlides=stats.map((s,i)=>{
-    const cats=Object.entries(s.cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="meeting-category"><b>${escapeHtml(k)}</b><span>${v}건</span></div>`).join('');
-    const acts=(meetingState.actions[s.dept]||[]).map((a,j)=>`<label class="meeting-action-item"><input type="checkbox" data-act-check="${s.dept}" data-act-index="${j}" ${a.done?'checked':''}><span>${escapeHtml(a.text)}</span></label>`).join('');
-    return `<section class="meeting-slide" data-slide="${i+1}" style="--meeting-color:${MEETING_COLORS[s.dept]}">
-      <div class="meeting-dept-head"><div><div class="meeting-kicker"><span class="meeting-dept-dot"></span>과별 주간 리뷰</div><h2 class="meeting-title">${s.dept}</h2></div><div class="meeting-page-no">${i+1} / ${DEPTS.length}</div></div>
-      <div class="meeting-columns">
-        <div class="meeting-panel"><div class="meeting-panel-title">이번 주 정량 현황</div><div class="meeting-metrics">
-          <div class="meeting-metric"><span>보고 업무</span><strong>${s.total}</strong></div><div class="meeting-metric"><span>완료</span><strong>${s.completed}</strong></div><div class="meeting-metric"><span>진행·확인</span><strong>${s.pending}</strong></div>
-        </div><div class="meeting-panel-title" style="margin-top:22px">분류별 실적</div>${cats||'<div style="color:#636369">등록된 주간 데이터가 없습니다.</div>'}</div>
-        <div class="meeting-panel"><div class="meeting-panel-title">부장 피드백 메모</div><textarea class="meeting-note" data-note="${s.dept}" placeholder="잘한 점, 확인할 점, 다음 주 요청사항을 기록하세요.">${escapeHtml(meetingState.notes[s.dept]||'')}</textarea>
-          <div class="meeting-panel-title" style="margin-top:20px">다음 주 액션</div><div class="meeting-action-row"><input class="meeting-action-input" data-act-input="${s.dept}" placeholder="예: 행사 촬영 인원 확정"><button class="meeting-action-add" data-act-add="${s.dept}">추가</button></div><div class="meeting-action-list">${acts}</div>
-        </div>
-      </div></section>`;
-  }).join('');
-  const summaryRows=stats.map(s=>`<div class="meeting-summary-row"><b>${s.dept}</b><span>${escapeHtml((meetingState.notes[s.dept]||'메모 없음').slice(0,55))}</span><em style="color:${MEETING_COLORS[s.dept]}">${s.total}건</em></div>`).join('');
-  const final=`<section class="meeting-slide" data-slide="${DEPTS.length+1}"><div class="meeting-kicker">회의 종료 · 결과 정리</div><h2 class="meeting-title">이번 주 총평</h2><p class="meeting-subtitle">과별 메모와 다음 주 액션을 저장합니다.</p><div class="meeting-summary-list">${summaryRows}</div><div class="meeting-finish-actions"><button class="save" id="meetingSave">회의 내용 저장</button><button id="meetingCopy">회의 요약 복사</button><button id="meetingRestart">처음부터 다시 보기</button></div></section>`;
-  return intro+deptSlides+final;
+function sharedToggle(type,i,v){
+  const shared=getSharedMeeting();
+  if(shared[type]?.[i]){
+    shared[type][i].done=v;
+    meetingState={...meetingState,...shared,running:false,timer:null};
+    if(state.data)state.data.sharedMeeting={...shared};
+    saveMeetingState(true);renderSharedFollowup();
+  }
 }
-function renderMeeting(){
-  const stage=document.getElementById('meetingStage'); if(!stage)return;
-  stage.innerHTML=meetingSlides();
-  const slides=[...stage.querySelectorAll('.meeting-slide')];
-  meetingState.index=Math.max(0,Math.min(meetingState.index,slides.length-1));
-  slides.forEach((x,i)=>x.classList.toggle('active',i===meetingState.index));
-  document.getElementById('meetingProgressFill').style.width=((meetingState.index+1)/slides.length*100)+'%';
-  document.getElementById('meetingPrev').disabled=meetingState.index===0;
-  document.getElementById('meetingNext').textContent=meetingState.index===slides.length-1?'회의 종료':'다음 →';
-  stage.querySelectorAll('[data-note]').forEach(el=>el.oninput=()=>{meetingState.notes[el.dataset.note]=el.value;meetingSaveLocal();});
-  stage.querySelectorAll('[data-act-add]').forEach(btn=>btn.onclick=()=>{const d=btn.dataset.actAdd,inp=stage.querySelector(`[data-act-input="${d}"]`),v=inp.value.trim();if(!v)return;(meetingState.actions[d]||(meetingState.actions[d]=[])).push({text:v,done:false});meetingSaveLocal();renderMeeting();});
-  stage.querySelectorAll('[data-act-check]').forEach(ch=>ch.onchange=()=>{const a=meetingState.actions[ch.dataset.actCheck]?.[Number(ch.dataset.actIndex)];if(a){a.done=ch.checked;meetingSaveLocal();}});
-  document.getElementById('meetingSave')?.addEventListener('click',()=>{meetingSaveLocal();alert('회의 메모와 액션이 이 기기에 저장되었습니다.');});
-  document.getElementById('meetingRestart')?.addEventListener('click',()=>{meetingState.index=0;renderMeeting();});
-  document.getElementById('meetingCopy')?.addEventListener('click',async()=>{const text=DEPTS.map(d=>`[${d}]\n메모: ${meetingState.notes[d]||'-'}\n액션: ${(meetingState.actions[d]||[]).map(a=>(a.done?'[완료] ':'[진행] ')+a.text).join(', ')||'-'}`).join('\n\n');try{await navigator.clipboard.writeText(text);alert('회의 요약을 복사했습니다.');}catch(e){alert(text);}});
+function openMeetingArchive(defaultDept){
+  const host=document.getElementById('meetingArchiveHost');if(!host)return;
+  const selected=(defaultDept&&defaultDept!=='전체 부서')?defaultDept:(state.dept&&state.dept!==ALL_DEPTS?state.dept:'전체 부서');
+  host.innerHTML=`<div class="meeting-archive-overlay" onclick="if(event.target===this)closeMeetingArchive()"><div class="meeting-archive-modal"><div class="archive-modal-head"><h2>🗂 지난 회의록</h2><button class="archive-close" onclick="closeMeetingArchive()">✕</button></div><div class="archive-filters"><select class="archive-select" id="archiveDept" onchange="renderMeetingArchiveBody()"><option>전체 부서</option>${DEPTS.map(d=>`<option ${d===selected?'selected':''}>${d}</option>`).join('')}</select><select class="archive-select" id="archiveWeek" onchange="renderMeetingArchiveBody()"></select></div><div class="archive-body" id="archiveBody"></div></div></div>`;
+  const archive=getMeetingArchiveData();
+  const week=document.getElementById('archiveWeek');
+  week.innerHTML=archive.map((x,i)=>`<option value="${i}">${archiveWeekLabel(x)}</option>`).join('')||'<option value="">저장된 회의 없음</option>';
+  renderMeetingArchiveBody();
 }
-function openMeeting(){meetingLoadLocal();meetingState.index=0;document.getElementById('meetingOverlay').classList.add('open');document.getElementById('meetingOverlay').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderMeeting();}
-function closeMeeting(){document.getElementById('meetingOverlay').classList.remove('open');document.getElementById('meetingOverlay').setAttribute('aria-hidden','true');document.body.style.overflow='';}
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('meetingLaunch').onclick=openMeeting;document.getElementById('meetingClose').onclick=closeMeeting;
-  document.getElementById('meetingPrev').onclick=()=>{meetingState.index--;renderMeeting();};
-  document.getElementById('meetingNext').onclick=()=>{const n=document.querySelectorAll('#meetingStage .meeting-slide').length;if(meetingState.index>=n-1){closeMeeting();}else{meetingState.index++;renderMeeting();}};
-});
-document.addEventListener('keydown',e=>{if(!document.getElementById('meetingOverlay')?.classList.contains('open'))return;if(e.key==='ArrowRight'){document.getElementById('meetingNext').click();}if(e.key==='ArrowLeft'){document.getElementById('meetingPrev').click();}if(e.key==='Escape')closeMeeting();});
+function closeMeetingArchive(){const h=document.getElementById('meetingArchiveHost');if(h)h.innerHTML=''}
+function renderMeetingArchiveBody(){
+  const body=document.getElementById('archiveBody'),week=document.getElementById('archiveWeek'),deptEl=document.getElementById('archiveDept');if(!body||!week||!deptEl)return;
+  const archive=getMeetingArchiveData();const item=archive[Number(week.value)||0];
+  if(!item){body.innerHTML='<div class="archive-empty">저장된 지난 회의록이 없습니다.</div>';return}
+  const dept=deptEl.value;
+  const match=x=>dept==='전체 부서'||x.dept==='전체'||x.dept===dept;
+  const list=(arr,label)=>(Array.isArray(arr)?arr:[]).filter(match).map(x=>`<div class="archive-row ${x.done?'done':''}"><span class="archive-status">${x.done?'✅':'▫️'}</span><span class="archive-row-text">${escapeHtml(x.text||'')}</span><span class="shared-dept-badge" style="--badge-color:${meetingColor(x.dept||'전체')}">${escapeHtml(x.dept||'전체')}</span></div>`).join('')||`<div class="archive-empty">${label}이 없습니다.</div>`;
+  const dt=new Date(item.endedAt||item.startedAt||Date.now());
+  body.innerHTML=`<div class="archive-summary"><b>${escapeHtml(archiveWeekLabel(item))}</b><span>${isNaN(dt)?'':dt.toLocaleString('ko-KR')} · ${formatTimer(Number(item.seconds||0))}</span></div><div class="archive-section"><h3>🚀 중점 업무</h3>${list(item.next,'중점 업무')}</div><div class="archive-section"><h3>⚖️ 결정사항</h3>${list(item.decisions,'결정사항')}</div><div class="archive-section"><h3>📝 전체 회의록</h3><div class="archive-minutes">${escapeHtml(item.minutes||'회의록 본문이 없습니다.')}</div></div>`;
+}
+
+function initModeSwitch(){loadMeetingState();loadSermonState();const saved=localStorage.getItem('dashboardViewMode')||'normal';document.querySelectorAll('.mode-btn').forEach(b=>b.onclick=()=>setDashboardMode(b.dataset.mode));setDashboardMode(saved)}
+document.addEventListener('DOMContentLoaded',initModeSwitch);
 
 
 load();
