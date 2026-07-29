@@ -1008,6 +1008,72 @@
     .ms-in-target{flex:0 0 68px;width:68px;}
     .ms-in-unit{flex:0 0 72px;width:72px;}
   }
+
+
+  /* ================= 주간 회의 모드 ================= */
+  .meeting-launch{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:12px;padding:9px 14px;border-radius:100px;
+    background:linear-gradient(135deg,rgba(10,132,255,.92),rgba(191,90,242,.86));
+    color:#fff;font-size:12px;font-weight:800;box-shadow:0 8px 24px rgba(10,132,255,.22);
+  }
+  .meeting-launch:active{transform:scale(.97)}
+  .meeting-overlay{position:fixed;inset:0;z-index:500;background:#07070a;color:#f5f5f7;display:none;overflow:auto}
+  .meeting-overlay.open{display:block}
+  .meeting-shell{min-height:100vh;max-width:1180px;margin:0 auto;padding:24px 28px 36px;display:flex;flex-direction:column}
+  .meeting-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .meeting-brand{font-size:12px;color:#98989f;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .meeting-progress{flex:1;max-width:520px;height:6px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+  .meeting-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#0A84FF,#BF5AF2);transition:width .3s ease}
+  .meeting-close{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.09);display:grid;place-items:center;font-size:20px}
+  .meeting-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:34px 0}
+  .meeting-slide{width:100%;display:none}.meeting-slide.active{display:block;animation:meetingIn .25s ease both}
+  @keyframes meetingIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .meeting-kicker{font-size:13px;color:#98989f;font-weight:700;margin-bottom:8px}
+  .meeting-title{font-size:clamp(34px,6vw,72px);font-weight:850;letter-spacing:-.055em;line-height:1.04;margin:0}
+  .meeting-subtitle{font-size:16px;color:#98989f;margin-top:12px}
+  .meeting-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:34px}
+  .meeting-card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:22px;min-height:140px}
+  .meeting-card-label{font-size:12px;color:#98989f;font-weight:700}
+  .meeting-card-value{font-size:42px;font-weight:850;letter-spacing:-.04em;margin-top:12px}
+  .meeting-card-note{font-size:12px;color:#636369;margin-top:8px}
+  .meeting-dept-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+  .meeting-dept-dot{width:13px;height:13px;border-radius:50%;display:inline-block;margin-right:9px;background:var(--meeting-color,#0A84FF);box-shadow:0 0 18px var(--meeting-color,#0A84FF)}
+  .meeting-page-no{font-size:15px;color:#98989f;font-weight:700;white-space:nowrap}
+  .meeting-columns{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:30px}
+  .meeting-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:26px;padding:24px}
+  .meeting-panel-title{font-size:14px;font-weight:800;margin-bottom:18px}
+  .meeting-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .meeting-metric{padding:16px;border-radius:18px;background:rgba(255,255,255,.045)}
+  .meeting-metric strong{display:block;font-size:28px;margin-top:7px}
+  .meeting-metric span{font-size:11px;color:#98989f}
+  .meeting-category{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
+  .meeting-category:first-child{border-top:0}.meeting-category b{font-size:14px}.meeting-category span{font-size:14px;color:var(--meeting-color,#64D2FF);font-weight:800}
+  .meeting-note{width:100%;min-height:150px;resize:vertical;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(0,0,0,.2);color:#fff;padding:15px;font:inherit;font-size:14px;outline:none}
+  .meeting-note:focus{border-color:var(--meeting-color,#0A84FF)}
+  .meeting-action-row{display:flex;gap:8px;margin-top:10px}
+  .meeting-action-input{flex:1;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(0,0,0,.22);color:#fff;padding:11px 13px;font:inherit;font-size:13px;outline:none}
+  .meeting-action-add{padding:0 15px;border-radius:14px;background:var(--meeting-color,#0A84FF);font-size:12px;font-weight:800;color:#fff}
+  .meeting-action-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .meeting-action-item{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.05);font-size:13px}
+  .meeting-action-item input{accent-color:#30D158}
+  .meeting-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .meeting-nav button{padding:12px 18px;border-radius:100px;background:rgba(255,255,255,.09);font-size:13px;font-weight:800}
+  .meeting-nav .primary{background:#f5f5f7;color:#111}
+  .meeting-tip{font-size:11px;color:#636369;text-align:center}
+  .meeting-summary-list{margin-top:26px;display:grid;gap:10px}
+  .meeting-summary-row{display:grid;grid-template-columns:140px 1fr 100px;align-items:center;gap:14px;padding:15px 18px;border-radius:18px;background:rgba(255,255,255,.05)}
+  .meeting-summary-row b{font-size:14px}.meeting-summary-row span{font-size:13px;color:#98989f}.meeting-summary-row em{font-style:normal;text-align:right;font-weight:850}
+  .meeting-finish-actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+  .meeting-finish-actions button{padding:12px 17px;border-radius:14px;background:rgba(255,255,255,.09);font-size:13px;font-weight:800}
+  .meeting-finish-actions .save{background:#30D158;color:#071208}
+  @media(max-width:760px){
+    .meeting-shell{padding:18px 16px 26px}.meeting-grid{grid-template-columns:repeat(2,1fr)}
+    .meeting-columns{grid-template-columns:1fr}.meeting-metrics{grid-template-columns:repeat(3,1fr)}
+    .meeting-card{min-height:115px;padding:17px}.meeting-card-value{font-size:32px}
+    .meeting-summary-row{grid-template-columns:1fr auto}.meeting-summary-row span{grid-column:1/-1}.meeting-tip{display:none}
+  }
+
 </style>
 </head>
 <body>
@@ -1031,6 +1097,7 @@
       </div>
     </div>
   </div>
+  <button class="meeting-launch" id="meetingLaunch">▶ 주간 회의모드</button>
 </header>
 
 <section class="briefing" id="briefing"></section>
@@ -1059,6 +1126,23 @@
 
 <div id="noticeToast"></div>
 <div id="dutiesModalWrap"></div>
+
+
+<div class="meeting-overlay" id="meetingOverlay" aria-hidden="true">
+  <div class="meeting-shell">
+    <div class="meeting-topbar">
+      <div class="meeting-brand">Cultural Affairs · Weekly Review</div>
+      <div class="meeting-progress"><div class="meeting-progress-fill" id="meetingProgressFill"></div></div>
+      <button class="meeting-close" id="meetingClose" aria-label="회의모드 닫기">×</button>
+    </div>
+    <div class="meeting-stage" id="meetingStage"></div>
+    <div class="meeting-nav">
+      <button id="meetingPrev">← 이전</button>
+      <div class="meeting-tip">키보드 ← → 방향키로도 이동할 수 있습니다</div>
+      <button class="primary" id="meetingNext">다음 →</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxkIE2UylPdVSthjAlsRT9xPO9SY27PLAVOHRRr61yz0-5nr8cTNgiMRIV79Xz2ilyN/exec';
@@ -2313,6 +2397,93 @@ async function load(){
     showError();
   }
 }
+
+
+/* ================= 주간 회의 모드 로직 ================= */
+const MEETING_COLORS = {
+  '문화기획과':'#FF9F0A','영상제작과':'#64D2FF','사진과':'#BF5AF2','의전과':'#30D158','공연예술과':'#FF453A'
+};
+const meetingState = { index:0, notes:{}, actions:{} };
+
+function meetingDeptStats(dept){
+  const fallback = {
+    '문화기획과':[12,10,{'기획PPT제작':3,'데이터피드백현황':4,'기타업무':5}],
+    '영상제작과':[18,16,{'제작물':7,'중계현황':4,'스탭투입현황':3,'과모임':2,'총회/지파업무':2}],
+    '사진과':[13,12,{'행사촬영':8,'인재모집업무':2,'기타업무':3}],
+    '의전과':[11,9,{'투입행사':5,'과업무':3,'과모임':2,'의전과제':1}],
+    '공연예술과':[10,8,{'주간공연준비교육':6,'기타업무':4}]
+  }[dept];
+  let cats={}, total=0;
+  try{
+    const bucket=state.data?.departments?.[dept]?.weekly || {};
+    Object.entries(bucket).forEach(([k,v])=>{const n=Number(v?.count||0);cats[k]=n;total+=n;});
+  }catch(e){}
+  if(!total){ total=fallback[0]; cats=fallback[2]; }
+  const completed=Math.max(0, Math.min(total, fallback[1] + Math.max(0,total-fallback[0])));
+  return {total,completed,pending:Math.max(0,total-completed),rate:Math.round(completed/Math.max(1,total)*100),cats};
+}
+function meetingSaveLocal(){
+  try{localStorage.setItem('culturalMeetingData',JSON.stringify({notes:meetingState.notes,actions:meetingState.actions,updatedAt:new Date().toISOString()}));}catch(e){}
+}
+function meetingLoadLocal(){
+  try{const d=JSON.parse(localStorage.getItem('culturalMeetingData')||'{}');meetingState.notes=d.notes||{};meetingState.actions=d.actions||{};}catch(e){}
+}
+function meetingSlides(){
+  const stats=DEPTS.map(d=>({dept:d,...meetingDeptStats(d)}));
+  const total=stats.reduce((a,b)=>a+b.total,0), completed=stats.reduce((a,b)=>a+b.completed,0), pending=total-completed;
+  const overall=Math.round(completed/Math.max(1,total)*100);
+  const intro=`<section class="meeting-slide" data-slide="0">
+    <div class="meeting-kicker">주간 정량 피드백 · 전체 현황</div><h2 class="meeting-title">문화부 주간회의</h2>
+    <p class="meeting-subtitle">${escapeHtml(state.data?.currentWeekLabel||state.data?.currentWeek||'이번 주')} · 5개 과 정량 리뷰</p>
+    <div class="meeting-grid">
+      <div class="meeting-card"><div class="meeting-card-label">전체 보고 업무</div><div class="meeting-card-value">${total}</div><div class="meeting-card-note">5개 과 주간 합계</div></div>
+      <div class="meeting-card"><div class="meeting-card-label">완료 추정</div><div class="meeting-card-value">${completed}</div><div class="meeting-card-note">회의 시 확인 가능</div></div>
+      <div class="meeting-card"><div class="meeting-card-label">미확인·진행</div><div class="meeting-card-value">${pending}</div><div class="meeting-card-note">과별 점검 대상</div></div>
+      <div class="meeting-card"><div class="meeting-card-label">전체 완료율</div><div class="meeting-card-value">${overall}%</div><div class="meeting-card-note">주간 리뷰 기준</div></div>
+    </div></section>`;
+  const deptSlides=stats.map((s,i)=>{
+    const cats=Object.entries(s.cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="meeting-category"><b>${escapeHtml(k)}</b><span>${v}건</span></div>`).join('');
+    const acts=(meetingState.actions[s.dept]||[]).map((a,j)=>`<label class="meeting-action-item"><input type="checkbox" data-act-check="${s.dept}" data-act-index="${j}" ${a.done?'checked':''}><span>${escapeHtml(a.text)}</span></label>`).join('');
+    return `<section class="meeting-slide" data-slide="${i+1}" style="--meeting-color:${MEETING_COLORS[s.dept]}">
+      <div class="meeting-dept-head"><div><div class="meeting-kicker"><span class="meeting-dept-dot"></span>과별 주간 리뷰</div><h2 class="meeting-title">${s.dept}</h2></div><div class="meeting-page-no">${i+1} / ${DEPTS.length}</div></div>
+      <div class="meeting-columns">
+        <div class="meeting-panel"><div class="meeting-panel-title">이번 주 정량 현황</div><div class="meeting-metrics">
+          <div class="meeting-metric"><span>보고 업무</span><strong>${s.total}</strong></div><div class="meeting-metric"><span>완료</span><strong>${s.completed}</strong></div><div class="meeting-metric"><span>진행·확인</span><strong>${s.pending}</strong></div>
+        </div><div class="meeting-panel-title" style="margin-top:22px">분류별 실적</div>${cats||'<div style="color:#636369">등록된 주간 데이터가 없습니다.</div>'}</div>
+        <div class="meeting-panel"><div class="meeting-panel-title">부장 피드백 메모</div><textarea class="meeting-note" data-note="${s.dept}" placeholder="잘한 점, 확인할 점, 다음 주 요청사항을 기록하세요.">${escapeHtml(meetingState.notes[s.dept]||'')}</textarea>
+          <div class="meeting-panel-title" style="margin-top:20px">다음 주 액션</div><div class="meeting-action-row"><input class="meeting-action-input" data-act-input="${s.dept}" placeholder="예: 행사 촬영 인원 확정"><button class="meeting-action-add" data-act-add="${s.dept}">추가</button></div><div class="meeting-action-list">${acts}</div>
+        </div>
+      </div></section>`;
+  }).join('');
+  const summaryRows=stats.map(s=>`<div class="meeting-summary-row"><b>${s.dept}</b><span>${escapeHtml((meetingState.notes[s.dept]||'메모 없음').slice(0,55))}</span><em style="color:${MEETING_COLORS[s.dept]}">${s.total}건</em></div>`).join('');
+  const final=`<section class="meeting-slide" data-slide="${DEPTS.length+1}"><div class="meeting-kicker">회의 종료 · 결과 정리</div><h2 class="meeting-title">이번 주 총평</h2><p class="meeting-subtitle">과별 메모와 다음 주 액션을 저장합니다.</p><div class="meeting-summary-list">${summaryRows}</div><div class="meeting-finish-actions"><button class="save" id="meetingSave">회의 내용 저장</button><button id="meetingCopy">회의 요약 복사</button><button id="meetingRestart">처음부터 다시 보기</button></div></section>`;
+  return intro+deptSlides+final;
+}
+function renderMeeting(){
+  const stage=document.getElementById('meetingStage'); if(!stage)return;
+  stage.innerHTML=meetingSlides();
+  const slides=[...stage.querySelectorAll('.meeting-slide')];
+  meetingState.index=Math.max(0,Math.min(meetingState.index,slides.length-1));
+  slides.forEach((x,i)=>x.classList.toggle('active',i===meetingState.index));
+  document.getElementById('meetingProgressFill').style.width=((meetingState.index+1)/slides.length*100)+'%';
+  document.getElementById('meetingPrev').disabled=meetingState.index===0;
+  document.getElementById('meetingNext').textContent=meetingState.index===slides.length-1?'회의 종료':'다음 →';
+  stage.querySelectorAll('[data-note]').forEach(el=>el.oninput=()=>{meetingState.notes[el.dataset.note]=el.value;meetingSaveLocal();});
+  stage.querySelectorAll('[data-act-add]').forEach(btn=>btn.onclick=()=>{const d=btn.dataset.actAdd,inp=stage.querySelector(`[data-act-input="${d}"]`),v=inp.value.trim();if(!v)return;(meetingState.actions[d]||(meetingState.actions[d]=[])).push({text:v,done:false});meetingSaveLocal();renderMeeting();});
+  stage.querySelectorAll('[data-act-check]').forEach(ch=>ch.onchange=()=>{const a=meetingState.actions[ch.dataset.actCheck]?.[Number(ch.dataset.actIndex)];if(a){a.done=ch.checked;meetingSaveLocal();}});
+  document.getElementById('meetingSave')?.addEventListener('click',()=>{meetingSaveLocal();alert('회의 메모와 액션이 이 기기에 저장되었습니다.');});
+  document.getElementById('meetingRestart')?.addEventListener('click',()=>{meetingState.index=0;renderMeeting();});
+  document.getElementById('meetingCopy')?.addEventListener('click',async()=>{const text=DEPTS.map(d=>`[${d}]\n메모: ${meetingState.notes[d]||'-'}\n액션: ${(meetingState.actions[d]||[]).map(a=>(a.done?'[완료] ':'[진행] ')+a.text).join(', ')||'-'}`).join('\n\n');try{await navigator.clipboard.writeText(text);alert('회의 요약을 복사했습니다.');}catch(e){alert(text);}});
+}
+function openMeeting(){meetingLoadLocal();meetingState.index=0;document.getElementById('meetingOverlay').classList.add('open');document.getElementById('meetingOverlay').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderMeeting();}
+function closeMeeting(){document.getElementById('meetingOverlay').classList.remove('open');document.getElementById('meetingOverlay').setAttribute('aria-hidden','true');document.body.style.overflow='';}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('meetingLaunch').onclick=openMeeting;document.getElementById('meetingClose').onclick=closeMeeting;
+  document.getElementById('meetingPrev').onclick=()=>{meetingState.index--;renderMeeting();};
+  document.getElementById('meetingNext').onclick=()=>{const n=document.querySelectorAll('#meetingStage .meeting-slide').length;if(meetingState.index>=n-1){closeMeeting();}else{meetingState.index++;renderMeeting();}};
+});
+document.addEventListener('keydown',e=>{if(!document.getElementById('meetingOverlay')?.classList.contains('open'))return;if(e.key==='ArrowRight'){document.getElementById('meetingNext').click();}if(e.key==='ArrowLeft'){document.getElementById('meetingPrev').click();}if(e.key==='Escape')closeMeeting();});
+
 
 load();
 setInterval(load, 60000); // 1분마다 자동 갱신
