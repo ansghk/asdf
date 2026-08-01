@@ -651,10 +651,12 @@
   .mode-btn.active{color:#fff;background:linear-gradient(135deg,#0A84FF,#315BFF);box-shadow:0 5px 18px rgba(10,132,255,.35)}
   
   /* ================= 주간 피드백 회의모드 ================= */
-  #meetingMode{display:none;padding:18px;max-width:1440px;margin:0 auto}
+  #meetingMode,#sermonPrep{display:none;padding:18px;max-width:1440px;margin:0 auto}
   body.meeting-active #meetingMode{display:block}
-  body.meeting-active #normalDashboard{display:none}
-  body.meeting-active header{position:relative}
+  body.meeting-active #normalDashboard, body.meeting-active #sermonPrep{display:none}
+  body.prep-active #sermonPrep{display:block}
+  body.prep-active #normalDashboard, body.prep-active #meetingMode{display:none}
+  body.meeting-active header, body.prep-active header{position:relative}
 
   .pf-hero{display:flex;justify-content:space-between;align-items:center;margin:4px 0 16px;}
   .pf-title-area{display:flex;flex-direction:column;gap:4px;}
@@ -667,6 +669,7 @@
     color:var(--text);transition:all .15s;
   }
   .pf-btn.primary{background:#0A84FF;color:#fff;border-color:#0A84FF;}
+  .pf-btn.ppt-btn{background:linear-gradient(135deg, #FF9F0A, #FF3B30);color:#fff;border:none;}
   .pf-btn:active{transform:scale(0.97);}
 
   /* 상단 5개 과 선택 탭 바 */
@@ -685,7 +688,7 @@
     box-shadow:0 0 16px color-mix(in srgb, var(--dept-color, #FF9F0A) 30%, transparent);
   }
 
-  /* 요약 대시보드 박스 (목표00건 / 완료00건) */
+  /* 요약 대시보드 박스 */
   .pf-summary-card{
     background:var(--glass);border:1px solid var(--glass-border);
     border-radius:20px;padding:18px;margin-bottom:16px;
@@ -765,26 +768,15 @@
     border-radius:100px;z-index:500;font-size:12px;display:none;
   }
 
-  #sermonPrep{display:none;padding:18px;max-width:1400px;margin:0 auto}
-  body.prep-active #sermonPrep{display:block}
-  body.prep-active #normalDashboard,body.prep-active #meetingMode{display:none}
   .prep-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin:4px 0 18px}
   .prep-title{font-size:30px;font-weight:800;margin:0 0 5px;letter-spacing:-.04em}
   .prep-sub{font-size:13px;color:var(--text-muted);margin:0}
-  .prep-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:14px;align-items:start}
-  .prep-main,.prep-side{display:flex;flex-direction:column;gap:14px}
-  .prep-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:17px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
-  .prep-card h3{font-size:14px;margin:0 0 12px}.prep-card h4{font-size:12px;margin:0 0 8px;color:var(--text-muted)}
-  .prep-overview{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .prep-field{display:flex;flex-direction:column;gap:7px}.prep-label{font-size:11px;color:var(--text-muted);font-weight:700}
-  .prep-input,.prep-textarea,.prep-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:11px 12px;font:inherit;font-size:13px;outline:none}
-  .prep-textarea{min-height:110px;resize:vertical;line-height:1.55}.prep-textarea.tall{min-height:220px}
-  .prep-structure{display:flex;flex-direction:column;gap:8px}.prep-structure-row{display:grid;grid-template-columns:34px 1fr;gap:9px;align-items:center}
-  .prep-num{width:30px;height:30px;border-radius:9px;background:rgba(139,92,246,.15);color:#B79BFF;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
-  .prep-history-row{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--glass-border);font-size:12px}.prep-history-row:first-child{border-top:0}
-  .prep-history-meta{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .prep-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border:1px solid var(--glass-border);background:var(--glass);border-radius:16px;margin-top:14px}
-  .prep-saved{font-size:11px;color:#30D158}.prep-start{padding:12px 18px;border-radius:13px;background:linear-gradient(135deg,#7C3AED,#4F46E5);color:#fff;font-weight:800;font-size:13px}
+  .prep-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
+  .prep-field{display:flex;flex-direction:column;gap:8px}.prep-label{font-size:14px;color:var(--text);font-weight:700}
+  .prep-input,.prep-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit;font-size:14px;outline:none}
+  .prep-textarea.tall{min-height:350px;resize:vertical;line-height:1.6}
+  .prep-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border:1px solid var(--glass-border);background:var(--glass);border-radius:16px;margin-top:20px}
+  .prep-saved{font-size:12px;color:#30D158}
 
   .shared-followup{margin:16px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .shared-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--glass-shadow)}
@@ -841,6 +833,7 @@
   <h1>문화부 대시보드</h1>
   <div class="mode-switch" id="modeSwitch">
     <button class="mode-btn active" data-mode="normal">⌂ 기본모드</button>
+    <button class="mode-btn" data-mode="sermon">📢 말씀 전달</button>
     <button class="mode-btn" data-mode="meeting">👥 주간 회의모드</button>
   </div>
   <div class="meta-row">
@@ -1930,6 +1923,7 @@ function bindReportCalendarEvents(){
 function render(){
   renderBriefing();
   if(document.body.classList.contains('meeting-active')) renderMeetingMode();
+  if(document.body.classList.contains('prep-active')) renderSermonPrep();
   renderDeptTabs();
   renderRangeTabs();
   renderMeta();
@@ -2039,6 +2033,17 @@ async function load(){
     const res = await fetch(API_URL);
     if(!res.ok) throw new Error('bad status');
     state.data = await res.json();
+    
+    // 서버에서 온 데이터 중 '전체' 항목 정제 보장
+    if(state.data && state.data.sharedMeeting) {
+      if(state.data.sharedMeeting.decisions) {
+        state.data.sharedMeeting.decisions = state.data.sharedMeeting.decisions.filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
+      }
+      if(state.data.sharedMeeting.next) {
+        state.data.sharedMeeting.next = state.data.sharedMeeting.next.filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
+      }
+    }
+
     await checkMonthlyMilestoneReset();
     if(document.activeElement && document.activeElement.closest && document.activeElement.closest('.ms-form')){
       renderVisitFooter();
@@ -2056,71 +2061,160 @@ async function load(){
   }
 }
 
-/* ================= 주간 말씀 준비 관련 로직 ================= */
+/* ================= 말씀 전달 로직 ================= */
 const SERMON_KEY='cultureSermonPrepV1';
-let sermonState={date:'',time:'20:00',audience:'문화부 전체',duration:'30~40분',topic:'',scripture:'',message:'',main:'',application:'',structure:['도입','본문 설명','적용 Point','결론','기도 제목'],references:'',savedAt:'',history:[]};
-function loadSermonState(){try{sermonState={...sermonState,...JSON.parse(localStorage.getItem(SERMON_KEY)||'{}')}}catch(e){}if(state.data?.sharedSermon)sermonState={...sermonState,...state.data.sharedSermon};if(!sermonState.date){const d=new Date();sermonState.date=d.toISOString().slice(0,10)}}
-let sermonSaveTimer=null;function saveSermonState(show=false){sermonState.savedAt=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});try{localStorage.setItem(SERMON_KEY,JSON.stringify(sermonState))}catch(e){}clearTimeout(sermonSaveTimer);sermonSaveTimer=setTimeout(async()=>{try{await apiAction('sermonSave',{data:JSON.stringify(sermonState)});if(show)showMeetingToast('말씀 준비 내용이 저장되었습니다.')}catch(e){if(show)showMeetingToast('서버 저장 실패')}renderPrepSaved()},show?0:700);renderPrepSaved()}
+let sermonState={topic:'', main:'', savedAt:''};
+
+function loadSermonState(){
+  try{sermonState={...sermonState,...JSON.parse(localStorage.getItem(SERMON_KEY)||'{}')}}catch(e){}
+  if(state.data?.sharedSermon)sermonState={...sermonState,...state.data.sharedSermon};
+}
+
+let sermonSaveTimer=null;
+function saveSermonState(show=false){
+  sermonState.savedAt=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  try{localStorage.setItem(SERMON_KEY,JSON.stringify(sermonState))}catch(e){}
+  clearTimeout(sermonSaveTimer);
+  sermonSaveTimer=setTimeout(async()=>{
+    try{
+      await apiAction('sermonSave',{data:JSON.stringify(sermonState)});
+      if(show)showMeetingToast('말씀 전달 내용이 저장되었습니다.');
+    }catch(e){
+      if(show)showMeetingToast('서버 저장 실패');
+    }
+    renderPrepSaved();
+  },show?0:700);
+  renderPrepSaved();
+}
+
 function updateSermon(k,v){sermonState[k]=v;saveSermonState(false)}
-function renderPrepSaved(){const e=document.textContent=sermonState.savedAt?`자동 저장됨 ${sermonState.savedAt}`:'입력 내용 자동 저장'}
+
+function renderPrepSaved(){
+  const e=document.getElementById('prepSaved');
+  if(e) e.textContent=sermonState.savedAt?`자동 저장됨 ${sermonState.savedAt}`:'입력 내용 자동 저장';
+}
+
+/* PPT 자동 제작 연동 함수 */
+async function createPptFromSermon(){
+  const topic = sermonState.topic ? sermonState.topic.trim() : '';
+  const main = sermonState.main ? sermonState.main.trim() : '';
+  
+  if(!topic && !main){
+    showMeetingToast('주제 또는 상세 전달 내용을 입력해 주세요.');
+    return;
+  }
+  
+  saveSermonState(false);
+  showMeetingToast('PPT 자동 제작을 요청 중입니다... ⏳');
+  
+  try {
+    const res = await apiAction('makePPT', {
+      topic: topic,
+      content: main,
+      date: new Date().toISOString().slice(0,10)
+    });
+    
+    if(res && res.url) {
+      showMeetingToast('PPT가 성공적으로 생성되었습니다! 🎉');
+      window.open(res.url, '_blank');
+    } else {
+      showMeetingToast('PPT 생성 요청이 서버 구글 드라이브로 전달되었습니다.');
+    }
+  } catch(e) {
+    console.error(e);
+    showMeetingToast('PPT 제작 요청 중 오류가 발생했습니다.');
+  }
+}
+
+/* 말씀 전달 간소화 렌더링 (주제 + 상세내용 2가지) */
 function renderSermonPrep(){
   const el=document.getElementById('sermonPrep');if(!el)return;
-  const hist=sermonState.history||[];
   el.innerHTML=`
   <div class="prep-hero">
     <div>
-      <h1 class="prep-title">📖 주간 말씀 준비</h1>
-      <p class="prep-sub">이번 주 교육을 위해 말씀을 준비하고 기록합니다.</p>
+      <h1 class="prep-title">📢 말씀 전달 및 PPT 제작</h1>
+      <p class="prep-sub">주제와 전달 내용을 작성한 후 PPT를 자동으로 제작할 수 있습니다.</p>
     </div>
     <div class="pf-actions">
-      <button class="pf-btn" onclick="saveSermonState(true)">준비 내용 저장</button>
-      <button class="pf-btn primary" onclick="startActualMeeting()">회의모드 시작하기 →</button>
+      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 PPT 자동 제작</button>
+      <button class="pf-btn primary" onclick="saveSermonState(true)">💾 저장하기</button>
+      <button class="pf-btn" onclick="setDashboardMode('meeting')">회의모드로 이동 →</button>
     </div>
   </div>
-  <div class="prep-layout">
-    <div class="prep-card prep-overview">
-      <div class="prep-field"><span class="prep-label">교육 일시</span><div style="display:flex;gap:7px"><input type="date" class="prep-input" value="${escapeHtml(sermonState.date)}" oninput="updateSermon('date',this.value)"><input type="time" class="prep-input" value="${escapeHtml(sermonState.time)}" oninput="updateSermon('time',this.value)"></div></div>
-      <div class="prep-field"><span class="prep-label">교육 대상</span><input class="prep-input" value="${escapeHtml(sermonState.audience)}" oninput="updateSermon('audience',this.value)"></div>
-      <div class="prep-field"><span class="prep-label">예상 시간</span><input class="prep-input" value="${escapeHtml(sermonState.duration)}" oninput="updateSermon('duration',this.value)"></div>
+  <div class="prep-card" style="display:flex; flex-direction:column; gap:20px;">
+    <div class="prep-field">
+      <span class="prep-label">📌 말씀 / 공유 주제</span>
+      <input class="prep-input" maxlength="100" placeholder="이번 주 말씀 및 공유 주제를 입력해 주세요..." value="${escapeHtml(sermonState.topic||'')}" oninput="updateSermon('topic',this.value)">
     </div>
-    <div class="prep-main">
-      <div class="prep-card"><div class="prep-field"><span class="prep-label">말씀 주제</span><input class="prep-input" maxlength="80" placeholder="이번 주 교육 주제" value="${escapeHtml(sermonState.topic)}" oninput="updateSermon('topic',this.value)"></div></div>
-      <div class="prep-card"><div class="prep-field"><span class="prep-label">말씀 본문</span><textarea class="prep-textarea" placeholder="성경 말씀 본문" oninput="updateSermon('scripture',this.value)">${escapeHtml(sermonState.scripture)}</textarea></div></div>
-      <div class="prep-card"><div class="prep-field"><span class="prep-label">핵심 메시지</span><textarea class="prep-textarea" placeholder="핵심 메시지" oninput="updateSermon('message',this.value)">${escapeHtml(sermonState.message)}</textarea></div></div>
-      <div class="prep-card"><div class="prep-field"><span class="prep-label">주요 내용</span><textarea class="prep-textarea tall" placeholder="상세 교육 내용" oninput="updateSermon('main',this.value)">${escapeHtml(sermonState.main)}</textarea></div></div>
-      <div class="prep-card"><div class="prep-field"><span class="prep-label">오늘의 적용 질문</span><textarea class="prep-textarea" placeholder="적용 질문" oninput="updateSermon('application',this.value)">${escapeHtml(sermonState.application)}</textarea></div></div>
-    </div>
-    <div class="prep-side">
-      <div class="prep-card"><h3>말씀 구조</h3><div class="prep-structure">${sermonState.structure.map((x,i)=>`<div class="prep-structure-row"><span class="prep-num">${i+1}</span><input class="prep-input" value="${escapeHtml(x)}" oninput="sermonState.structure[${i}]=this.value;saveSermonState(false)"></div>`).join('')}</div></div>
-      <div class="prep-card"><h3>참고 자료</h3><textarea class="prep-textarea" placeholder="참고 링크 및 메모" oninput="updateSermon('references',this.value)">${escapeHtml(sermonState.references)}</textarea></div>
+    <div class="prep-field">
+      <span class="prep-label">📝 상세 말씀 전달 내용</span>
+      <textarea class="prep-textarea tall" placeholder="PPT 슬라이드로 생성될 상세 말씀 전달 내용을 입력해 주세요..." oninput="updateSermon('main',this.value)">${escapeHtml(sermonState.main||'')}</textarea>
     </div>
   </div>
   <div class="prep-savebar">
     <div><div class="prep-saved" id="prepSaved"></div></div>
-    <button class="pf-btn primary" onclick="startActualMeeting()">회의모드 시작하기 →</button>
+    <div style="display:flex; gap:8px;">
+      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 PPT 자동 제작</button>
+      <button class="pf-btn primary" onclick="saveSermonState(true)">💾 저장하기</button>
+    </div>
   </div>`;
   renderPrepSaved();
 }
-function archiveCurrentSermon(){if(!sermonState.topic&&!sermonState.message)return;const id=Date.now().toString();const item={id,date:sermonState.date,topic:sermonState.topic,message:sermonState.message,scripture:sermonState.scripture,main:sermonState.main,application:sermonState.application};sermonState.history=[...(sermonState.history||[]).filter(x=>x.date!==item.date),item].slice(-20);saveSermonState(false)}
-function openSermonPrep(){document.body.classList.remove('meeting-active');document.body.classList.add('prep-active');renderSermonPrep();window.scrollTo({top:0,behavior:'smooth'})}
-function startActualMeeting(){archiveCurrentSermon();document.body.classList.remove('prep-active');document.body.classList.add('meeting-active');renderMeetingMode();try{localStorage.setItem('dashboardViewMode','meeting')}catch(e){}window.scrollTo({top:0,behavior:'smooth'})}
 
-
-/* ================= 캡처 모드 : 주간 피드백 회의모드 데이터/렌더링 ================= */
+/* ================= 주간 피드백 회의모드 데이터/렌더링 ================= */
 const MEETING_KEY='cultureMeetingModeV1';
+const LAST_RESET_KEY='cultureMeetingLastResetTimestamp';
+
 let meetingState={
   deptIndex:0,
   decisions:[], 
   next:[],      
-  notes:''  // 전체 부서 공통 회의 총평 메모
+  notes:'' 
 };
 
+// 최근 월요일 00:00시 타임스탬프 계산
+function getMostRecentMondayTimestamp() {
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = (day === 0 ? 6 : day - 1);
+  const lastMonday = new Date(now);
+  lastMonday.setDate(now.getDate() - diffToMonday);
+  lastMonday.setHours(0, 0, 0, 0);
+  return lastMonday.getTime();
+}
+
+// 매주 월요일 00:00시 자정 자동 초기화 체크 및 초기 클리어
+function checkWeeklyReset() {
+  const currentMondayTime = getMostRecentMondayTimestamp();
+  let lastResetTime = null;
+  try { lastResetTime = localStorage.getItem(LAST_RESET_KEY); } catch(e){}
+
+  if(!lastResetTime || parseInt(lastResetTime, 10) < currentMondayTime) {
+    meetingState.decisions = [];
+    meetingState.next = [];
+    meetingState.notes = '';
+    try {
+      localStorage.setItem(LAST_RESET_KEY, currentMondayTime.toString());
+      localStorage.setItem(MEETING_KEY, JSON.stringify(meetingState));
+    } catch(e){}
+  }
+}
+
 function loadMeetingState(){
+  checkWeeklyReset();
+
   try{
     meetingState={...meetingState,...JSON.parse(localStorage.getItem(MEETING_KEY)||'{}')};
   }catch(e){}
+
+  // '전체' 태그 및 테스트 항목 완전히 지우기
+  meetingState.decisions = (meetingState.decisions || []).filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
+  meetingState.next = (meetingState.next || []).filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
+
   if(state.data?.sharedMeeting){
-    meetingState={...meetingState,...state.data.sharedMeeting};
+    const sm = state.data.sharedMeeting;
+    if(sm.decisions) sm.decisions = sm.decisions.filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
+    if(sm.next) sm.next = sm.next.filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
   }
 }
 
@@ -2183,7 +2277,7 @@ ${formatListByDept(meetingState.next)}
 ${formatListByDept(meetingState.decisions)}`;
 }
 
-/* 캡처 레이아웃에 맞춘 주간 피드백 회의모드 렌더링 */
+/* 회의모드 렌더링 */
 function renderMeetingMode(){
   const el = document.getElementById('meetingMode');
   if(!el) return;
@@ -2191,13 +2285,11 @@ function renderMeetingMode(){
   const currentDept = DEPTS[meetingState.deptIndex] || DEPTS[0];
   const cKey = DEPT_COLOR_KEY[currentDept];
 
-  // 마일스톤 데이터 집계
   const goals = goalsFor(currentDept);
   const totalGoals = goals.length;
   const completedGoals = goals.filter(g => Number(g.current) >= Number(g.target)).length;
   const goalProgressPct = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
-  // 선택한 부서의 이번주 작성 데이터 가져오기
   let currentDeptItems = [];
   if(state.data && state.data.departments && state.data.departments[currentDept]){
     const weeklyData = state.data.departments[currentDept].weekly || {};
@@ -2214,7 +2306,6 @@ function renderMeetingMode(){
   const currentNextList = (meetingState.next || []).filter(x => x.dept === currentDept);
   const currentFeedbackList = (meetingState.decisions || []).filter(x => x.dept === currentDept);
 
-  // 1. 상단 탭 렌더링
   const deptTabsHtml = DEPTS.map((d, i) => {
     const isActive = i === meetingState.deptIndex;
     const keyColor = DEPT_COLOR_KEY[d];
@@ -2226,7 +2317,6 @@ function renderMeetingMode(){
       </div>`;
   }).join('');
 
-  // 2. 좌측 [한 주간 한 일] 목록 렌더링
   const doneListHtml = currentDeptItems.length > 0 
     ? currentDeptItems.map(it => `
         <div class="pf-item-box">
@@ -2237,7 +2327,6 @@ function renderMeetingMode(){
       `).join('')
     : `<div class="empty-cat">이번 주 보고된 업무가 없습니다.</div>`;
 
-  // 3. 중앙 [차주에 할 일] 목록 렌더링
   const nextListHtml = currentNextList.length > 0
     ? currentNextList.map((it, idx) => `
         <div class="pf-row-item">
@@ -2247,7 +2336,6 @@ function renderMeetingMode(){
       `).join('')
     : `<div class="empty-cat">차주 예정 과제를 입력하세요.</div>`;
 
-  // 4. 우측 [지시사항 & 피드백] 목록 렌더링
   const feedbackListHtml = currentFeedbackList.length > 0
     ? currentFeedbackList.map((it, idx) => `
         <div class="pf-row-item">
@@ -2269,14 +2357,11 @@ function renderMeetingMode(){
       </div>
     </div>
 
-    <!-- 5개 과 탭 바 -->
     <div class="pf-dept-tabs">
       ${deptTabsHtml}
     </div>
 
-    <!-- 3컬럼 메인 그리드 -->
     <div class="pf-grid">
-      <!-- 1) 한 주간 한 일 영역 (상단 마일스톤 대시보드 포함) -->
       <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="pf-summary-card" style="--dept-color: var(--dept-${cKey})">
           <div class="pf-summary-head">
@@ -2304,13 +2389,12 @@ function renderMeetingMode(){
         </div>
       </div>
 
-      <!-- 2) 차주에 할 일 -->
       <div class="pf-card">
         <div class="pf-card-head">
-          <h3 class="pf-card-title">🚀 차주에 할 일 <small>(계획)</small></h3>
+          <h3 class="pf-card-title">🚀 차주중점업무 <small>(차주할일)</small></h3>
           <span class="pf-card-count mono">${currentNextList.length}건</span>
         </div>
-        <p class="pf-desc">차주 예정 과제를 입력하세요.</p>
+        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (매주 월요일 00:00시 자동 초기화)</p>
         <div class="pf-list">
           ${nextListHtml}
         </div>
@@ -2320,13 +2404,12 @@ function renderMeetingMode(){
         </div>
       </div>
 
-      <!-- 3) 지시사항 & 피드백 (주황 강조) -->
       <div class="pf-card highlight">
         <div class="pf-card-head">
           <h3 class="pf-card-title">💡 지시사항 & 피드백</h3>
           <span class="pf-card-count mono">${currentFeedbackList.length}건</span>
         </div>
-        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 즉시 전달됩니다.</p>
+        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (매주 월요일 00:00시 자동 초기화)</p>
         <div class="pf-list">
           ${feedbackListHtml}
         </div>
@@ -2336,7 +2419,6 @@ function renderMeetingMode(){
         </div>
       </div>
 
-      <!-- 4) 회의 총평 / 특이사항 메모 카드 (★ 모든 과 공통 통합 고정 영역) -->
       <div class="pf-memo-card">
         <h3 class="pf-card-title" style="margin-bottom: 2px;">📝 회의 총평 및 특이사항 메모 (문화부 전체 공통)</h3>
         <p class="pf-desc">어떤 과를 선택하든 동일하게 유지되며, '지난 회의록' 보관함 본문에 함께 기록됩니다.</p>
@@ -2402,6 +2484,9 @@ function setDashboardMode(mode){
   if(mode==='meeting'){
     document.body.classList.add('meeting-active');
     renderMeetingMode();
+  }else if(mode==='sermon'){
+    document.body.classList.add('prep-active');
+    renderSermonPrep();
   }else{
     renderSharedFollowup();
   }
@@ -2416,7 +2501,10 @@ async function apiAction(action,params={}){
 
 function normalizeSharedMeeting(raw){
   const base=raw&&typeof raw==='object'?raw:{};
-  const fix=arr=>(Array.isArray(arr)?arr:[]).map(x=>typeof x==='string'?{text:x,done:false,dept:'전체'}:{...x,text:String(x.text||''),done:!!x.done,dept:x.dept||'전체'});
+  const fix=arr=>(Array.isArray(arr)?arr:[])
+    .map(x=>typeof x==='string'?{text:x,done:false,dept:'전체'}:{...x,text:String(x.text||''),done:!!x.done,dept:x.dept||'전체'})
+    .filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ'); // '전체' 태그 및 테스트 항목 전면 배제
+
   return {...base,decisions:fix(base.decisions),next:fix(base.next)};
 }
 
@@ -2450,7 +2538,7 @@ function renderSharedFollowup(){
   const el=document.getElementById('sharedFollowup');if(!el)return;
   const m=getSharedMeeting();
   const selected=state.dept||ALL_DEPTS;
-  const matches=x=>selected===ALL_DEPTS||x.dept==='전체'||x.dept===selected;
+  const matches=x=>selected===ALL_DEPTS||x.dept===selected; // '전체' 매칭 제거
   const decisions=m.decisions.filter(matches),next=m.next.filter(matches);
   const archiveCount=getMeetingArchiveData().length;
   if(!decisions.length&&!next.length&&!archiveCount){el.innerHTML='';return}
@@ -2487,7 +2575,7 @@ function renderMeetingArchiveBody(){
   const archive=getMeetingArchiveData();const item=archive[Number(week.value)||0];
   if(!item){body.innerHTML='<div class="archive-empty">저장된 지난 회의록이 없습니다.</div>';return}
   const dept=deptEl.value;
-  const match=x=>dept==='전체 부서'||x.dept==='전체'||x.dept===dept;
+  const match=x=>x.dept!=='전체' && (dept==='전체 부서'||x.dept===dept);
   const list=(arr,label)=>(Array.isArray(arr)?arr:[]).filter(match).map(x=>`<div class="archive-row ${x.done?'done':''}"><span class="archive-status">${x.done?'✅':'▫️'}</span><span class="archive-row-text">${escapeHtml(x.text||'')}</span><span class="shared-dept-badge" style="--badge-color:var(--dept-${DEPT_COLOR_KEY[x.dept]||'culture'})">${escapeHtml(x.dept||'전체')}</span></div>`).join('')||`<div class="archive-empty">${label}이 없습니다.</div>`;
   const dt=new Date(item.endedAt||item.startedAt||Date.now());
   body.innerHTML=`<div class="archive-summary"><b>${escapeHtml(archiveWeekLabel(item))}</b><span>${isNaN(dt)?'':dt.toLocaleString('ko-KR')}</span></div><div class="archive-section"><h3>🚀 차주 할 일</h3>${list(item.next,'차주 할 일')}</div><div class="archive-section"><h3>💡 지시사항 및 피드백</h3>${list(item.decisions,'지시사항 및 피드백')}</div><div class="archive-section"><h3>📝 전체 회의록</h3><div class="archive-minutes">${escapeHtml(item.minutes||'회의록 본문이 없습니다.')}</div></div>`;
