@@ -774,9 +774,22 @@
   .prep-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
   .prep-field{display:flex;flex-direction:column;gap:8px}.prep-label{font-size:14px;color:var(--text);font-weight:700}
   .prep-input,.prep-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit;font-size:14px;outline:none}
-  .prep-textarea.tall{min-height:350px;resize:vertical;line-height:1.6}
+  .prep-textarea.tall{min-height:220px;resize:vertical;line-height:1.6}
   .prep-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border:1px solid var(--glass-border);background:var(--glass);border-radius:16px;margin-top:20px}
   .prep-saved{font-size:12px;color:#30D158}
+
+  /* PPT 미리보기 프레임 스타일 */
+  .ppt-preview-box{
+    width:100%;height:520px;border-radius:16px;border:1px solid var(--glass-border);
+    background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  }
+  .ppt-iframe{
+    width:100%;height:100%;border:none;
+  }
+  .ppt-placeholder{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;color:var(--text-dim);font-size:13px;text-align:center;padding:20px;
+  }
 
   .shared-followup{margin:16px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .shared-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--glass-shadow)}
@@ -817,10 +830,12 @@
   @media(max-width:900px){
     .pf-dept-tabs{grid-template-columns:repeat(3, 1fr);}
     .pf-grid{grid-template-columns:1fr;}
+    .ppt-preview-box{height:360px;}
   }
   @media(max-width:600px){
     .pf-dept-tabs{grid-template-columns:repeat(2, 1fr);}
     .pf-hero{flex-direction:column;align-items:flex-start;gap:12px;}
+    .ppt-preview-box{height:280px;}
   }
 </style>
 </head>
@@ -2063,7 +2078,7 @@ async function load(){
 
 /* ================= 말씀 전달 로직 ================= */
 const SERMON_KEY='cultureSermonPrepV1';
-let sermonState={topic:'', main:'', savedAt:''};
+let sermonState={topic:'', main:'', pptUrl:'', savedAt:''};
 
 function loadSermonState(){
   try{sermonState={...sermonState,...JSON.parse(localStorage.getItem(SERMON_KEY)||'{}')}}catch(e){}
@@ -2094,6 +2109,18 @@ function renderPrepSaved(){
   if(e) e.textContent=sermonState.savedAt?`자동 저장됨 ${sermonState.savedAt}`:'입력 내용 자동 저장';
 }
 
+/* Google Presentation Embed URL 변환 보조 함수 */
+function getEmbedPptUrl(url){
+  if(!url) return '';
+  if(url.includes('/embed')) return url;
+  // Google Slides 공유 URL을 embed URL로 변환
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(match && match[1]){
+    return `https://docs.google.com/presentation/d/${match[1]}/embed?start=false&loop=false&delayms=3000`;
+  }
+  return url;
+}
+
 /* PPT 자동 제작 연동 함수 */
 async function createPptFromSermon(){
   const topic = sermonState.topic ? sermonState.topic.trim() : '';
@@ -2115,8 +2142,11 @@ async function createPptFromSermon(){
     });
     
     if(res && res.url) {
+      const embedUrl = getEmbedPptUrl(res.url);
+      sermonState.pptUrl = embedUrl;
+      saveSermonState(false);
       showMeetingToast('PPT가 성공적으로 생성되었습니다! 🎉');
-      window.open(res.url, '_blank');
+      renderSermonPrep(); // 화면 갱신하여 하단 카드에 PPT 탑재
     } else {
       showMeetingToast('PPT 생성 요청이 서버 구글 드라이브로 전달되었습니다.');
     }
@@ -2126,9 +2156,19 @@ async function createPptFromSermon(){
   }
 }
 
-/* 말씀 전달 간소화 렌더링 (주제 + 상세내용 2가지) */
+/* 말씀 전달 렌더링 (주제 + 상세내용 + 하단 PPT 임베드 카드) */
 function renderSermonPrep(){
   const el=document.getElementById('sermonPrep');if(!el)return;
+  
+  const embedUrl = sermonState.pptUrl ? getEmbedPptUrl(sermonState.pptUrl) : '';
+  
+  const pptCardContent = embedUrl 
+    ? `<iframe class="ppt-iframe" src="${escapeHtml(embedUrl)}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>`
+    : `<div class="ppt-placeholder">
+        <p>📊 위에서 내용을 입력하고 [PPT 자동 제작] 버튼을 누르면</p>
+        <p>이곳에 프레젠테이션 슬라이드가 생성되어 임베드됩니다.</p>
+       </div>`;
+
   el.innerHTML=`
   <div class="prep-hero">
     <div>
@@ -2141,6 +2181,8 @@ function renderSermonPrep(){
       <button class="pf-btn" onclick="setDashboardMode('meeting')">회의모드로 이동 →</button>
     </div>
   </div>
+  
+  <!-- 상단 : 말씀 작성 카드 -->
   <div class="prep-card" style="display:flex; flex-direction:column; gap:20px;">
     <div class="prep-field">
       <span class="prep-label">📌 말씀 / 공유 주제</span>
@@ -2151,11 +2193,20 @@ function renderSermonPrep(){
       <textarea class="prep-textarea tall" placeholder="PPT 슬라이드로 생성될 상세 말씀 전달 내용을 입력해 주세요..." oninput="updateSermon('main',this.value)">${escapeHtml(sermonState.main||'')}</textarea>
     </div>
   </div>
+
   <div class="prep-savebar">
     <div><div class="prep-saved" id="prepSaved"></div></div>
     <div style="display:flex; gap:8px;">
       <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 PPT 자동 제작</button>
       <button class="pf-btn primary" onclick="saveSermonState(true)">💾 저장하기</button>
+    </div>
+  </div>
+
+  <!-- 하단 : 자동 생성된 PPT 슬라이드 임베드 카드 -->
+  <div class="prep-card" style="margin-top:20px; display:flex; flex-direction:column; gap:14px;">
+    <h3 class="pf-card-title" style="font-size:16px;">💻 자동 생성된 PPT 프레젠테이션</h3>
+    <div class="ppt-preview-box">
+      ${pptCardContent}
     </div>
   </div>`;
   renderPrepSaved();
@@ -2503,7 +2554,7 @@ function normalizeSharedMeeting(raw){
   const base=raw&&typeof raw==='object'?raw:{};
   const fix=arr=>(Array.isArray(arr)?arr:[])
     .map(x=>typeof x==='string'?{text:x,done:false,dept:'전체'}:{...x,text:String(x.text||''),done:!!x.done,dept:x.dept||'전체'})
-    .filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ'); // '전체' 태그 및 테스트 항목 전면 배제
+    .filter(x => x.dept !== '전체' && x.text !== 'ㄴㅇㄹㄴㅇㄹ');
 
   return {...base,decisions:fix(base.decisions),next:fix(base.next)};
 }
@@ -2538,7 +2589,7 @@ function renderSharedFollowup(){
   const el=document.getElementById('sharedFollowup');if(!el)return;
   const m=getSharedMeeting();
   const selected=state.dept||ALL_DEPTS;
-  const matches=x=>selected===ALL_DEPTS||x.dept===selected; // '전체' 매칭 제거
+  const matches=x=>selected===ALL_DEPTS||x.dept===selected;
   const decisions=m.decisions.filter(matches),next=m.next.filter(matches);
   const archiveCount=getMeetingArchiveData().length;
   if(!decisions.length&&!next.length&&!archiveCount){el.innerHTML='';return}
