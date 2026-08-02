@@ -1710,6 +1710,10 @@ function msArchiveSave(archive){
 let msResetBusy = false;
 let msResetDoneKey = null;
 
+// ⚠️ 서버(시트) 백업이 구현되기 전까지 자동 삭제 비활성화.
+//    true 로 바꾸면 매월 1일 첫 접속 시 전 부서 목표가 시트에서 영구 삭제됩니다.
+const MS_AUTO_RESET_ENABLED = false;
+
 async function checkMonthlyMilestoneReset(){
   if(!state.data || !state.data.goals || msResetBusy) return;
 
@@ -1744,6 +1748,8 @@ async function checkMonthlyMilestoneReset(){
       msArchiveSave(archive);
     }
 
+    if(!MS_AUTO_RESET_ENABLED) return;
+
     const deleteJobs = [];
     DEPTS.forEach(dept=>{
       goalsFor(dept).forEach(g=>{
@@ -1762,25 +1768,55 @@ function shiftMonthKey(monthKey, delta){
   return monthKeyOf(new Date(y, (m - 1) + delta, 1));
 }
 
+/* ── 지난 마일스톤: 구글 시트에서 직접 조회 ────────────────── */
+const msHistoryCache = {};    // '2026-07' -> { 부서명: [goal,...] }  (실패 시 null)
+const msHistoryPending = {};
+
+function msHistoryLoad(monthKey){
+  if(msHistoryCache[monthKey] !== undefined || msHistoryPending[monthKey]) return;
+  msHistoryPending[monthKey] = true;
+  fetch(API_URL + '?action=goalHistory&month=' + encodeURIComponent(monthKey), { cache:'no-store' })
+    .then(r => r.json())
+    .then(d => { msHistoryCache[monthKey] = (d && d.goals) ? d.goals : {}; })
+    .catch(() => { msHistoryCache[monthKey] = null; })   // null = 서버 조회 실패 → 로컬 백업 사용
+    .then(() => { msHistoryPending[monthKey] = false; render(); });
+}
+
 function msArchiveSection(dept){
-  const archive = msArchiveLoad();
   const isOpen = state.msArchiveOpen.has(dept);
 
   const nowKey = monthKeyOf();
   if(!state.msArchiveMonth[dept]) state.msArchiveMonth[dept] = shiftMonthKey(nowKey, -1);
   const viewKey = state.msArchiveMonth[dept];
 
-  const goals = (archive[viewKey] && archive[viewKey][dept]) || [];
+  let goals = [];
+  let loading = false;
+
+  if(isOpen){
+    const server = msHistoryCache[viewKey];
+    if(server === undefined){
+      msHistoryLoad(viewKey);
+      loading = true;
+    } else if(server === null){
+      const archive = msArchiveLoad();                       // 서버 실패 시 로컬 백업
+      goals = (archive[viewKey] && archive[viewKey][dept]) || [];
+    } else {
+      goals = server[dept] || [];
+    }
+  }
+
   const doneCount = goals.filter(g => Number(g.current) >= Number(g.target)).length;
 
-  const rows = goals.length
-    ? goals.map(g=>{
-        const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
-        const done = cur >= tgt;
-        const unit = escapeHtml(g.unit || '건');
-        return `<div class="ms-archive-row">${done ? '✅' : '▫️'} <span class="ms-archive-row-title">${escapeHtml(g.title)}</span><span class="ms-archive-row-count mono">${cur} / ${tgt} ${unit}</span></div>`;
-      }).join('')
-    : `<div class="ms-archive-empty">이 달의 기록이 없습니다.</div>`;
+  const rows = loading
+    ? `<div class="ms-archive-empty">불러오는 중…</div>`
+    : (goals.length
+      ? goals.map(g=>{
+          const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
+          const done = cur >= tgt;
+          const unit = escapeHtml(g.unit || '건');
+          return `<div class="ms-archive-row">${done ? '✅' : '▫️'} <span class="ms-archive-row-title">${escapeHtml(g.title)}</span><span class="ms-archive-row-count mono">${cur} / ${tgt} ${unit}</span></div>`;
+        }).join('')
+      : `<div class="ms-archive-empty">이 달의 기록이 없습니다.</div>`);
 
   const [vy, vm] = viewKey.split('-');
   const canGoNext = viewKey < nowKey;
@@ -1794,7 +1830,7 @@ function msArchiveSection(dept){
       <div class="ms-archive-body">
         <div class="ms-archive-nav">
           <button class="ms-archive-nav-btn" data-ms-archive-prev="${dept}">‹</button>
-          <span class="ms-archive-nav-label mono">${vy}.${vm}${goals.length ? ` · ${doneCount}/${goals.length} 달성` : ''}</span>
+          <span class="ms-archive-nav-label mono">${vy}.${vm}${(!loading && goals.length) ? ` · ${doneCount}/${goals.length} 달성` : ''}</span>
           <button class="ms-archive-nav-btn" data-ms-archive-next="${dept}" ${canGoNext ? '' : 'disabled'}>›</button>
         </div>
         ${rows}
