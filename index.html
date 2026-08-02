@@ -888,6 +888,30 @@
     .ms-sub::before{content:'';}
     .ms-badge{flex:0 0 auto;}
   }
+
+  /* 말씀 전달 / 회의모드 상단 헤더: 모바일에서 버튼 세로글씨 방지 */
+  @media(max-width:760px){
+    .prep-hero{flex-direction:column;align-items:stretch;gap:14px;margin:4px 0 16px;}
+    .prep-title{font-size:22px;line-height:1.25;}
+    .prep-sub{font-size:12px;line-height:1.55;}
+    .pf-hero{flex-direction:column;align-items:stretch;gap:14px;}
+    .pf-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+    .pf-actions .pf-btn{
+      width:100%;justify-content:center;text-align:center;
+      white-space:nowrap;padding:12px 8px;font-size:12px;gap:5px;
+    }
+    .prep-savebar{flex-direction:column;align-items:stretch;gap:12px;}
+    .prep-savebar > div:last-child{display:grid !important;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+    .prep-savebar .pf-btn{width:100%;justify-content:center;white-space:nowrap;padding:12px 8px;font-size:12px;}
+    .ppt-style-actions{display:grid;grid-template-columns:1fr;gap:8px;}
+    .ppt-style-actions .pf-btn{width:100%;justify-content:center;white-space:nowrap;}
+    .ppt-preview-container{padding:14px;border-radius:18px;}
+    .prep-card{padding:16px;}
+  }
+  @media(max-width:400px){
+    .pf-actions{grid-template-columns:1fr;}
+    .prep-savebar > div:last-child{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
