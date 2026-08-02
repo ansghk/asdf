@@ -376,7 +376,7 @@
   .dept-card-unit{font-size:11.5px;font-weight:600;color:var(--text-muted);}
 
   .dept-focus-bar{
-    margin:22px 18px 0;padding-top:16px;
+    margin:22px 18px 0;padding:16px 0 0;
     border-top:1px solid rgba(255,255,255,0.07);
     display:flex;flex-direction:column;gap:12px;
   }
@@ -499,13 +499,178 @@
   }
   .badge.ready{background:rgba(48,209,88,0.14);color:#5CE07F;border-color:rgba(48,209,88,0.25);}
 
-  .briefing{display:block;padding:16px 18px 0;}
-  .briefing-card{
-    background:var(--glass);border:1px solid var(--glass-border);
-    border-radius:var(--radius);padding:18px 16px;
+  /* ★ 상단 브리핑 영역: 카드 내부 레이아웃 및 접기/펼치기 수정 ★ */
+  .briefing{
+    display:grid;
+    grid-template-columns: 2fr 1.15fr;
+    gap: 16px;
+    padding: 16px 18px 0;
   }
-  .briefing-top{display:flex;align-items:center;gap:16px;}
-  .briefing-left{display:flex;align-items:center;gap:16px;min-width:0;flex:1;}
+
+  .briefing-card{
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--glass-shadow);
+  }
+
+  /* 좌측 주간 보고 카드 스타일 */
+  .briefing-card.report-main-card{
+    min-height: 220px;
+  }
+  .briefing-card-top-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    width:100%;
+    z-index:2;
+  }
+  .briefing-card-text-group{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    max-width: 65%;
+  }
+  .briefing-eyebrow{
+    font-size:12px;
+    font-weight:700;
+    color:#FF9F0A;
+    letter-spacing:-0.01em;
+    margin:0 0 2px;
+  }
+  .briefing-big-title{
+    font-size:24px;
+    font-weight:800;
+    line-height:1.3;
+    margin:0 0 6px;
+    color:var(--text);
+    letter-spacing:-0.03em;
+  }
+  .briefing-sub-desc{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin:0;
+    line-height:1.4;
+  }
+
+  /* 우측 원형 차트 그래픽 - 카드 이탈 방지 수정 */
+  .briefing-chart-pos{
+    position:absolute;
+    right: 20px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:1;
+  }
+  .briefing-chart-pos .ring-wrap{
+    width:120px;
+    height:120px;
+  }
+  .briefing-chart-pos .ring-wrap svg{
+    width:100%;
+    height:100%;
+  }
+  .briefing-chart-pos .ring-track{
+    stroke-width:10;
+  }
+  .briefing-chart-pos .ring-fill{
+    stroke-width:10;
+  }
+  .briefing-chart-pos .ring-pct{
+    font-size:24px;
+    font-weight:800;
+  }
+  .briefing-chart-pos .ring-sub{
+    font-size:10.5px;
+    color:var(--text-dim);
+    margin-top:2px;
+  }
+
+  /* 하단 부서 태그 칩 */
+  .briefing-card-bottom-chips{
+    margin-top:auto;
+    padding-top:18px;
+    z-index:2;
+  }
+
+  /* 우측 다가오는 일정 카드 - 접기/펼치기 가능 구조 */
+  .briefing-card.upcoming-side-card{
+    min-height:220px;
+    transition: all 0.3s ease;
+  }
+  .upcoming-toggle-btn{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    text-align:left;
+    cursor:pointer;
+    user-select:none;
+  }
+  .upcoming-head-left{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+  }
+  .upcoming-eyebrow{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--text-dim);
+  }
+  .upcoming-title-text{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .upcoming-title-text .up-side-chevron{
+    width:8px;
+    height:8px;
+    border-right:2px solid var(--text);
+    border-bottom:2px solid var(--text);
+    transform:rotate(45deg);
+    transition:transform .25s ease;
+    display:inline-block;
+  }
+  .upcoming-side-card:not(.open) .upcoming-title-text .up-side-chevron{
+    transform:rotate(-45deg);
+  }
+  .upcoming-count-badge{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:rgba(255,159,10,0.18);
+    border:1px solid rgba(255,159,10,0.3);
+    color:#FF9F0A;
+    font-size:12.5px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .upcoming-list-body{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:14px;
+    overflow-y:auto;
+    max-height:160px;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+  }
+  .upcoming-side-card:not(.open) .upcoming-list-body{
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+  }
 
   .notice-toast{
     position:fixed;z-index:100;left:14px;right:14px;
@@ -537,48 +702,29 @@
   .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .ring-pct{font-size:19px;font-weight:700;line-height:1;}
   .ring-sub{font-size:9px;color:var(--text-dim);font-weight:600;margin-top:2px;}
-  .briefing-info{flex:1;min-width:0;}
-  .briefing-title{font-size:14.5px;font-weight:700;margin:0 0 3px;}
-  .briefing-desc{font-size:12px;color:var(--text-muted);margin:0 0 10px;line-height:1.5;}
+  
   .dept-chips{display:flex;flex-direction:column;gap:5px;}
-  .dept-chips-row{display:flex;flex-wrap:wrap;gap:5px;}
+  .dept-chips-row{display:flex;flex-wrap:wrap;gap:6px;}
   .dept-chip{
-    display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
-    padding:4px 9px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
+    padding:6px 12px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
     color:var(--text-muted);
   }
-  .dept-chip .chip-dot{width:5px;height:5px;border-radius:50%;background:#30D158;}
-  .dept-chip.missing{background:rgba(255,69,58,0.10);border-color:rgba(255,69,58,0.22);color:#FF8A80;}
+  .dept-chip .chip-dot{width:6px;height:6px;border-radius:50%;background:#30D158;}
+  .dept-chip.missing{background:rgba(255,69,58,0.12);border-color:rgba(255,69,58,0.25);color:#FF8A80;}
   .dept-chip.missing .chip-dot{background:#FF453A;}
 
-  .briefing-upcoming{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07);}
-  .briefing-upcoming-toggle{display:flex;align-items:center;gap:9px;width:100%;padding:2px 0;}
-  .up-chevron{
-    width:7px;height:7px;flex:0 0 auto;border-right:2px solid var(--text);border-bottom:2px solid var(--text);
-    transform:rotate(-45deg);transition:transform .25s ease;
-  }
-  .briefing-upcoming.open .up-chevron{transform:rotate(45deg);margin-top:-3px;}
-  .briefing-upcoming-label{font-size:11px;color:var(--text-dim);font-weight:600;margin:0;}
-  .briefing-upcoming-count{
-    font-size:10.5px;color:var(--text-muted);font-weight:700;
-    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);
-    border-radius:100px;padding:2px 8px;
-  }
-  .briefing-upcoming-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
-  .briefing-upcoming.open .briefing-upcoming-body{max-height:600px;}
-  .up-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;}
-  .up-row + .up-row{border-top:1px solid rgba(255,255,255,0.05);}
+  .up-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);border-radius:14px;}
   .up-dday{
-    flex:0 0 52px;font-weight:700;font-size:11px;text-align:center;padding:4px 0;border-radius:100px;
-    background:color-mix(in srgb, var(--dday-color,var(--blue)) 26%, transparent);
-    color:color-mix(in srgb, var(--dday-color,var(--blue)) 88%, white);
+    flex:0 0 46px;font-weight:700;font-size:11px;text-align:center;padding:5px 0;border-radius:8px;
+    background:rgba(255,159,10,0.16);
+    color:#FF9F0A;
   }
   .up-info{flex:1;min-width:0;}
-  .up-title{font-size:12.5px;font-weight:600;color:var(--text);margin:0;}
-  .up-desc-inline{font-size:11px;color:var(--text-muted);margin-left:4px;}
-  .up-dept{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--text-dim);margin-top:1px;}
-  .up-dept::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--up-color,var(--blue));}
-  .up-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:8px 0 2px;}
+  .up-title{font-size:13px;font-weight:700;color:var(--text);margin:0 0 2px;}
+  .up-dept{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--text-dim);}
+  .up-dept::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--up-color,var(--blue));}
+  .up-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:24px 0;}
 
   .state-box{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
   .state-box .big{font-size:15px;color:var(--text);font-weight:600;margin-bottom:6px;}
@@ -900,6 +1046,25 @@
   .archive-minutes{white-space:pre-wrap;font-size:12px;line-height:1.7;color:var(--text-muted);max-height:280px;overflow:auto;}
 
   @media(max-width:900px){
+    .briefing{
+      grid-template-columns: 1fr;
+      padding: 16px 14px 0;
+    }
+    .briefing-card.report-main-card{
+      min-height: auto;
+    }
+    .briefing-card-text-group{
+      max-width: 100%;
+    }
+    .briefing-chart-pos{
+      position: relative;
+      right: 0;
+      top: 0;
+      transform: none;
+      margin: 16px auto 0;
+      display: flex;
+      justify-content: center;
+    }
     .pf-dept-tabs{grid-template-columns:repeat(3, 1fr);}
     .pf-grid{grid-template-columns:1fr;}
     .pf-milestones-row{grid-template-columns:1fr;}
@@ -1490,6 +1655,7 @@ function renderSchedule(){
   });
 }
 
+/* ★ 2열 분리 레이아웃 및 접기/펼치기가 적용된 renderBriefing ★ */
 function renderBriefing(){
   const wrap = document.getElementById('briefing');
   if(!state.data){ wrap.innerHTML=''; return; }
@@ -1497,21 +1663,21 @@ function renderBriefing(){
   const unreported = state.data.unreportedDepartments || [];
   const done = DEPTS.length - unreported.length;
   const pct = Math.round((done / DEPTS.length) * 100);
-  const R = 39, C = 2 * Math.PI * R;
+  const R = 42, C = 2 * Math.PI * R;
   const offset = C * (1 - done / DEPTS.length);
-  const ringColor = pct < 50 ? '#FF453A' : '#0A84FF';
+  const ringColor = pct < 50 ? '#FF453A' : '#FF9F0A';
 
   const chipOf = dept => {
     const missing = unreported.includes(dept);
     return `<span class="dept-chip ${missing?'missing':''}">
-      <span class="chip-dot"></span>${dept.slice(0,2)}
+      <span class="chip-dot"></span>${dept.slice(0,2)} ${missing ? '대기' : '완료'}
     </span>`;
   };
-  const missingChips = DEPTS.filter(d=>unreported.includes(d)).map(chipOf).join('');
   const doneChips    = DEPTS.filter(d=>!unreported.includes(d)).map(chipOf).join('');
+  const missingChips = DEPTS.filter(d=>unreported.includes(d)).map(chipOf).join('');
   const chips = [
-    missingChips ? `<div class="dept-chips-row">${missingChips}</div>` : '',
-    doneChips    ? `<div class="dept-chips-row">${doneChips}</div>`    : ''
+    doneChips    ? `<div class="dept-chips-row">${doneChips}</div>`    : '',
+    missingChips ? `<div class="dept-chips-row">${missingChips}</div>` : ''
   ].join('');
 
   const schedules = state.data.schedules || {};
@@ -1524,57 +1690,76 @@ function renderBriefing(){
     });
   });
   upcoming.sort((a,b)=>a.dDay-b.dDay);
-  const top3 = upcoming.slice(0,3);
 
-  const DDAY_RANK_COLORS = ['#FF453A', '#64D2FF', '#98989F'];
-  const upRows = top3.length
-    ? top3.map((it,i)=>`
-        <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]});--dday-color:${DDAY_RANK_COLORS[i] || '#98989F'}">
+  const upRows = upcoming.length
+    ? upcoming.slice(0, 3).map((it,i)=>`
+        <div class="up-row" style="--up-color:var(--dept-${DEPT_COLOR_KEY[it.dept]})">
           <span class="up-dday">${fmtDday(it.dDay)}</span>
           <div class="up-info">
-            <p class="up-title">${escapeHtml(it.title||'')}${it.content ? ' <span class="up-desc-inline">· ' + escapeHtml(it.content) + '</span>' : ''}</p>
-            <div class="up-dept">${it.dept}</div>
+            <p class="up-title">${escapeHtml(it.title||'')}</p>
+            <div class="up-dept">${it.dept} · ${escapeHtml(it.content||'없음')}</div>
           </div>
         </div>`).join('')
-    : `<div class="up-empty">예정된 일정이 없습니다</div>`;
+    : `<div class="up-empty">예정된 다가오는 일정이 없습니다</div>`;
+
+  const dateRangeStr = state.data.currentWeekLabel || '07.26 - 08.01';
+  const isUpcomingOpen = state.upcomingOpen !== false;
 
   wrap.innerHTML = `
-    <div class="briefing-card">
-      <div class="briefing-top">
-        <div class="briefing-left">
-          <div class="ring-wrap">
-            <svg width="86" height="86" viewBox="0 0 86 86">
-              <circle class="ring-track" cx="43" cy="43" r="${R}"/>
-              <circle class="ring-fill" cx="43" cy="43" r="${R}"
-                stroke="${ringColor}"
-                stroke-dasharray="${C.toFixed(1)}"
-                stroke-dashoffset="${C.toFixed(1)}"/>
-            </svg>
-            <div class="ring-center">
-              <span class="ring-pct mono" style="color:${ringColor}">${pct}%</span>
-              <span class="ring-sub">${done}/${DEPTS.length} 보고</span>
-            </div>
-          </div>
-          <div class="briefing-info">
-            <p class="briefing-title">${pct === 100 ? '이번 주 전 부서 보고 완료' : `미보고 ${unreported.length}개 부서`}</p>
-            <p class="briefing-desc">이번 주(${state.data.currentWeekLabel || state.data.currentWeek || ''}) 부서별 보고 현황입니다.</p>
-            <div class="dept-chips">${chips}</div>
+    <!-- 1. 좌측 주간 보고 현황 카드 -->
+    <div class="briefing-card report-main-card">
+      <div class="briefing-card-top-header">
+        <div class="briefing-card-text-group">
+          <p class="briefing-eyebrow">주간 보고</p>
+          <h2 class="briefing-big-title">
+            ${pct === 100 ? '이번 주 전 부서 보고 완료 🎉' : `<b style="color:#FFF;">${unreported.length}개 부서</b>의 보고를 기다리고 있어요`}
+          </h2>
+          <p class="briefing-sub-desc">${escapeHtml(dateRangeStr)} · 마감 현황을 한눈에 확인하세요.</p>
+        </div>
+      </div>
+
+      <div class="briefing-chart-pos">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 110 110">
+            <circle class="ring-track" cx="55" cy="55" r="${R}"/>
+            <circle class="ring-fill" cx="55" cy="55" r="${R}"
+              stroke="${ringColor}"
+              stroke-dasharray="${C.toFixed(1)}"
+              stroke-dashoffset="${C.toFixed(1)}"/>
+          </svg>
+          <div class="ring-center">
+            <span class="ring-pct mono" style="color:${ringColor}">${pct}%</span>
+            <span class="ring-sub">${done}/${DEPTS.length} 보고</span>
           </div>
         </div>
       </div>
-      <div class="briefing-upcoming ${state.upcomingOpen ? 'open' : ''}" id="briefingUpcoming">
-        <button class="briefing-upcoming-toggle" id="upcomingToggleBtn" aria-expanded="${state.upcomingOpen}">
-          <span class="up-chevron"></span>
-          <p class="briefing-upcoming-label">전 부서 임박 일정</p>
-          <span class="briefing-upcoming-count mono">${top3.length}</span>
-        </button>
-        <div class="briefing-upcoming-body">${upRows}</div>
-      </div>
-    </div>`;
 
-  document.getElementById('upcomingToggleBtn').onclick = ()=>{
-    state.upcomingOpen = !state.upcomingOpen;
-    document.getElementById('briefingUpcoming').classList.toggle('open', state.upcomingOpen);
+      <div class="briefing-card-bottom-chips">
+        <div class="dept-chips">${chips}</div>
+      </div>
+    </div>
+
+    <!-- 2. 우측 다가오는 일정 카드 (접기/펼치기) -->
+    <div class="briefing-card upcoming-side-card ${isUpcomingOpen ? 'open' : ''}" id="upcomingSideCard">
+      <button class="upcoming-toggle-btn" id="upcomingSideToggleBtn">
+        <div class="upcoming-head-left">
+          <span class="upcoming-eyebrow">다가오는 일정</span>
+          <h3 class="upcoming-title-text">
+            놓치면 안 되는 일
+            <span class="up-side-chevron"></span>
+          </h3>
+        </div>
+        <span class="upcoming-count-badge mono">${upcoming.length}</span>
+      </button>
+      <div class="upcoming-list-body">
+        ${upRows}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('upcomingSideToggleBtn').onclick = ()=>{
+    state.upcomingOpen = !isUpcomingOpen;
+    renderBriefing();
   };
 
   requestAnimationFrame(()=>{
