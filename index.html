@@ -671,6 +671,10 @@
   .mode-switch{display:flex;gap:3px;padding:3px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);margin-bottom:8px;width:max-content}
   .mode-btn{padding:7px 14px;border-radius:100px;font-size:12px;font-weight:700;color:var(--text-muted)}
   .mode-btn.active{color:#fff;background:linear-gradient(135deg,#0A84FF,#315BFF);box-shadow:0 5px 18px rgba(10,132,255,.35)}
+  @media (max-width:640px){
+    .mode-switch{width:100%;}
+    .mode-btn{flex:1 1 0;text-align:center;padding:9px 6px;}
+  }
   
   /* ================= 주간 피드백 회의모드 ================= */
   #meetingMode,#sermonPrep{display:none;padding:18px;max-width:1440px;margin:0 auto}
