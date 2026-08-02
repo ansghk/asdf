@@ -797,6 +797,23 @@
   .ppt-preview-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;}
   .ppt-iframe-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);}
   .ppt-iframe-wrap iframe{width:100%;height:100%;border:none;}
+  .ppt-preview-empty{display:grid;place-items:center;height:100%;color:var(--text-dim);font-size:13px;padding:0 20px;text-align:center;line-height:1.6}
+
+  /* PPT 디자인 설정 패널 */
+  .ppt-style-panel{margin-top:16px;border-top:1px solid var(--glass-border);padding-top:16px}
+  .ppt-style-toggle{background:none;border:none;color:var(--text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:0;display:flex;align-items:center;gap:7px}
+  .ppt-style-toggle .cx{width:6px;height:6px;border-right:2px solid var(--text-dim);border-bottom:2px solid var(--text-dim);transform:rotate(-45deg);transition:transform .2s ease}
+  .ppt-style-panel.open .ppt-style-toggle .cx{transform:rotate(45deg);margin-top:-3px}
+  .ppt-style-body{display:none;margin-top:14px}
+  .ppt-style-panel.open .ppt-style-body{display:block}
+  .ppt-style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+  .ppt-style-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .ppt-style-field > span{font-size:11px;color:var(--text-dim);font-weight:700;display:flex;justify-content:space-between;gap:6px}
+  .ppt-style-field select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;font-size:12.5px;outline:none}
+  .ppt-style-field input[type=range]{width:100%;accent-color:var(--blue)}
+  .ppt-style-val{color:var(--text-muted);font-weight:800}
+  .ppt-style-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .ppt-style-hint{font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.6}
 
   .shared-followup{margin:16px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .shared-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--glass-shadow)}
@@ -2113,38 +2130,78 @@ async function load(){
 }
 
 /* ================= 말씀 전달 로직 (문화부 전체 공유형) ================= */
-const SERMON_KEY='cultureSermonPrepV2';
-let sermonState={topic:'', main:'', pptUrl:'', embedUrl:'', savedAt:'', updatedAt:'', updatedBy:''};
-let sermonDirty=false;      // 내 기기에서 수정했지만 아직 서버 저장 전
-let sermonSyncedOnce=false; // 서버값을 한 번이라도 받아왔는지
+const SERMON_KEY='cultureSermonPrepV3';
+
+const PPT_STYLE_DEFAULT={
+  font:'Noto Sans KR',
+  theme:'dark',
+  accent:'#FF9F0A',
+  titleSize:34,
+  headingSize:20,
+  bodySize:18,
+  align:'LEFT',
+  margin:'normal',
+  charsPerSlide:380,
+  showCover:1,
+  showOutro:1
+};
+
+const PPT_FONT_OPTIONS=[
+  ['Noto Sans KR','본고딕 (기본)'],
+  ['Nanum Gothic','나눔고딕'],
+  ['Nanum Myeongjo','나눔명조'],
+  ['Gothic A1','고딕 A1'],
+  ['Gowun Dodum','고운돋움'],
+  ['Do Hyeon','도현체'],
+  ['Jua','주아체'],
+  ['Black Han Sans','검은고딕']
+];
+const PPT_THEME_OPTIONS=[['dark','다크 (검정)'],['navy','딥네이비'],['ink','잉크블랙'],['light','라이트 (흰색)']];
+const PPT_ACCENT_OPTIONS=[['#FF9F0A','오렌지'],['#0A84FF','블루'],['#30D158','그린'],['#BF5AF2','퍼플'],['#FF453A','레드'],['#8E8E93','그레이']];
+const PPT_MARGIN_OPTIONS=[['narrow','좁게 (글자 크게)'],['normal','보통'],['wide','넓게 (여백 크게)']];
+
+let sermonState={topic:'', main:'', pptUrl:'', embedUrl:'', savedAt:'', updatedAt:'', updatedBy:'', pptNonce:0, pptStyle:{...PPT_STYLE_DEFAULT}};
+let sermonDirty=false;
+let sermonSyncedOnce=false;
+let pptStyleOpen=false;
+
+function pptStyle(){ return {...PPT_STYLE_DEFAULT, ...(sermonState.pptStyle||{})}; }
 
 function loadSermonLocal(){
-  try{ sermonState={...sermonState,...JSON.parse(localStorage.getItem(SERMON_KEY)||'{}')}; }catch(e){}
+  try{
+    const raw=JSON.parse(localStorage.getItem(SERMON_KEY)||'{}');
+    sermonState={...sermonState,...raw};
+    sermonState.pptStyle={...PPT_STYLE_DEFAULT,...(raw.pptStyle||{})};
+  }catch(e){}
 }
 function persistSermonLocal(){
   try{ localStorage.setItem(SERMON_KEY,JSON.stringify(sermonState)); }catch(e){}
 }
 function isTypingInSermon(){
   const a=document.activeElement;
-  return !!(a && a.closest && a.closest('#sermonPrep') && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'));
+  if(!a||!a.closest||!a.closest('#sermonPrep')) return false;
+  return a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT';
 }
 
-/* 서버(구글시트)에 저장된 값을 받아 화면에 반영 → 데스크탑/휴대폰/다른 사람 모두 동일 */
+/* 서버(구글시트) 값을 받아 화면에 반영 = 문화부 전체 공유 */
 function syncSermonFromServer(){
   const s=state.data && state.data.sharedSermon;
   if(!s) return;
-  if(sermonDirty || isTypingInSermon()) return;   // 지금 내가 작성 중이면 덮어쓰지 않음
+  if(sermonDirty || isTypingInSermon()) return;
 
   const serverTime=Date.parse(s.updatedAt||'')||0;
   const localTime=Date.parse(sermonState.updatedAt||'')||0;
   if(sermonSyncedOnce && serverTime<localTime) return;
 
+  const prevPpt=sermonState.pptUrl;
   sermonState.topic    = s.topic||'';
   sermonState.main     = s.main||'';
   sermonState.pptUrl   = s.pptUrl||'';
   sermonState.embedUrl = s.embedUrl||'';
   sermonState.updatedAt= s.updatedAt||'';
   sermonState.updatedBy= s.updatedBy||'';
+  sermonState.pptStyle = {...PPT_STYLE_DEFAULT, ...(s.pptStyle||{})};
+  if(prevPpt!==sermonState.pptUrl) sermonState.pptNonce=Date.now();
   if(s.updatedAt){
     const d=new Date(s.updatedAt);
     if(!isNaN(d)) sermonState.savedAt=d.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -2161,17 +2218,16 @@ async function pushSermonToServer(show){
       topic:    sermonState.topic||'',
       main:     sermonState.main||'',
       pptUrl:   sermonState.pptUrl||'',
-      embedUrl: sermonState.embedUrl||''
+      embedUrl: sermonState.embedUrl||'',
+      pptStyle: pptStyle()
     })});
     if(res && res.ok){
       sermonDirty=false;
       sermonSyncedOnce=true;
-      if(res.sermon){
-        sermonState.updatedAt=res.sermon.updatedAt||'';
-        if(res.sermon.updatedAt){
-          const d=new Date(res.sermon.updatedAt);
-          if(!isNaN(d)) sermonState.savedAt=d.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-        }
+      if(res.sermon && res.sermon.updatedAt){
+        sermonState.updatedAt=res.sermon.updatedAt;
+        const d=new Date(res.sermon.updatedAt);
+        if(!isNaN(d)) sermonState.savedAt=d.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
       }
       persistSermonLocal();
       if(show) showMeetingToast('문화부 전체에 공유 저장되었습니다 ✅');
@@ -2198,7 +2254,21 @@ function saveSermonState(show=false){
 
 function updateSermon(k,v){ sermonState[k]=v; saveSermonState(false); }
 
-/* 서버 최신본 강제로 다시 불러오기 */
+function updatePptStyle(k,v){
+  const st=pptStyle();
+  st[k]=(typeof PPT_STYLE_DEFAULT[k]==='number')?Number(v):v;
+  sermonState.pptStyle=st;
+  const label=document.getElementById('pptv-'+k);
+  if(label) label.textContent=(k==='charsPerSlide')?(st[k]+'자'):(st[k]+'pt');
+  saveSermonState(false);
+}
+
+function togglePptStyle(){
+  pptStyleOpen=!pptStyleOpen;
+  const el=document.getElementById('pptStylePanel');
+  if(el) el.classList.toggle('open', pptStyleOpen);
+}
+
 async function reloadSermonFromServer(){
   sermonDirty=false;
   sermonSyncedOnce=false;
@@ -2216,24 +2286,30 @@ function renderPrepSaved(){
   e.textContent = sermonState.savedAt ? `전체 공유 저장됨 · ${sermonState.savedAt}` : '작성 후 자동으로 전체 공유됩니다';
 }
 
-/* PPT 자동 제작 → 구글 슬라이드 생성 → 링크를 시트에 저장 → 전원 임베드 열람 */
+/* PPT 제작 / 디자인 반영 재생성 */
 async function createPptFromSermon(){
   const topic=(sermonState.topic||'').trim();
   const main=(sermonState.main||'').trim();
   if(!topic && !main){ showMeetingToast('주제 또는 상세 전달 내용을 입력해 주세요.'); return; }
 
-  showMeetingToast('내용을 저장하고 PPT를 제작합니다… ⏳');
+  const rebuilding=!!sermonState.pptUrl;
+  showMeetingToast(rebuilding?'디자인을 반영해 슬라이드를 다시 그리는 중… ⏳':'내용을 저장하고 PPT를 제작합니다… ⏳');
   await pushSermonToServer(false);
 
   try{
-    const res=await apiAction('createPPT',{ data:JSON.stringify({ topic, main, date:new Date().toISOString().slice(0,10) }) });
+    const res=await apiAction('createPPT',{ data:JSON.stringify({
+      topic, main,
+      date:new Date().toISOString().slice(0,10),
+      style:pptStyle()
+    })});
     if(res && res.ok){
       sermonState.pptUrl   = res.editUrl || res.url || '';
       sermonState.embedUrl = res.embedUrl || '';
+      sermonState.pptNonce = Date.now();
       persistSermonLocal();
       await pushSermonToServer(false);
       renderSermonPrep();
-      showMeetingToast('PPT가 생성되어 문화부 전체에 공유되었습니다 🎉');
+      showMeetingToast(res.warning ? ('완료 — ' + res.warning) : (rebuilding?'디자인이 반영되었습니다 🎨':'PPT가 생성되어 전체에 공유되었습니다 🎉'));
     }else{
       showMeetingToast('PPT 생성 실패: ' + ((res && res.error) || '알 수 없는 오류'));
     }
@@ -2243,16 +2319,35 @@ async function createPptFromSermon(){
   }
 }
 
+function openPptEditor(){
+  if(!sermonState.pptUrl){ showMeetingToast('먼저 PPT를 제작해 주세요.'); return; }
+  window.open(sermonState.pptUrl,'_blank','noopener');
+}
+
 function toEmbedUrl(url){
   if(!url) return '';
   const m=String(url).match(/\/d\/([a-zA-Z0-9-_]+)/);
   return m ? `https://docs.google.com/presentation/d/${m[1]}/embed?start=false&loop=false&delayms=3000` : '';
 }
 
-/* 말씀 전달 렌더링 (주제 + 상세내용 + PPT 임베드) */
+function selectField(key,label,options){
+  const cur=String(pptStyle()[key]);
+  const opts=options.map(([v,t])=>`<option value="${escapeHtml(String(v))}" ${String(v)===cur?'selected':''}>${escapeHtml(t)}</option>`).join('');
+  return `<label class="ppt-style-field"><span>${escapeHtml(label)}</span>
+    <select onchange="updatePptStyle('${key}',this.value)">${opts}</select></label>`;
+}
+function rangeField(key,label,min,max,step,suffix){
+  const v=pptStyle()[key];
+  return `<label class="ppt-style-field"><span>${escapeHtml(label)}<b class="ppt-style-val" id="pptv-${key}">${v}${suffix}</b></span>
+    <input type="range" min="${min}" max="${max}" step="${step}" value="${v}" oninput="updatePptStyle('${key}',this.value)"></label>`;
+}
+
+/* 말씀 전달 렌더링 — PPT 카드가 위, 작성란이 아래 */
 function renderSermonPrep(){
   const el=document.getElementById('sermonPrep'); if(!el) return;
-  const embedUrl = sermonState.embedUrl || toEmbedUrl(sermonState.pptUrl);
+  let embedUrl = sermonState.embedUrl || toEmbedUrl(sermonState.pptUrl);
+  if(embedUrl && sermonState.pptNonce) embedUrl += '&v=' + sermonState.pptNonce;
+  const hasPpt = !!embedUrl;
 
   el.innerHTML=`
   <div class="prep-hero">
@@ -2262,12 +2357,51 @@ function renderSermonPrep(){
     </div>
     <div class="pf-actions">
       <button class="pf-btn" onclick="reloadSermonFromServer()">🔄 최신본 불러오기</button>
-      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 PPT 자동 제작</button>
+      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 ${hasPpt?'PPT 다시 만들기':'PPT 자동 제작'}</button>
       <button class="pf-btn primary" onclick="saveSermonState(true)">💾 전체 공유 저장</button>
       <button class="pf-btn" onclick="setDashboardMode('meeting')">회의모드로 이동 →</button>
     </div>
   </div>
-  <div class="prep-card" style="display:flex; flex-direction:column; gap:20px;">
+
+  <!-- ① 생성된 PPT 미리보기 + 디자인 설정 -->
+  <div class="ppt-preview-container active" id="pptPreviewBox" style="margin-top:0">
+    <div class="ppt-preview-head">
+      <span class="ppt-preview-title">📊 생성된 PPT 프레젠테이션</span>
+      ${sermonState.pptUrl ? `<a href="${escapeHtml(sermonState.pptUrl)}" target="_blank" rel="noopener" style="font-size:12px; color:var(--blue); font-weight:700; text-decoration:none;">구글 슬라이드에서 직접 편집 ↗</a>` : ''}
+    </div>
+    <div class="ppt-iframe-wrap">
+      ${hasPpt
+        ? `<iframe src="${escapeHtml(embedUrl)}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>`
+        : '<div class="ppt-preview-empty">아래에 주제와 내용을 입력하고<br>[PPT 자동 제작]을 누르면 이곳에 슬라이드가 나타납니다.</div>'}
+    </div>
+
+    <div class="ppt-style-panel${pptStyleOpen?' open':''}" id="pptStylePanel">
+      <button class="ppt-style-toggle" onclick="togglePptStyle()"><span class="cx"></span>🎨 디자인 설정 — 서체 · 색상 · 크기 · 여백</button>
+      <div class="ppt-style-body">
+        <div class="ppt-style-grid">
+          ${selectField('font','서체',PPT_FONT_OPTIONS)}
+          ${selectField('theme','배경 테마',PPT_THEME_OPTIONS)}
+          ${selectField('accent','강조 색상',PPT_ACCENT_OPTIONS)}
+          ${selectField('align','본문 정렬',[['LEFT','왼쪽 정렬'],['CENTER','가운데 정렬']])}
+          ${selectField('margin','글상자 여백 (위치)',PPT_MARGIN_OPTIONS)}
+          ${selectField('showCover','표지 슬라이드',[[1,'사용함'],[0,'사용 안 함']])}
+          ${selectField('showOutro','마무리 슬라이드',[[1,'사용함'],[0,'사용 안 함']])}
+          ${rangeField('titleSize','표지 제목 크기',20,54,1,'pt')}
+          ${rangeField('headingSize','소제목 크기',14,32,1,'pt')}
+          ${rangeField('bodySize','본문 크기',12,30,1,'pt')}
+          ${rangeField('charsPerSlide','슬라이드당 분량',150,700,10,'자')}
+        </div>
+        <div class="ppt-style-actions">
+          <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">🎨 이 설정으로 다시 만들기</button>
+          <button class="pf-btn" onclick="openPptEditor()">구글 슬라이드에서 열기 ↗</button>
+        </div>
+        <p class="ppt-style-hint">설정을 바꾼 뒤 [다시 만들기]를 누르면 <b>같은 슬라이드 파일</b>을 그 디자인으로 새로 그립니다. 링크가 바뀌지 않으니 이미 공유한 주소를 그대로 쓰실 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 작성란 -->
+  <div class="prep-card" style="display:flex; flex-direction:column; gap:20px; margin-top:20px;">
     <div class="prep-field">
       <span class="prep-label">📌 말씀 / 공유 주제</span>
       <input class="prep-input" maxlength="100" placeholder="이번 주 말씀 및 공유 주제를 입력해 주세요..." value="${escapeHtml(sermonState.topic||'')}" oninput="updateSermon('topic',this.value)">
@@ -2278,21 +2412,10 @@ function renderSermonPrep(){
     </div>
   </div>
 
-  <!-- 자동 생성된 PPT 미리보기 영역 -->
-  <div class="ppt-preview-container ${embedUrl ? 'active' : ''}" id="pptPreviewBox">
-    <div class="ppt-preview-head">
-      <span class="ppt-preview-title">📊 생성된 PPT 프레젠테이션</span>
-      ${sermonState.pptUrl ? `<a href="${escapeHtml(sermonState.pptUrl)}" target="_blank" rel="noopener" style="font-size:12px; color:var(--blue); font-weight:700; text-decoration:none;">새 창에서 열기 ↗</a>` : ''}
-    </div>
-    <div class="ppt-iframe-wrap">
-      ${embedUrl ? `<iframe src="${escapeHtml(embedUrl)}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>` : '<div style="display:grid;place-items:center;height:100%;color:var(--text-dim);font-size:13px;padding:0 20px;text-align:center;">내용을 입력하고 [PPT 자동 제작]을 누르면 이곳에 슬라이드가 임베드됩니다.</div>'}
-    </div>
-  </div>
-
   <div class="prep-savebar">
     <div><div class="prep-saved" id="prepSaved"></div></div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 PPT 자동 제작</button>
+      <button class="pf-btn ppt-btn" onclick="createPptFromSermon()">📊 ${hasPpt?'PPT 다시 만들기':'PPT 자동 제작'}</button>
       <button class="pf-btn primary" onclick="saveSermonState(true)">💾 전체 공유 저장</button>
     </div>
   </div>`;
