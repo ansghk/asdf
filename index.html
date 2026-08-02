@@ -756,7 +756,7 @@
   .pf-summary-bar-fill{height:100%;border-radius:100px;background:var(--dept-color, #0A84FF);transition:width .4s ease;box-shadow:0 0 10px var(--dept-color, #0A84FF), 0 0 16px rgba(255,159,10,0.4);animation:bar-glow 2s ease-in-out infinite;}
 
   .pf-ms-history-list{
-    display:flex;flex-direction:column;gap:5px;margin-top:2px;max-height:80px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:5px;margin-top:2px;max-height:120px;overflow-y:auto;
   }
   .pf-ms-history-item{
     display:flex;align-items:center;justify-content:space-between;gap:6px;
@@ -2676,6 +2676,17 @@ function renderMeetingMode(){
   const goalProgressPct = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
   const doneGoalCount = goals.filter(g => Number(g.current) >= Number(g.target)).length;
 
+  const currentGoalsHtml = goals.length > 0
+    ? goals.map(g => {
+        const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
+        const done = cur >= tgt;
+        return `<div class="pf-ms-history-item">
+            <span class="pf-ms-history-title">${done ? '✅ ' : '▫️ '}${escapeHtml(g.title)}</span>
+            <span class="pf-ms-history-val mono">${cur}/${tgt} ${escapeHtml(g.unit||'건')}</span>
+          </div>`;
+      }).join('')
+    : `<div class="empty-cat" style="padding:10px 0;">이번달 등록된 마일스톤이 없습니다.</div>`;
+
   /* --- 지난달(전달) 마일스톤 데이터 연동 --- */
   const lastMonthKey = shiftMonthKey(monthKeyOf(), -1);
   const [lYear, lMonth] = lastMonthKey.split('-');
@@ -2804,6 +2815,9 @@ function renderMeetingMode(){
             <span>달성 <b>${doneGoalCount}</b>/${goals.length}개</span>
             <span style="color:var(--dept-color); margin-left:2px;">(${goalProgressPct}%)</span>
           </div>
+        </div>
+        <div class="pf-ms-history-list">
+          ${currentGoalsHtml}
         </div>
         <div class="pf-summary-bar-bg" style="margin-top:auto;">
           <div class="pf-summary-bar-fill" style="width: ${goalProgressPct}%"></div>
