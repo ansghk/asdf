@@ -278,11 +278,12 @@
   }
 
   .ms-gauge{
-    --lamp:#8E8E93;
+    --lamp:var(--dept-color, #8E8E93);
     margin-top:12px;padding-top:10px;
     border-top:1px solid rgba(255,255,255,0.08);
     display:flex;flex-direction:column;gap:7px;
   }
+  .ms-gauge.none{ --lamp:#8E8E93; }
   .ms-gauge-top{display:flex;align-items:center;gap:6px;min-width:0;}
   .ms-gauge-bulb{
     width:10px;height:10px;border-radius:50%;flex:0 0 auto;
@@ -307,6 +308,17 @@
     display:block;height:100%;border-radius:100px;background:var(--lamp);
     box-shadow:0 0 9px color-mix(in srgb, var(--lamp) 75%, transparent);
     transition:width .45s cubic-bezier(.4,0,.2,1);
+  }
+  .ms-gauge.low .ms-seg-fill, .ms-gauge.mid .ms-seg-fill, .ms-gauge.high .ms-seg-fill{
+    box-shadow:0 0 10px var(--lamp), 0 0 16px color-mix(in srgb, var(--lamp) 60%, transparent);
+  }
+  .ms-gauge.done .ms-seg-fill{
+    box-shadow:0 0 12px var(--lamp), 0 0 22px color-mix(in srgb, var(--lamp) 70%, transparent);
+    animation:seg-glow 2s ease-in-out infinite;
+  }
+  @keyframes seg-glow{
+    0%,100%{ box-shadow:0 0 12px var(--lamp), 0 0 22px color-mix(in srgb, var(--lamp) 70%, transparent); }
+    50%{ box-shadow:0 0 16px var(--lamp), 0 0 30px color-mix(in srgb, var(--lamp) 85%, transparent); }
   }
 
   .duties-overlay{
@@ -582,8 +594,14 @@
   .ms-panel{
     background:var(--glass);border:1px solid var(--glass-border);
     border-radius:var(--radius);padding:18px 18px 14px;margin:16px 18px 0;
-    box-shadow:var(--glass-shadow);
+    box-shadow:var(--glass-shadow), 0 0 16px rgba(255,159,10,0.2);
+    transition:box-shadow 0.3s ease;
   }
+  .ms-panel[data-progress="0"] { box-shadow:var(--glass-shadow), 0 0 12px rgba(255,159,10,0.15); }
+  .ms-panel[data-progress="1"] { box-shadow:var(--glass-shadow), 0 0 18px var(--dept-color,#FF9F0A); }
+  .ms-panel[data-progress="2"] { box-shadow:var(--glass-shadow), 0 0 24px var(--dept-color,#FF9F0A), 0 0 32px rgba(255,159,10,0.4); animation:card-glow 2.5s ease-in-out infinite; }
+  @keyframes card-glow{0%,100%{box-shadow:var(--glass-shadow), 0 0 24px var(--dept-color,#FF9F0A), 0 0 32px rgba(255,159,10,0.4);}50%{box-shadow:var(--glass-shadow), 0 0 32px var(--dept-color,#FF9F0A), 0 0 48px rgba(255,159,10,0.6);}}
+  @keyframes bar-glow{0%,100%{box-shadow:0 0 12px var(--dept-color,#30D158), 0 0 20px rgba(255,159,10,0.5);}50%{box-shadow:0 0 16px var(--dept-color,#30D158), 0 0 28px rgba(255,159,10,0.7);}}
   .ms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;width:100%;}
   .ms-head-left{display:flex;align-items:center;gap:9px;min-width:0;}
   .ms-chevron{
@@ -616,9 +634,9 @@
   }
   .ms-count{font-size:13px;font-weight:700;min-width:64px;text-align:center;}
   .ms-count .cur{color:var(--dept-color,var(--blue));}
-  .ms-track{height:5px;border-radius:100px;background:rgba(255,255,255,0.08);margin-top:10px;overflow:hidden;}
-  .ms-fill{height:100%;border-radius:100px;background:var(--dept-color,var(--blue));transition:width .35s ease;}
-  .ms-fill.done{background:#30D158;}
+  .ms-track{height:5px;border-radius:100px;background:rgba(255,255,255,0.08);margin-top:10px;overflow:visible;}
+  .ms-fill{height:100%;border-radius:100px;background:var(--dept-color,var(--blue));transition:width .35s ease;box-shadow:0 0 8px var(--dept-color,var(--blue)), 0 0 12px rgba(255,159,10,0.3);}
+  .ms-fill.done{background:var(--dept-color,#30D158);box-shadow:0 0 12px var(--dept-color,#30D158), 0 0 20px rgba(255,159,10,0.5);animation:bar-glow 2s ease-in-out infinite;}
   .ms-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:16px 0 10px;}
   .ms-form{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border);}
   .ms-input{
@@ -696,9 +714,12 @@
   .pf-summary-card{
     background:var(--glass);border:1px solid var(--glass-border);
     border-radius:20px;padding:14px 18px;margin-bottom:16px;
-    box-shadow:var(--glass-shadow);display:flex;flex-direction:column;gap:10px;
-    width:100%; min-width:0;
+    box-shadow:var(--glass-shadow), 0 0 16px rgba(255,159,10,0.2);display:flex;flex-direction:column;gap:10px;
+    width:100%; min-width:0;transition:box-shadow 0.3s ease;
   }
+  .pf-summary-card[data-progress="0"] { box-shadow:var(--glass-shadow), 0 0 12px rgba(255,159,10,0.15); }
+  .pf-summary-card[data-progress="1"] { box-shadow:var(--glass-shadow), 0 0 18px var(--dept-color,#FF9F0A); }
+  .pf-summary-card[data-progress="2"] { box-shadow:var(--glass-shadow), 0 0 24px var(--dept-color,#FF9F0A), 0 0 32px rgba(255,159,10,0.4); animation:card-glow 2.5s ease-in-out infinite; }
   .pf-summary-head{
     display:flex;align-items:center;justify-content:space-between;
     gap:6px;width:100%;min-width:0;
@@ -719,8 +740,8 @@
     white-space:nowrap;flex-shrink:0;margin-left:auto;
   }
   .pf-summary-stats span b{color:var(--dept-color, #0A84FF);font-size:clamp(11px, 3.2vw, 14.5px);}
-  .pf-summary-bar-bg{height:8px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:hidden;}
-  .pf-summary-bar-fill{height:100%;border-radius:100px;background:var(--dept-color, #0A84FF);transition:width .4s ease;}
+  .pf-summary-bar-bg{height:8px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:visible;}
+  .pf-summary-bar-fill{height:100%;border-radius:100px;background:var(--dept-color, #0A84FF);transition:width .4s ease;box-shadow:0 0 10px var(--dept-color, #0A84FF), 0 0 16px rgba(255,159,10,0.4);animation:bar-glow 2s ease-in-out infinite;}
 
   /* 하단 3컬럼 영역 */
   .pf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;}
@@ -1870,8 +1891,16 @@ function milestoneSection(dept){
 
   const isOpen = !state.msCollapsed.has(dept);
 
+  // 진행률 계산 (회의모드와 동일 기준: 목표치/달성치 합산)
+  const totalGoals = goals.reduce((s, g) => s + Math.max(1, Number(g.target) || 0), 0);
+  const completedGoals = goals.reduce((s, g) => s + Math.min(Math.max(0, Number(g.current) || 0), Math.max(1, Number(g.target) || 0)), 0);
+  const goalProgressPct = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+  
+  // 카드 글로우 강도: 0=없음, 1=진행중, 2=완료
+  const progressState = goalProgressPct === 0 ? 0 : (goalProgressPct === 100 ? 2 : 1);
+
   return `
-    <div class="ms-panel${isOpen ? ' open' : ''}" style="--dept-color:var(--dept-${colorKey})" data-ms-panel="${dept}">
+    <div class="ms-panel${isOpen ? ' open' : ''}" style="--dept-color:var(--dept-${colorKey})" data-ms-panel="${dept}" data-progress="${progressState}">
       <button class="ms-head" data-ms-toggle="${dept}">
         <span class="ms-head-left">
           <span class="ms-chevron"></span>
@@ -2698,7 +2727,7 @@ function renderMeetingMode(){
     <div class="pf-grid">
       <div style="display:flex; flex-direction:column; gap:16px;">
         <!-- 상단 요약 카드: 한 줄 고정 및 가변 반응형 CSS -->
-        <div class="pf-summary-card" style="--dept-color: var(--dept-${cKey})">
+        <div class="pf-summary-card" style="--dept-color: var(--dept-${cKey})" data-progress="${goalProgressPct === 0 ? 0 : (goalProgressPct === 100 ? 2 : 1)}">
           <div class="pf-summary-head">
             <h3 class="pf-summary-title"><span class="pf-summary-dept">🎯 ${currentDept}</span><span class="pf-summary-sub">월간 마일스톤</span></h3>
             <div class="pf-summary-stats mono">
