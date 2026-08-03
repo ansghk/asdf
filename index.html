@@ -92,6 +92,250 @@
   body.light .theme-toggle{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.06);}
   body.light .theme-opt.active{background:#FFFFFF;box-shadow:0 1px 6px rgba(0,0,0,0.12);}
 
+  /* 메모 버튼 스타일 */
+  .memo-btn{
+    width:36px;height:36px;border-radius:100px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--glass);border:1px solid var(--glass-border);
+    font-size:18px;cursor:pointer;
+    -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+    transition:background .15s, transform .1s;
+  }
+  .memo-btn:active{transform:scale(.94);}
+  .memo-btn:hover{background:var(--glass-strong);}
+  body.light .memo-btn{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.06);}
+
+  /* 메모 패널 스타일 */
+  .memo-panel{
+    position:fixed;right:0;top:0;bottom:0;width:min(360px, 90vw);
+    background:rgba(5,5,7,0.75);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    backdrop-filter:blur(28px) saturate(180%);
+    border-left:1px solid rgba(255,255,255,0.06);
+    z-index:25;
+    display:flex;flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow:hidden;
+  }
+  .memo-panel.open{transform:translateX(0);}
+  body.light .memo-panel{background:rgba(242,242,247,0.9);border-left-color:rgba(0,0,0,0.06);}
+
+  .memo-overlay{
+    position:fixed;inset:0;z-index:24;
+    background:rgba(0,0,0,0.3);
+    opacity:0;pointer-events:none;
+    transition:opacity .3s;
+  }
+  .memo-overlay.open{opacity:1;pointer-events:all;}
+
+  .memo-header{
+    flex:0 0 auto;padding:16px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);gap:10px;
+  }
+  body.light .memo-header{border-bottom-color:rgba(0,0,0,0.06);}
+
+  .memo-title{font-size:16px;font-weight:700;margin:0;}
+  .memo-sync-indicator{font-size:10px;color:var(--text-muted);margin-left:8px;}
+  .memo-sync-indicator.syncing{color:#30D158;font-weight:600;}
+
+  .memo-close-btn{
+    width:32px;height:32px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;font-size:20px;
+    transition:background .15s;flex:0 0 auto;
+  }
+  .memo-close-btn:hover{background:rgba(255,255,255,0.08);}
+  body.light .memo-close-btn:hover{background:rgba(0,0,0,0.06);}
+
+  .memo-input-group{
+    flex:0 0 auto;padding:16px 16px 12px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+
+  .memo-input-row{display:flex;gap:8px;align-items:stretch;}
+
+  .memo-text-input{
+    flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;padding:10px 14px;color:var(--text);font-family:inherit;
+    font-size:14px;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+    transition:background .15s, border-color .15s;
+  }
+  .memo-text-input:focus{
+    outline:none;background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.20);
+  }
+  .memo-text-input::placeholder{color:var(--text-muted);}
+  body.light .memo-text-input{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+  body.light .memo-text-input:focus{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.15);}
+
+  .memo-add-btn{
+    flex:0 0 auto;width:40px;height:40px;border-radius:12px;
+    background:var(--blue);border:none;display:flex;align-items:center;justify-content:center;
+    color:white;font-size:18px;cursor:pointer;transition:transform .1s, opacity .15s;
+  }
+  .memo-add-btn:active{transform:scale(.95);}
+  .memo-add-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .memo-dept-row{display:flex;gap:8px;align-items:center;}
+  .memo-dept-label{font-size:12px;color:var(--text-muted);font-weight:600;flex:0 0 auto;}
+
+  .memo-dept-select{
+    flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;padding:8px 12px;color:var(--text);font-family:inherit;
+    font-size:13px;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+    transition:background .15s, border-color .15s;
+  }
+  .memo-dept-select:focus{
+    outline:none;background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.20);
+  }
+  body.light .memo-dept-select{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+  body.light .memo-dept-select:focus{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.15);}
+
+  .memo-list{
+    flex:1;overflow-y:auto;padding:8px 16px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+
+  .memo-item{
+    background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;padding:12px 14px;-webkit-backdrop-filter:blur(24px);
+    backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:8px;
+    transition:background .15s, border-color .15s, transform .1s;
+    animation:slideIn .3s ease-out;cursor:pointer;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .memo-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.12);}
+  .memo-item.pinned{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.14);order:-1;}
+  body.light .memo-item{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);}
+  body.light .memo-item:hover{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.12);}
+  body.light .memo-item.pinned{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.14);}
+
+  .memo-item-preview{flex:1;min-width:0;}
+  .memo-item-text{
+    font-size:13.5px;line-height:1.4;color:var(--text);word-break:break-word;margin:0;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+  }
+
+  .memo-item-meta{
+    display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;
+    color:var(--text-muted);flex-wrap:wrap;
+  }
+
+  .memo-dept-badge{
+    display:inline-block;padding:3px 8px;border-radius:6px;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    font-size:10px;font-weight:600;
+  }
+  body.light .memo-dept-badge{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+
+  .memo-item-actions{display:flex;gap:4px;flex:0 0 auto;}
+
+  .memo-item-btn{
+    width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.08);
+    border:none;display:flex;align-items:center;justify-content:center;
+    color:var(--text-muted);font-size:14px;cursor:pointer;
+    transition:background .15s, color .15s;flex:0 0 auto;
+  }
+  .memo-item-btn:hover{background:rgba(255,255,255,0.14);color:var(--text);}
+  body.light .memo-item-btn{background:rgba(0,0,0,0.05);}
+  body.light .memo-item-btn:hover{background:rgba(0,0,0,0.12);}
+
+  .memo-empty{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);font-size:14px;text-align:center;padding:40px 20px;
+  }
+
+  .memo-list::-webkit-scrollbar{width:6px;}
+  .memo-list::-webkit-scrollbar-track{background:transparent;}
+  .memo-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+  .memo-list::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2);}
+
+  /* 상세보기 모달 */
+  .memo-modal-overlay{
+    position:fixed;inset:0;z-index:26;background:rgba(0,0,0,0.4);
+    opacity:0;pointer-events:none;transition:opacity .3s;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .memo-modal-overlay.open{opacity:1;pointer-events:all;}
+
+  .memo-modal{
+    background:rgba(5,5,7,0.95);-webkit-backdrop-filter:blur(28px) saturate(180%);
+    backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,0.06);
+    border-radius:24px;max-width:500px;width:100%;max-height:80vh;
+    display:flex;flex-direction:column;
+    transform:scale(0.9);opacity:0;transition:transform .3s, opacity .3s;
+    animation:modalIn .3s ease-out forwards;
+  }
+  @keyframes modalIn{to{transform:scale(1);opacity:1}}
+  body.light .memo-modal{background:rgba(242,242,247,0.95);border-color:rgba(0,0,0,0.06);}
+
+  .memo-modal-header{
+    flex:0 0 auto;padding:24px 24px 16px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  body.light .memo-modal-header{border-bottom-color:rgba(0,0,0,0.06);}
+
+  .memo-modal-title{font-size:18px;font-weight:700;margin:0;}
+
+  .memo-modal-close{
+    width:36px;height:36px;border-radius:8px;background:transparent;
+    font-size:20px;display:flex;align-items:center;justify-content:center;
+    transition:background .15s;
+  }
+  .memo-modal-close:hover{background:rgba(255,255,255,0.08);}
+  body.light .memo-modal-close:hover{background:rgba(0,0,0,0.06);}
+
+  .memo-modal-body{
+    flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;
+  }
+
+  .memo-modal-content{
+    background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;padding:16px;-webkit-backdrop-filter:blur(24px);
+    backdrop-filter:blur(24px);line-height:1.6;color:var(--text);
+    word-break:break-word;white-space:pre-wrap;
+  }
+  body.light .memo-modal-content{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);}
+
+  .memo-modal-meta{display:flex;flex-direction:column;gap:10px;}
+
+  .memo-modal-meta-row{
+    display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);
+  }
+
+  .memo-modal-actions{
+    flex:0 0 auto;display:flex;gap:8px;padding:16px 24px;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  body.light .memo-modal-actions{border-top-color:rgba(0,0,0,0.06);}
+
+  .memo-modal-btn{
+    flex:1;padding:10px 16px;border-radius:12px;border:none;
+    font-size:14px;font-weight:600;cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .memo-modal-btn:active{transform:scale(.98);}
+
+  .memo-modal-pin-btn{
+    background:rgba(255,255,255,0.08);color:var(--text);
+  }
+  .memo-modal-pin-btn:hover{background:rgba(255,255,255,0.14);}
+  body.light .memo-modal-pin-btn{background:rgba(0,0,0,0.05);}
+  body.light .memo-modal-pin-btn:hover{background:rgba(0,0,0,0.12);}
+
+  .memo-modal-delete-btn{
+    background:rgba(255,69,58,0.2);color:#FF453A;
+  }
+  .memo-modal-delete-btn:hover{background:rgba(255,69,58,0.3);}
+
+  @media (max-width:600px){
+    .memo-panel{width:100%;max-width:100%;}
+    .memo-modal{border-radius:20px;}
+  }
+
   *{box-sizing:border-box;letter-spacing:-0.01em;}
   html,body{margin:0;padding:0;}
   button{
@@ -105,9 +349,12 @@
     color:var(--text);
     font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
     -webkit-font-smoothing:antialiased;
-    padding-bottom:calc(32px + env(safe-area-inset-bottom));
+    padding-bottom:calc(86px + env(safe-area-inset-bottom));
     min-height:100vh;
     position:relative;
+  }
+  @media (min-width:640px){
+    body{padding-bottom:96px;}
   }
 
   body::before{
@@ -279,7 +526,7 @@
 
   .ms-gauge{
     --lamp:var(--dept-color, #8E8E93);
-    margin-top:12px;padding-top:10px;
+    margin-top:auto;padding-top:14px;
     border-top:1px solid rgba(255,255,255,0.08);
     display:flex;flex-direction:column;gap:7px;
   }
@@ -818,13 +1065,48 @@
   .ms-archive-row-title{flex:1;min-width:0;color:var(--text);}
   .ms-archive-row-count{flex:0 0 auto;color:var(--text-dim);}
 
-  /* ---------- 스위치 / 레이아웃 ---------- */
-  .mode-switch{display:flex;gap:3px;padding:3px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);margin-bottom:8px;width:max-content}
-  .mode-btn{padding:7px 14px;border-radius:100px;font-size:12px;font-weight:700;color:var(--text-muted)}
-  .mode-btn.active{color:#fff;background:linear-gradient(135deg,#0A84FF,#315BFF);box-shadow:0 5px 18px rgba(10,132,255,.35)}
-  @media (max-width:640px){
-    .mode-switch{width:100%;}
-    .mode-btn{flex:1 1 0;text-align:center;padding:9px 6px;}
+  /* ---------- 스위치 / 레이아웃 (하단 고정 네비게이션 바 - 갤럭시 스타일) ---------- */
+  .mode-switch{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    display:flex;gap:2px;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    background:rgba(5,5,7,0.78);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    backdrop-filter:blur(28px) saturate(180%);
+    border-top:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 -8px 32px rgba(0,0,0,0.4);
+  }
+  body.light .mode-switch{
+    background:rgba(242,242,247,0.85);
+    border-top-color:rgba(0,0,0,0.07);
+    box-shadow:0 -8px 24px rgba(0,0,0,0.08);
+  }
+  .mode-btn{
+    flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;padding:8px 4px 6px;border-radius:14px;
+    font-size:10.5px;font-weight:600;color:var(--text-muted);
+    -webkit-tap-highlight-color:transparent;
+    transition:background .18s ease,color .18s ease,transform .1s ease;
+  }
+  .mode-btn:active{transform:scale(.93);}
+  .mode-btn-icon{font-size:19px;line-height:1;transition:transform .18s ease;}
+  .mode-btn-label{white-space:nowrap;letter-spacing:-.01em;}
+  .mode-btn.active{
+    color:var(--blue);
+    background:color-mix(in srgb, var(--blue) 14%, transparent);
+  }
+  .mode-btn.active .mode-btn-icon{transform:translateY(-1px) scale(1.08);}
+  body.light .mode-btn.active{background:color-mix(in srgb, var(--blue) 10%, transparent);}
+  @media (min-width:640px){
+    .mode-switch{
+      left:50%;right:auto;bottom:18px;transform:translateX(-50%);
+      width:max-content;gap:4px;padding:6px;border-radius:100px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    body.light .mode-switch{border-color:rgba(0,0,0,0.07);}
+    .mode-btn{flex-direction:row;padding:9px 18px;border-radius:100px;font-size:13px;gap:6px;}
+    .mode-btn-icon{font-size:14px;}
+    .mode-btn.active .mode-btn-icon{transform:none;}
   }
   
   /* ================= 주간 피드백 회의모드 ================= */
@@ -1018,15 +1300,23 @@
 
   .shared-followup{margin:16px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .shared-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:16px;box-shadow:var(--glass-shadow)}
-  .shared-card h3{margin:0 0 10px;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .shared-card h3{margin:0 0 10px;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;user-select:none;}
+  .shared-card h3 > span:first-child{display:flex;align-items:center;gap:5px;}
+  .shared-card-chevron{width:7px;height:7px;border-right:2px solid var(--text-dim);border-bottom:2px solid var(--text-dim);transform:rotate(45deg);transition:transform .2s ease;display:inline-block;flex:0 0 auto;}
+  .shared-card.collapsed h3{margin-bottom:0;}
+  .shared-card.collapsed .shared-card-chevron{transform:rotate(-45deg);}
+  .shared-card.collapsed .shared-list{display:none;}
   .shared-list{display:flex;flex-direction:column;gap:8px}
-  .shared-item{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-top:1px solid var(--glass-border);font-size:12px}
+  .shared-item{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:10px 0;border-top:1px solid var(--glass-border);font-size:12px}
   .shared-item:first-child{border-top:0}
+  .shared-item-left{display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0;cursor:pointer;}
   .shared-item input{accent-color:#30D158;margin-top:3px;width:17px;height:17px;flex:0 0 auto}
   .shared-item-body{flex:1;min-width:0}
   .shared-item-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
   .shared-dept-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:100px;background:color-mix(in srgb,var(--badge-color,#0A84FF) 15%,transparent);color:var(--badge-color,#0A84FF);font-size:9.5px;font-weight:800;white-space:nowrap}
   .shared-meta{font-size:10px;color:var(--text-dim);margin-top:4px}
+  .shared-del-btn{color:var(--text-dim);font-size:13px;padding:4px 8px;opacity:.6;transition:opacity .15s;flex:0 0 auto;border-radius:6px;}
+  .shared-del-btn:hover{opacity:1;color:#FF453A;background:rgba(255,69,58,0.12);}
   .sync-state{font-size:10px;color:#30D158;white-space:nowrap}
   .shared-empty{padding:12px 2px;color:var(--text-dim);font-size:11.5px}
   .shared-scope{margin:16px 18px 0;font-size:11px;color:var(--text-muted);font-weight:700}
@@ -1055,23 +1345,62 @@
   @media(max-width:900px){
     .briefing{
       grid-template-columns: 1fr;
-      padding: 16px 14px 0;
+      gap:10px;
+      padding: 12px 14px 0;
+    }
+    .briefing-card{
+      padding:14px 16px;
     }
     .briefing-card.report-main-card{
       min-height: auto;
     }
+    .briefing-card-top-header{
+      align-items:center;
+    }
     .briefing-card-text-group{
-      max-width: 100%;
+      max-width: 72%;
+      gap:2px;
     }
+    .briefing-eyebrow{font-size:10px;margin:0 0 1px;}
+    .briefing-big-title{
+      font-size:15px;
+      line-height:1.3;
+      margin:0 0 3px;
+    }
+    .briefing-sub-desc{font-size:10.5px;}
     .briefing-chart-pos{
-      position: relative;
-      right: 0;
-      top: 0;
+      position: absolute;
+      right: 14px;
+      top: 14px;
       transform: none;
-      margin: 16px auto 0;
-      display: flex;
-      justify-content: center;
+      margin: 0;
+      display: block;
     }
+    .briefing-chart-pos .ring-wrap{width:52px;height:52px;}
+    .briefing-chart-pos .ring-track,
+    .briefing-chart-pos .ring-fill{stroke-width:9;}
+    .briefing-chart-pos .ring-pct{font-size:12.5px;}
+    .briefing-chart-pos .ring-sub{font-size:0;}
+    .briefing-card-bottom-chips{padding-top:10px;}
+    .dept-chips{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .dept-chips::-webkit-scrollbar{display:none;}
+    .dept-chips-row{flex-wrap:nowrap;gap:6px;}
+    .dept-chip{font-size:10px;padding:4px 9px;white-space:nowrap;flex:0 0 auto;}
+
+    .briefing-card.upcoming-side-card{
+      min-height: auto;
+    }
+    .upcoming-eyebrow{font-size:10px;}
+    .upcoming-title-text{font-size:14.5px;gap:6px;}
+    .upcoming-title-text .up-side-chevron{width:6px;height:6px;}
+    .upcoming-count-badge{width:22px;height:22px;font-size:11px;}
+    .upcoming-list-body{margin-top:10px;max-height:150px;gap:6px;}
+    .up-row{padding:8px 10px;gap:8px;}
+    .up-dday{flex:0 0 40px;font-size:10px;padding:4px 0;}
+    .up-title{font-size:12px;}
+    .up-dept{font-size:10px;}
+    .up-empty{font-size:11px;padding:10px 0;}
+
     .pf-dept-tabs{grid-template-columns:repeat(3, 1fr);}
     .pf-grid{grid-template-columns:1fr;}
     .pf-milestones-row{grid-template-columns:1fr;}
@@ -1134,17 +1463,28 @@
 
 <div id="alertBanner"></div>
 
+<nav class="mode-switch" id="modeSwitch">
+  <button class="mode-btn active" data-mode="normal">
+    <span class="mode-btn-icon">⌂</span>
+    <span class="mode-btn-label">기본모드</span>
+  </button>
+  <button class="mode-btn" data-mode="sermon">
+    <span class="mode-btn-icon">📢</span>
+    <span class="mode-btn-label">말씀 전달</span>
+  </button>
+  <button class="mode-btn" data-mode="meeting">
+    <span class="mode-btn-icon">👥</span>
+    <span class="mode-btn-label">주간 회의모드</span>
+  </button>
+</nav>
+
 <header>
   <p class="eyebrow">Cultural Affairs · Control Board</p>
   <h1>문화부 대시보드</h1>
-  <div class="mode-switch" id="modeSwitch">
-    <button class="mode-btn active" data-mode="normal">⌂ 기본모드</button>
-    <button class="mode-btn" data-mode="sermon">📢 말씀 전달</button>
-    <button class="mode-btn" data-mode="meeting">👥 주간 회의모드</button>
-  </div>
   <div class="meta-row">
     <span><span class="status-dot"></span><span id="weekLabel">불러오는 중…</span></span>
     <div class="meta-right">
+      <button class="memo-btn" id="memoBtnHeader" onclick="openMemoPanel()" title="메모">📝</button>
       <div class="theme-toggle" id="themeToggle">
         <button class="theme-opt" data-theme="light">☀️ Light</button>
         <button class="theme-opt" data-theme="dark">🌙 Dark</button>
@@ -1157,6 +1497,60 @@
     </div>
   </div>
 </header>
+
+<!-- 메모 오버레이 -->
+<div class="memo-overlay" id="memoOverlay" onclick="if(event.target===this)closeMemoPanel()"></div>
+
+<!-- 메모 패널 -->
+<div class="memo-panel" id="memoPanel">
+  <div class="memo-header">
+    <div>
+      <h2 class="memo-title">📝 메모
+        <span class="memo-sync-indicator" id="syncIndicator"></span>
+      </h2>
+    </div>
+    <button class="memo-close-btn" onclick="closeMemoPanel()">✕</button>
+  </div>
+
+  <div class="memo-input-group">
+    <div class="memo-input-row">
+      <input type="text" class="memo-text-input" id="memoInput" placeholder="메모를 입력하세요..." onkeypress="handleMemoKeypress(event)">
+      <button class="memo-add-btn" id="addMemoBtn" onclick="addMemo()" title="추가">+</button>
+    </div>
+    <div class="memo-dept-row">
+      <label class="memo-dept-label">부서:</label>
+      <select class="memo-dept-select" id="memoDeptSelect">
+        <option value="전체">전체</option>
+        <option value="문화기획과">문화기획과</option>
+        <option value="영상제작과">영상제작과</option>
+        <option value="사진과">사진과</option>
+        <option value="의전과">의전과</option>
+        <option value="공연예술과">공연예술과</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="memo-list" id="memoList"></div>
+</div>
+
+<!-- 상세보기 모달 -->
+<div class="memo-modal-overlay" id="memoModalOverlay" onclick="if(event.target===this)closeDetailModal()">
+  <div class="memo-modal">
+    <div class="memo-modal-header">
+      <h2 class="memo-modal-title">메모 상세</h2>
+      <button class="memo-modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="memo-modal-body">
+      <div class="memo-modal-content" id="modalContent"></div>
+      <div class="memo-modal-meta" id="modalMeta"></div>
+    </div>
+    <div class="memo-modal-actions">
+      <button class="memo-modal-btn memo-modal-pin-btn" id="modalPinBtn" onclick="toggleDetailPin()"></button>
+      <button class="memo-modal-btn memo-modal-delete-btn" onclick="deleteDetailMemo()">삭제</button>
+      <button class="memo-modal-btn" style="background:var(--blue);color:white;" onclick="closeDetailModal()">닫기</button>
+    </div>
+  </div>
+</div>
 
 <div id="normalDashboard">
 <section class="briefing" id="briefing"></section>
@@ -1297,10 +1691,11 @@ let state = {
   dept: null,
   data: null,
   openCats: new Set(),
-  upcomingOpen: true,
+  upcomingOpen: null,
   msCollapsed: new Set(),
   msArchiveOpen: new Set(),
-  msArchiveMonth: {}
+  msArchiveMonth: {},
+  sharedCardOpen: { next: window.innerWidth > 900, decisions: window.innerWidth > 900 }
 };
 
 function fmtDate(iso){
@@ -1397,7 +1792,6 @@ function renderDeptChart(){
 function renderDeptTabs(){
   const wrap = document.getElementById('deptTabs');
   wrap.innerHTML = '';
-  wrap.appendChild(renderDeptChart());
 
   DEPTS.forEach(dept=>{
     const btn = document.createElement('div');
@@ -1438,6 +1832,8 @@ function renderDeptTabs(){
     };
     wrap.appendChild(btn);
   });
+
+  wrap.appendChild(renderDeptChart());
 
   const focusBar = document.querySelector('.dept-focus-bar');
   const focusName = document.getElementById('deptFocusName');
@@ -1709,7 +2105,7 @@ function renderBriefing(){
     : `<div class="up-empty">예정된 다가오는 일정이 없습니다</div>`;
 
   const dateRangeStr = state.data.currentWeekLabel || '월 - 일 기준';
-  const isUpcomingOpen = state.upcomingOpen !== false;
+  const isUpcomingOpen = state.upcomingOpen === null ? upcoming.length > 0 : state.upcomingOpen !== false;
 
   wrap.innerHTML = `
     <!-- 1. 좌측 주간 보고 현황 카드 -->
@@ -2762,9 +3158,8 @@ let meetingState={
   notes:'' 
 };
 
-// ★ 수동 삭제 전환: 차주중점업무와 지시사항 항목의 자동 초기화 로직 제거
 function checkWeeklyReset() {
-  // 사용자가 수동으로 ✕를 눌러 삭제할 때까지 대시보드 목록 데이터 유지
+  // 수동 삭제 전까지 현황판 목록 유지
 }
 
 function loadMeetingState(){
@@ -3183,6 +3578,19 @@ function archiveWeekLabel(item){
   return `${d.getFullYear()}년 ${f(sun)}–${f(sat)}`;
 }
 
+// ★ 기본모드 회의 후속 업무 카드 항목 삭제 함수
+function removeSharedItem(type, originalIdx) {
+  const shared = getSharedMeeting();
+  if (!shared[type] || !shared[type][originalIdx]) return;
+  
+  shared[type].splice(originalIdx, 1);
+  meetingState[type] = shared[type];
+  
+  if (state.data) state.data.sharedMeeting = shared;
+  saveMeetingState(true);
+  renderSharedFollowup();
+}
+
 function renderSharedFollowup(){
   const el=document.getElementById('sharedFollowup');if(!el)return;
   const m=getSharedMeeting();
@@ -3192,9 +3600,34 @@ function renderSharedFollowup(){
   const archiveCount=getMeetingArchiveData().length;
   if(!decisions.length&&!next.length&&!archiveCount){el.innerHTML='';return}
   const originalIndex=(type,item)=>m[type].findIndex(x=>x===item||[x.text,x.dept].join('|')===[item.text,item.dept].join('|'));
-  const rows=(arr,type)=>arr.map(item=>{const i=originalIndex(type,item);return `<label class="shared-item ${item.done?'is-done':''}"><input type="checkbox" ${item.done?'checked':''} onchange="sharedToggle('${type}',${i},this.checked)"><span class="shared-item-body"><span class="shared-item-title"><b>${escapeHtml(item.text)}</b><span class="shared-dept-badge" style="--badge-color:var(--dept-${DEPT_COLOR_KEY[item.dept]||'culture'})">${escapeHtml(item.dept)}</span></span><div class="shared-meta">${type==='next'?'차주 중점 업무':'회의 피드백 지시사항'}${item.done?' · 완료됨':' · 진행 확인 필요'}</div></span></label>`}).join('')||'<div class="shared-empty">이 부서에 등록된 내용이 없습니다.</div>';
+  
+  // ★ 항목 우측에 삭제(✕) 버튼 추가
+  const rows=(arr,type)=>arr.map(item=>{
+    const i=originalIndex(type,item);
+    return `<div class="shared-item ${item.done?'is-done':''}">
+      <label class="shared-item-left">
+        <input type="checkbox" ${item.done?'checked':''} onchange="sharedToggle('${type}',${i},this.checked)">
+        <span class="shared-item-body">
+          <span class="shared-item-title">
+            <b>${escapeHtml(item.text)}</b>
+            <span class="shared-dept-badge" style="--badge-color:var(--dept-${DEPT_COLOR_KEY[item.dept]||'culture'})">${escapeHtml(item.dept)}</span>
+          </span>
+          <div class="shared-meta">${type==='next'?'차주 중점 업무':'회의 피드백 지시사항'}${item.done?' · 완료됨':' · 진행 확인 필요'}</div>
+        </span>
+      </label>
+      <button class="shared-del-btn" onclick="removeSharedItem('${type}',${i})" title="삭제">✕</button>
+    </div>`
+  }).join('')||'<div class="shared-empty">이 부서에 등록된 내용이 없습니다.</div>';
+
   const scope=selected===ALL_DEPTS?'전체 부서':selected;
-  el.innerHTML=`<div class="shared-scope"><div class="shared-head-actions"><span>${escapeHtml(scope)} · 회의 후속 업무</span><button class="archive-open-btn" onclick="openMeetingArchive('${escapeHtml(scope)}')">🗂 지난 회의록 보기${archiveCount?` · ${archiveCount}회`:''}</button></div></div><div class="shared-followup"><div class="shared-card"><h3><span>🚀 차주 중점 업무</span><span class="sync-state">${next.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(next,'next')}</div></div><div class="shared-card"><h3><span>💡 지시사항 & 피드백</span><span class="sync-state">${decisions.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(decisions,'decisions')}</div></div></div>`
+  const cardOpen=t=>state.sharedCardOpen?.[t]!==false;
+  el.innerHTML=`<div class="shared-scope"><div class="shared-head-actions"><span>${escapeHtml(scope)} · 회의 후속 업무</span><button class="archive-open-btn" onclick="openMeetingArchive('${escapeHtml(scope)}')">🗂 지난 회의록 보기${archiveCount?` · ${archiveCount}회`:''}</button></div></div><div class="shared-followup"><div class="shared-card ${cardOpen('next')?'':'collapsed'}"><h3 onclick="toggleSharedCard('next')"><span>🚀 차주 중점 업무<span class="shared-card-chevron"></span></span><span class="sync-state">${next.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(next,'next')}</div></div><div class="shared-card ${cardOpen('decisions')?'':'collapsed'}"><h3 onclick="toggleSharedCard('decisions')"><span>💡 지시사항 & 피드백<span class="shared-card-chevron"></span></span><span class="sync-state">${decisions.length}건 · 공용 저장</span></h3><div class="shared-list">${rows(decisions,'decisions')}</div></div></div>`
+}
+
+function toggleSharedCard(type){
+  if(!state.sharedCardOpen) state.sharedCardOpen={next:true,decisions:true};
+  state.sharedCardOpen[type]=!(state.sharedCardOpen[type]!==false);
+  renderSharedFollowup();
 }
 
 function sharedToggle(type,i,v){
@@ -3239,6 +3672,241 @@ function initModeSwitch(){
 }
 
 document.addEventListener('DOMContentLoaded',initModeSwitch);
+
+// ==================== 메모 기능 ====================
+
+const MEMO_DEPTS = ['전체','문화기획과','영상제작과','사진과','의전과','공연예술과'];
+const MEMO_API_URL = 'https://script.google.com/macros/d/YOUR_DEPLOYMENT_ID/usercallback';
+
+let memos = [];
+let currentDetailMemoId = null;
+
+// 메모 패널 열기/닫기
+function openMemoPanel(){
+  document.getElementById('memoPanel').classList.add('open');
+  document.getElementById('memoOverlay').classList.add('open');
+  loadMemosFromSheet();
+  document.getElementById('memoInput').focus();
+}
+
+function closeMemoPanel(){
+  document.getElementById('memoPanel').classList.remove('open');
+  document.getElementById('memoOverlay').classList.remove('open');
+}
+
+// 상세보기 모달 열기/닫기
+function closeDetailModal(){
+  document.getElementById('memoModalOverlay').classList.remove('open');
+  currentDetailMemoId = null;
+}
+
+function openDetailModal(memo){
+  currentDetailMemoId = memo.id;
+  document.getElementById('modalContent').textContent = memo.text;
+  
+  const deptKey = getDeptColorKey(memo.dept);
+  const metaHtml = `
+    <div class="memo-modal-meta-row">
+      <span class="memo-dept-badge" style="color:var(--dept-${deptKey});border-color:var(--dept-${deptKey})20;">
+        ${escapeHtml(memo.dept)}
+      </span>
+    </div>
+    <div class="memo-modal-meta-row">
+      🕐 ${memo.createdAt}
+    </div>
+  `;
+  document.getElementById('modalMeta').innerHTML = metaHtml;
+  
+  const pinBtn = document.getElementById('modalPinBtn');
+  pinBtn.textContent = memo.pinned ? '📌 고정 해제' : '○ 고정';
+  
+  document.getElementById('memoModalOverlay').classList.add('open');
+}
+
+function toggleDetailPin(){
+  const memo = memos.find(m => m.id === currentDetailMemoId);
+  if(memo){
+    memo.pinned = !memo.pinned;
+    saveMemosToSheet();
+  }
+}
+
+function deleteDetailMemo(){
+  if(confirm('이 메모를 삭제하시겠습니까?')){
+    memos = memos.filter(m => m.id !== currentDetailMemoId);
+    saveMemosToSheet();
+    closeDetailModal();
+  }
+}
+
+// Google Sheets에서 메모 로드
+async function loadMemosFromSheet(){
+  try {
+    showSyncStatus(true);
+    const response = await fetch(MEMO_API_URL + '?action=getMemos', {
+      cache: 'no-store'
+    });
+    const result = await response.json();
+    
+    if(result.success && Array.isArray(result.memos)){
+      memos = result.memos.sort((a, b) => {
+        if(a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      renderMemos();
+    }
+    showSyncStatus(false);
+  } catch(err){
+    console.error('Failed to load memos:', err);
+    showSyncStatus(false);
+  }
+}
+
+// Google Sheets에 메모 저장
+async function saveMemosToSheet(){
+  try {
+    showSyncStatus(true);
+    const response = await fetch(MEMO_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'saveMemos', memos: memos }),
+      redirect: 'follow'
+    });
+    const result = await response.json();
+    showSyncStatus(false);
+  } catch(err){
+    console.error('Failed to save memos:', err);
+    showSyncStatus(false);
+  }
+}
+
+// 동기화 상태 표시
+function showSyncStatus(syncing){
+  const indicator = document.getElementById('syncIndicator');
+  if(syncing){
+    indicator.textContent = '⏳ 저장 중...';
+    indicator.classList.add('syncing');
+  } else {
+    indicator.textContent = '✓ 저장됨';
+    indicator.classList.remove('syncing');
+    setTimeout(() => { indicator.textContent = ''; }, 2000);
+  }
+}
+
+// 메모 추가
+async function addMemo(){
+  const input = document.getElementById('memoInput');
+  const text = input.value.trim();
+  
+  if(!text) return;
+  
+  document.getElementById('addMemoBtn').disabled = true;
+  
+  const dept = document.getElementById('memoDeptSelect').value;
+  const now = new Date();
+  const memo = {
+    id: Date.now() + Math.random(),
+    text,
+    dept,
+    pinned: false,
+    createdAt: now.toLocaleString('ko-KR', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    })
+  };
+  
+  memos.unshift(memo);
+  input.value = '';
+  
+  await saveMemosToSheet();
+  renderMemos();
+  
+  document.getElementById('addMemoBtn').disabled = false;
+  input.focus();
+}
+
+// Enter 키 감지
+function handleMemoKeypress(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    addMemo();
+  }
+}
+
+// 메모 렌더링
+function renderMemos(){
+  const list = document.getElementById('memoList');
+  
+  if(memos.length === 0){
+    list.innerHTML = '<div class="memo-empty">📭 메모가 없습니다<br>첫 메모를 작성해보세요!</div>';
+    return;
+  }
+
+  list.innerHTML = memos.map(memo => {
+    const deptKey = getDeptColorKey(memo.dept);
+    const dateObj = new Date(memo.createdAt);
+    const timeStr = dateObj.toLocaleString('ko-KR', {
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    return `
+      <div class="memo-item ${memo.pinned ? 'pinned' : ''}" onclick="openDetailModal(${JSON.stringify(memo).replace(/"/g, '&quot;')})">
+        <div class="memo-item-preview">
+          <p class="memo-item-text">${escapeHtml(memo.text)}</p>
+          <div class="memo-item-meta">
+            <span class="memo-dept-badge" style="color:var(--dept-${deptKey});border-color:var(--dept-${deptKey})20;">
+              ${escapeHtml(memo.dept)}
+            </span>
+            <span>${timeStr}</span>
+          </div>
+        </div>
+        <div class="memo-item-actions" onclick="event.stopPropagation();">
+          <button class="memo-item-btn" onclick="togglePin(${memo.id})" title="${memo.pinned ? '고정 해제' : '고정'}">${memo.pinned ? '📌' : '○'}</button>
+          <button class="memo-item-btn" onclick="deleteMemo(${memo.id})" title="삭제">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 부서별 색상 키
+function getDeptColorKey(dept){
+  const map = {
+    '문화기획과': 'culture',
+    '영상제작과': 'video',
+    '사진과': 'photo',
+    '의전과': 'protocol',
+    '공연예술과': 'performance',
+    '전체': 'etc'
+  };
+  return map[dept] || 'etc';
+}
+
+// 메모 핀 토글
+function togglePin(id){
+  const memo = memos.find(m => m.id === id);
+  if(memo){
+    memo.pinned = !memo.pinned;
+    saveMemosToSheet();
+  }
+}
+
+// 메모 삭제
+function deleteMemo(id){
+  if(confirm('이 메모를 삭제하시겠습니까?')){
+    memos = memos.filter(m => m.id !== id);
+    saveMemosToSheet();
+  }
+}
+
+// HTML 이스케이프 (기존 함수 있으면 사용, 없으면 정의)
+if(typeof escapeHtml !== 'function'){
+  window.escapeHtml = function(text){
+    const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+  };
+}
 
 load();
 setInterval(load, 60000);
