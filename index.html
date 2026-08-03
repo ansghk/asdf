@@ -1532,11 +1532,10 @@ function dateKey(d){
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
 }
 
-/* ★ [날짜계산] 일요일 시작 (일~토 기준) ★ */
 function startOfWeek(date){
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const day = d.getDay();
-  const diff = d.getDate() - day; // 일요일(0) 기준 이동
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(d.setDate(diff));
 }
 
@@ -1590,7 +1589,7 @@ function renderSchedule(){
   let headerLabel, cells;
 
   if(state.range === 'weekly'){
-    const weekStart = startOfWeek(now); // 일요일부터 시작
+    const weekStart = startOfWeek(now);
     const days = [...Array(7)].map((_,i)=>new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate()+i));
     const p = n => String(n).padStart(2,'0');
     headerLabel = `${p(days[0].getMonth()+1)}.${p(days[0].getDate())} - ${p(days[6].getMonth()+1)}.${p(days[6].getDate())}`;
@@ -1709,7 +1708,7 @@ function renderBriefing(){
         </div>`).join('')
     : `<div class="up-empty">예정된 다가오는 일정이 없습니다</div>`;
 
-  const dateRangeStr = state.data.currentWeekLabel || '일 - 토 기준';
+  const dateRangeStr = state.data.currentWeekLabel || '월 - 일 기준';
   const isUpcomingOpen = state.upcomingOpen !== false;
 
   wrap.innerHTML = `
@@ -2755,7 +2754,6 @@ function renderSermonPrep(){
 
 /* ================= 주간 피드백 회의모드 데이터/렌더링 ================= */
 const MEETING_KEY='cultureMeetingModeV1';
-const LAST_RESET_KEY='cultureMeetingLastResetTimestamp';
 
 let meetingState={
   deptIndex:0,
@@ -2764,31 +2762,9 @@ let meetingState={
   notes:'' 
 };
 
-/* ★ [주차 리셋 기준 수정] 직전 일요일 00시 기준 타임스탬프 계산 ★ */
-function getMostRecentSundayTimestamp() {
-  const now = new Date();
-  const day = now.getDay();
-  const diffToSunday = day; // 일요일(0) 기준 이동
-  const lastSunday = new Date(now);
-  lastSunday.setDate(now.getDate() - diffToSunday);
-  lastSunday.setHours(0, 0, 0, 0);
-  return lastSunday.getTime();
-}
-
+// ★ 수동 삭제 전환: 차주중점업무와 지시사항 항목의 자동 초기화 로직 제거
 function checkWeeklyReset() {
-  const currentSundayTime = getMostRecentSundayTimestamp();
-  let lastResetTime = null;
-  try { lastResetTime = localStorage.getItem(LAST_RESET_KEY); } catch(e){}
-
-  if(!lastResetTime || parseInt(lastResetTime, 10) < currentSundayTime) {
-    meetingState.decisions = [];
-    meetingState.next = [];
-    meetingState.notes = '';
-    try {
-      localStorage.setItem(LAST_RESET_KEY, currentSundayTime.toString());
-      localStorage.setItem(MEETING_KEY, JSON.stringify(meetingState));
-    } catch(e){}
-  }
+  // 사용자가 수동으로 ✕를 눌러 삭제할 때까지 대시보드 목록 데이터 유지
 }
 
 function loadMeetingState(){
@@ -3053,7 +3029,7 @@ function renderMeetingMode(){
           <h3 class="pf-card-title">🚀 차주중점업무 <small>(차주할일)</small></h3>
           <span class="pf-card-count mono">${currentNextList.length}건</span>
         </div>
-        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (매주 일요일 00:00시 자동 초기화)</p>
+        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (수동 삭제 전까지 현황판 유지)</p>
         <div class="pf-list">
           ${nextListHtml}
         </div>
@@ -3068,7 +3044,7 @@ function renderMeetingMode(){
           <h3 class="pf-card-title">💡 지시사항 & 피드백</h3>
           <span class="pf-card-count mono">${currentFeedbackList.length}건</span>
         </div>
-        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (매주 일요일 00:00시 자동 초기화)</p>
+        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (수동 삭제 전까지 현황판 유지)</p>
         <div class="pf-list">
           ${feedbackListHtml}
         </div>
@@ -3194,17 +3170,13 @@ function getMeetingArchiveData(){
   return all.filter(x=>{const k=String(x.id||x.endedAt||x.startedAt||x.minutes||'');if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(b.endedAt||b.startedAt||0)-new Date(a.endedAt||a.startedAt||0));
 }
 
-/* ★ [회의록 주차 계산 수정] 일~토 범위로 변경 ★ */
 function archiveWeekLabel(item){
   const d=new Date(item.endedAt||item.startedAt||Date.now());
   if(isNaN(d))return '날짜 미정';
   
-  // 일요일 구하기
   const day = d.getDay();
   const diffToSunday = d.getDate() - day;
   const sun = new Date(d); sun.setDate(diffToSunday);
-  
-  // 토요일 구하기
   const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
   
   const f = x => `${x.getMonth()+1}.${x.getDate()}`;
