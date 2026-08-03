@@ -450,10 +450,11 @@
   .calendar-day-item .item-dot{width:6px;height:6px;border-radius:50%;background:var(--item-color);flex-shrink:0;}
   .calendar-day-detail{margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px;}
   .calendar-day-detail-label{font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 10px;}
+  
   .schedule-row{
-    display:flex;align-items:center;gap:10px;
+    display:flex;flex-direction:column;gap:4px;
     background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.08);
-    border-radius:14px;padding:11px 12px;margin-bottom:8px;
+    border-radius:14px;padding:12px 14px;margin-bottom:8px;
   }
   .schedule-dday{
     flex:0 0 auto;font-weight:700;font-size:11px;padding:4px 9px;border-radius:100px;
@@ -461,11 +462,15 @@
     color:var(--dept-color,var(--blue));
   }
   .schedule-info{flex:1;min-width:0;}
-  .schedule-title{font-size:13px;font-weight:600;color:var(--text);margin:0 0 2px;}
-  .schedule-meta{font-size:11px;color:var(--text-muted);margin:0;}
-  .schedule-empty{
-    font-size:12.5px;color:var(--text-dim);text-align:center;
-    padding:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;
+  .schedule-title{font-size:13.5px;font-weight:700;color:var(--text);margin:0 0 2px;}
+  .schedule-meta{font-size:11px;color:var(--text-muted);margin:0 0 4px;line-height:1.4;}
+  .schedule-dept-tag{
+    display:block;
+    font-size:11px;
+    font-weight:500;
+    color:var(--text-dim);
+    text-align:right;
+    margin-top:2px;
   }
 
   .report-cal{
@@ -902,15 +907,17 @@
   .pf-summary-bar-fill{height:100%;border-radius:100px;background:var(--dept-color, #0A84FF);transition:width .4s ease;box-shadow:0 0 10px var(--dept-color, #0A84FF), 0 0 16px rgba(255,159,10,0.4);animation:bar-glow 2s ease-in-out infinite;}
 
   .pf-ms-history-list{
-    display:flex;flex-direction:column;gap:5px;margin-top:2px;max-height:120px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:6px;margin-top:2px;max-height:140px;overflow-y:auto;
   }
   .pf-ms-history-item{
-    display:flex;align-items:center;justify-content:space-between;gap:6px;
-    font-size:11.5px;color:var(--text-muted);padding:3px 0;border-top:1px solid rgba(255,255,255,0.05);
+    display:flex;align-items:flex-start;justify-content:space-between;gap:6px;
+    font-size:11.5px;color:var(--text-muted);padding:4px 0;border-top:1px solid rgba(255,255,255,0.05);
   }
   .pf-ms-history-item:first-child{border-top:none;}
-  .pf-ms-history-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
-  .pf-ms-history-val{font-size:11px;color:var(--text-dim);}
+  .pf-ms-history-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .pf-ms-history-title{color:var(--text);font-weight:600;line-height:1.3;word-break:break-all;}
+  .pf-ms-history-desc{font-size:10.5px;color:var(--text-dim);line-height:1.3;word-break:break-all;}
+  .pf-ms-history-val{font-size:11px;color:var(--text-dim);flex-shrink:0;padding-top:1px;}
 
   /* 하단 3컬럼 영역 */
   .pf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;}
@@ -1525,11 +1532,11 @@ function dateKey(d){
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
 }
 
-/* ★ [날짜계산 수정] 월요일 시작 (월~일 기준) ★ */
+/* ★ [날짜계산] 일요일 시작 (일~토 기준) ★ */
 function startOfWeek(date){
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // 일요일(0)이면 -6, 그외는 월요일(1) 기준 이동
+  const diff = d.getDate() - day; // 일요일(0) 기준 이동
   return new Date(d.setDate(diff));
 }
 
@@ -1583,7 +1590,7 @@ function renderSchedule(){
   let headerLabel, cells;
 
   if(state.range === 'weekly'){
-    const weekStart = startOfWeek(now); // 월요일부터 시작
+    const weekStart = startOfWeek(now); // 일요일부터 시작
     const days = [...Array(7)].map((_,i)=>new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate()+i));
     const p = n => String(n).padStart(2,'0');
     headerLabel = `${p(days[0].getMonth()+1)}.${p(days[0].getDate())} - ${p(days[6].getMonth()+1)}.${p(days[6].getDate())}`;
@@ -1629,7 +1636,7 @@ function renderSchedule(){
           <div class="schedule-info">
             <p class="schedule-title">${escapeHtml(it.title||'')}</p>
             ${it.content ? `<p class="schedule-meta">${escapeHtml(it.content)}</p>` : ''}
-            ${isAll ? `<span class="schedule-dept-tag" style="--row-color:${rowVar}">${it.dept}</span>` : ''}
+            ${isAll ? `<span class="schedule-dept-tag">${escapeHtml(it.dept)}</span>` : ''}
           </div>
         </div>`;
       }).join('')
@@ -1702,7 +1709,7 @@ function renderBriefing(){
         </div>`).join('')
     : `<div class="up-empty">예정된 다가오는 일정이 없습니다</div>`;
 
-  const dateRangeStr = state.data.currentWeekLabel || '월 - 일 기준';
+  const dateRangeStr = state.data.currentWeekLabel || '일 - 토 기준';
   const isUpcomingOpen = state.upcomingOpen !== false;
 
   wrap.innerHTML = `
@@ -2274,7 +2281,7 @@ function renderMonthlyReportSection(){
           <div class="schedule-info">
             <p class="schedule-title">${escapeHtml(it.title||'(제목 없음)')}</p>
             ${it.content ? `<p class="schedule-meta">${escapeHtml(it.content)}</p>` : ''}
-            <span class="schedule-dept-tag" style="--row-color:${rowVar}">${escapeHtml(it.dept)} · ${escapeHtml(it.category)}${it.reporter ? ' · '+escapeHtml(it.reporter) : ''}</span>
+            <span class="schedule-dept-tag">${escapeHtml(it.dept)} · ${escapeHtml(it.category)}${it.reporter ? ' · '+escapeHtml(it.reporter) : ''}</span>
           </div>
         </div>`;
       }).join('')
@@ -2658,10 +2665,22 @@ function rangeField(key,label,min,max,step,suffix){
 }
 
 function renderSermonPrep(){
-  const el=document.getElementById('sermonPrep'); if(!el) return;
+  const el = document.getElementById('sermonPrep'); 
+  if(!el) return;
+
   let embedUrl = sermonState.embedUrl || toEmbedUrl(sermonState.pptUrl);
   if(embedUrl && sermonState.pptNonce) embedUrl += '&v=' + sermonState.pptNonce;
   const hasPpt = !!embedUrl;
+
+  const existingFrame = document.getElementById('pptIframeElement');
+  if (existingFrame && hasPpt) {
+    if (existingFrame.dataset.src !== embedUrl) {
+      existingFrame.src = embedUrl;
+      existingFrame.dataset.src = embedUrl;
+    }
+    renderPrepSaved();
+    return;
+  }
 
   el.innerHTML=`
   <div class="prep-hero">
@@ -2684,7 +2703,7 @@ function renderSermonPrep(){
     </div>
     <div class="ppt-iframe-wrap">
       ${hasPpt
-        ? `<iframe src="${escapeHtml(embedUrl)}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>`
+        ? `<iframe id="pptIframeElement" data-src="${escapeHtml(embedUrl)}" src="${escapeHtml(embedUrl)}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>`
         : '<div class="ppt-preview-empty">아래에 주제와 내용을 입력하고<br>[PPT 자동 제작]을 누르면 이곳에 슬라이드가 나타납니다.</div>'}
     </div>
 
@@ -2745,28 +2764,28 @@ let meetingState={
   notes:'' 
 };
 
-/* ★ [주차 리셋 기준 수정] 직전 월요일 00시 기준 타임스탬프 계산 ★ */
-function getMostRecentMondayTimestamp() {
+/* ★ [주차 리셋 기준 수정] 직전 일요일 00시 기준 타임스탬프 계산 ★ */
+function getMostRecentSundayTimestamp() {
   const now = new Date();
   const day = now.getDay();
-  const diffToMonday = (day === 0 ? 6 : day - 1);
-  const lastMonday = new Date(now);
-  lastMonday.setDate(now.getDate() - diffToMonday);
-  lastMonday.setHours(0, 0, 0, 0);
-  return lastMonday.getTime();
+  const diffToSunday = day; // 일요일(0) 기준 이동
+  const lastSunday = new Date(now);
+  lastSunday.setDate(now.getDate() - diffToSunday);
+  lastSunday.setHours(0, 0, 0, 0);
+  return lastSunday.getTime();
 }
 
 function checkWeeklyReset() {
-  const currentMondayTime = getMostRecentMondayTimestamp();
+  const currentSundayTime = getMostRecentSundayTimestamp();
   let lastResetTime = null;
   try { lastResetTime = localStorage.getItem(LAST_RESET_KEY); } catch(e){}
 
-  if(!lastResetTime || parseInt(lastResetTime, 10) < currentMondayTime) {
+  if(!lastResetTime || parseInt(lastResetTime, 10) < currentSundayTime) {
     meetingState.decisions = [];
     meetingState.next = [];
     meetingState.notes = '';
     try {
-      localStorage.setItem(LAST_RESET_KEY, currentMondayTime.toString());
+      localStorage.setItem(LAST_RESET_KEY, currentSundayTime.toString());
       localStorage.setItem(MEETING_KEY, JSON.stringify(meetingState));
     } catch(e){}
   }
@@ -2866,7 +2885,10 @@ function renderMeetingMode(){
         const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
         const done = cur >= tgt;
         return `<div class="pf-ms-history-item">
-            <span class="pf-ms-history-title">${done ? '✅ ' : '▫️ '}${escapeHtml(g.title)}</span>
+            <div class="pf-ms-history-content">
+              <span class="pf-ms-history-title">${done ? '✅ ' : '▫️ '}${escapeHtml(g.title)}</span>
+              ${g.desc ? `<span class="pf-ms-history-desc">${escapeHtml(g.desc)}</span>` : ''}
+            </div>
             <span class="pf-ms-history-val mono">${cur}/${tgt} ${escapeHtml(g.unit||'건')}</span>
           </div>`;
       }).join('')
@@ -2899,7 +2921,10 @@ function renderMeetingMode(){
         const cur = Number(g.current), tgt = Math.max(1, Number(g.target));
         const done = cur >= tgt;
         return `<div class="pf-ms-history-item">
-            <span class="pf-ms-history-title">${done ? '✅ ' : '▫️ '}${escapeHtml(g.title)}</span>
+            <div class="pf-ms-history-content">
+              <span class="pf-ms-history-title">${done ? '✅ ' : '▫️ '}${escapeHtml(g.title)}</span>
+              ${g.desc ? `<span class="pf-ms-history-desc">${escapeHtml(g.desc)}</span>` : ''}
+            </div>
             <span class="pf-ms-history-val mono">${cur}/${tgt} ${escapeHtml(g.unit||'건')}</span>
           </div>`;
       }).join('')
@@ -3028,7 +3053,7 @@ function renderMeetingMode(){
           <h3 class="pf-card-title">🚀 차주중점업무 <small>(차주할일)</small></h3>
           <span class="pf-card-count mono">${currentNextList.length}건</span>
         </div>
-        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (매주 월요일 00:00시 자동 초기화)</p>
+        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (매주 일요일 00:00시 자동 초기화)</p>
         <div class="pf-list">
           ${nextListHtml}
         </div>
@@ -3043,7 +3068,7 @@ function renderMeetingMode(){
           <h3 class="pf-card-title">💡 지시사항 & 피드백</h3>
           <span class="pf-card-count mono">${currentFeedbackList.length}건</span>
         </div>
-        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (매주 월요일 00:00시 자동 초기화)</p>
+        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (매주 일요일 00:00시 자동 초기화)</p>
         <div class="pf-list">
           ${feedbackListHtml}
         </div>
@@ -3169,21 +3194,21 @@ function getMeetingArchiveData(){
   return all.filter(x=>{const k=String(x.id||x.endedAt||x.startedAt||x.minutes||'');if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(b.endedAt||b.startedAt||0)-new Date(a.endedAt||a.startedAt||0));
 }
 
-/* ★ [회의록 주차 계산 수정] 월~일 범위로 변경 ★ */
+/* ★ [회의록 주차 계산 수정] 일~토 범위로 변경 ★ */
 function archiveWeekLabel(item){
   const d=new Date(item.endedAt||item.startedAt||Date.now());
   if(isNaN(d))return '날짜 미정';
   
-  // 월요일 구하기
-  const day = d.getDay();
-  const diffToMonday = d.getDate() - day + (day === 0 ? -6 : 1);
-  const mon = new Date(d); mon.setDate(diffToMonday);
-  
   // 일요일 구하기
-  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const day = d.getDay();
+  const diffToSunday = d.getDate() - day;
+  const sun = new Date(d); sun.setDate(diffToSunday);
+  
+  // 토요일 구하기
+  const sat = new Date(sun); sat.setDate(sun.getDate() + 6);
   
   const f = x => `${x.getMonth()+1}.${x.getDate()}`;
-  return `${d.getFullYear()}년 ${f(mon)}–${f(sun)}`;
+  return `${d.getFullYear()}년 ${f(sun)}–${f(sat)}`;
 }
 
 function renderSharedFollowup(){
