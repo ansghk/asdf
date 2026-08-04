@@ -169,6 +169,33 @@
   body.light .memo-text-input{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
   body.light .memo-text-input:focus{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.15);}
 
+  .memo-title-input{
+    width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;padding:10px 14px;color:var(--text);font-family:inherit;
+    font-size:14px;font-weight:700;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+    transition:background .15s, border-color .15s;box-sizing:border-box;
+  }
+  .memo-title-input:focus{
+    outline:none;background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.20);
+  }
+  .memo-title-input::placeholder{color:var(--text-muted);font-weight:400;}
+  body.light .memo-title-input{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+  body.light .memo-title-input:focus{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.15);}
+
+  .memo-content-input{
+    width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;padding:10px 14px;color:var(--text);font-family:inherit;
+    font-size:13.5px;line-height:1.5;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+    transition:background .15s, border-color .15s;box-sizing:border-box;
+    resize:vertical;min-height:64px;max-height:200px;
+  }
+  .memo-content-input:focus{
+    outline:none;background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.20);
+  }
+  .memo-content-input::placeholder{color:var(--text-muted);}
+  body.light .memo-content-input{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);}
+  body.light .memo-content-input:focus{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.15);}
+
   .memo-add-btn{
     flex:0 0 auto;width:40px;height:40px;border-radius:12px;
     background:var(--blue);border:none;display:flex;align-items:center;justify-content:center;
@@ -212,8 +239,13 @@
   body.light .memo-item.pinned{background:rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.14);}
 
   .memo-item-preview{flex:1;min-width:0;}
+  .memo-item-title{
+    font-size:14px;font-weight:700;line-height:1.4;color:var(--text);word-break:break-word;margin:0 0 4px;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;
+    -webkit-box-orient:vertical;
+  }
   .memo-item-text{
-    font-size:13.5px;line-height:1.4;color:var(--text);word-break:break-word;margin:0;
+    font-size:13px;line-height:1.4;color:var(--text-muted);word-break:break-word;margin:0;
     overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;
     -webkit-box-orient:vertical;
   }
@@ -299,6 +331,11 @@
     word-break:break-word;white-space:pre-wrap;
   }
   body.light .memo-modal-content{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);}
+
+  .memo-modal-detail-title{
+    font-size:16px;font-weight:700;color:var(--text);margin:0 0 10px;
+    word-break:break-word;white-space:pre-wrap;
+  }
 
   .memo-modal-meta{display:flex;flex-direction:column;gap:10px;}
 
@@ -1513,10 +1550,8 @@
   </div>
 
   <div class="memo-input-group">
-    <div class="memo-input-row">
-      <input type="text" class="memo-text-input" id="memoInput" placeholder="메모를 입력하세요..." onkeypress="handleMemoKeypress(event)">
-      <button class="memo-add-btn" id="addMemoBtn" onclick="addMemo()" title="추가">+</button>
-    </div>
+    <input type="text" class="memo-title-input" id="memoTitleInput" placeholder="제목을 입력하세요..." onkeypress="handleMemoTitleKeypress(event)">
+    <textarea class="memo-content-input" id="memoInput" placeholder="내용을 입력하세요..." rows="3" onkeydown="handleMemoKeypress(event)"></textarea>
     <div class="memo-dept-row">
       <label class="memo-dept-label">부서:</label>
       <select class="memo-dept-select" id="memoDeptSelect">
@@ -1527,6 +1562,7 @@
         <option value="의전과">의전과</option>
         <option value="공연예술과">공연예술과</option>
       </select>
+      <button class="memo-add-btn" id="addMemoBtn" onclick="addMemo()" title="추가">+</button>
     </div>
   </div>
 
@@ -1541,7 +1577,10 @@
       <button class="memo-modal-close" onclick="closeDetailModal()">✕</button>
     </div>
     <div class="memo-modal-body">
-      <div class="memo-modal-content" id="modalContent"></div>
+      <div class="memo-modal-content">
+        <h3 class="memo-modal-detail-title" id="modalTitle"></h3>
+        <div id="modalContent"></div>
+      </div>
       <div class="memo-modal-meta" id="modalMeta"></div>
     </div>
     <div class="memo-modal-actions">
@@ -3686,7 +3725,7 @@ function openMemoPanel(){
   document.getElementById('memoPanel').classList.add('open');
   document.getElementById('memoOverlay').classList.add('open');
   loadMemosFromSheet();
-  document.getElementById('memoInput').focus();
+  document.getElementById('memoTitleInput').focus();
 }
 
 function closeMemoPanel(){
@@ -3702,7 +3741,8 @@ function closeDetailModal(){
 
 function openDetailModal(memo){
   currentDetailMemoId = memo.id;
-  document.getElementById('modalContent').textContent = memo.text;
+  document.getElementById('modalTitle').textContent = memo.title || '(제목 없음)';
+  document.getElementById('modalContent').textContent = memo.text || '';
   
   const deptKey = getDeptColorKey(memo.dept);
   const metaHtml = `
@@ -3795,10 +3835,15 @@ function showSyncStatus(syncing){
 
 // 메모 추가
 async function addMemo(){
+  const titleInput = document.getElementById('memoTitleInput');
   const input = document.getElementById('memoInput');
+  const title = titleInput.value.trim();
   const text = input.value.trim();
   
-  if(!text) return;
+  if(!title){
+    titleInput.focus();
+    return;
+  }
   
   document.getElementById('addMemoBtn').disabled = true;
   
@@ -3806,6 +3851,7 @@ async function addMemo(){
   const now = new Date();
   const memo = {
     id: Date.now() + Math.random(),
+    title,
     text,
     dept,
     pinned: false,
@@ -3816,18 +3862,27 @@ async function addMemo(){
   };
   
   memos.unshift(memo);
+  titleInput.value = '';
   input.value = '';
   
   await saveMemosToSheet();
   renderMemos();
   
   document.getElementById('addMemoBtn').disabled = false;
-  input.focus();
+  titleInput.focus();
 }
 
-// Enter 키 감지
+// 제목 입력창 Enter → 내용으로 포커스 이동
+function handleMemoTitleKeypress(e){
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    document.getElementById('memoInput').focus();
+  }
+}
+
+// 내용 입력창 Enter 감지 (Shift+Enter는 줄바꿈, Ctrl/Cmd+Enter는 저장)
 function handleMemoKeypress(e){
-  if(e.key === 'Enter' && !e.shiftKey){
+  if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
     e.preventDefault();
     addMemo();
   }
@@ -3853,7 +3908,8 @@ function renderMemos(){
     return `
       <div class="memo-item ${memo.pinned ? 'pinned' : ''}" onclick="openDetailModal(${JSON.stringify(memo).replace(/"/g, '&quot;')})">
         <div class="memo-item-preview">
-          <p class="memo-item-text">${escapeHtml(memo.text)}</p>
+          <p class="memo-item-title">${escapeHtml(memo.title || '(제목 없음)')}</p>
+          ${memo.text ? `<p class="memo-item-text">${escapeHtml(memo.text)}</p>` : ''}
           <div class="memo-item-meta">
             <span class="memo-dept-badge" style="color:var(--dept-${deptKey});border-color:var(--dept-${deptKey})20;">
               ${escapeHtml(memo.dept)}
