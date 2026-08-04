@@ -32,6 +32,9 @@
     --dept-protocol:#30D158;     /* green */
     --dept-performance:#FF453A;  /* red */
     --dept-etc:#AC8E68;
+
+    /* 구조색(트랙/헤어라인/칩 배경 등) 테마 반전용 — 다크: 흰색, 라이트: 검정색 */
+    --ink-rgb:255,255,255;
   }
 
   body.light{
@@ -51,6 +54,7 @@
     --dept-protocol:#34C759;
     --dept-performance:#FF3B30;
     --dept-etc:#A2845E;
+    --ink-rgb:0,0,0;
   }
   body.light::before{
     background:
@@ -139,6 +143,7 @@
   .memo-title{font-size:16px;font-weight:700;margin:0;}
   .memo-sync-indicator{font-size:10px;color:var(--text-muted);margin-left:8px;}
   .memo-sync-indicator.syncing{color:#30D158;font-weight:600;}
+  .memo-subtitle{font-size:10.5px;color:var(--text-dim);margin:3px 0 0;font-weight:500;}
 
   .memo-close-btn{
     width:32px;height:32px;border-radius:8px;
@@ -281,8 +286,8 @@
 
   .memo-list::-webkit-scrollbar{width:6px;}
   .memo-list::-webkit-scrollbar-track{background:transparent;}
-  .memo-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
-  .memo-list::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2);}
+  .memo-list::-webkit-scrollbar-thumb{background:rgba(var(--ink-rgb),0.1);border-radius:3px;}
+  .memo-list::-webkit-scrollbar-thumb:hover{background:rgba(var(--ink-rgb),0.2);}
 
   /* 상세보기 모달 */
   .memo-modal-overlay{
@@ -472,7 +477,7 @@
     transition:background .2s ease,color .2s ease;
   }
   .range-tab.active{
-    background:rgba(255,255,255,0.16);
+    background:rgba(var(--ink-rgb),0.16);
     color:var(--text);
     box-shadow:0 2px 10px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.25);
   }
@@ -526,7 +531,7 @@
   .dept-chart-cell:active{transform:scale(.97);}
   .dept-chart-cell.active{
     background:var(--glass-strong);
-    border-color:rgba(255,255,255,0.42);
+    border-color:rgba(var(--ink-rgb),0.42);
     box-shadow:0 8px 32px rgba(0,0,0,0.5), inset 0 0.5px 0 rgba(255,255,255,0.2);
   }
   .dept-chart-hint{
@@ -536,7 +541,7 @@
   .chart-row{display:flex;align-items:center;gap:8px;}
   .chart-label{font-size:10px;color:var(--text-dim);flex:0 0 24px;font-weight:600;}
   .chart-bar-track{
-    flex:1;height:5px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:hidden;
+    flex:1;height:5px;border-radius:100px;background:rgba(var(--ink-rgb),0.08);overflow:hidden;
   }
   .chart-bar-fill{
     display:block;height:100%;border-radius:100px;
@@ -555,7 +560,7 @@
   .dept-info-btn{
     flex:0 0 auto;height:22px;padding:0 9px;border-radius:100px;
     display:flex;align-items:center;justify-content:center;gap:3px;
-    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+    background:rgba(var(--ink-rgb),0.08);border:1px solid rgba(var(--ink-rgb),0.12);
     font-size:10px;font-weight:600;color:var(--text-muted);
     line-height:1;white-space:nowrap;
     transition:background .15s, transform .1s;
@@ -564,7 +569,7 @@
   .ms-gauge{
     --lamp:var(--dept-color, #8E8E93);
     margin-top:auto;padding-top:14px;
-    border-top:1px solid rgba(255,255,255,0.08);
+    border-top:1px solid rgba(var(--ink-rgb),0.08);
     display:flex;flex-direction:column;gap:7px;
   }
   .ms-gauge.none{ --lamp:#8E8E93; }
@@ -586,7 +591,7 @@
   .ms-gauge-track{display:flex;gap:3px;height:8px;}
   .ms-seg{
     flex:1 1 0;min-width:0;height:100%;border-radius:100px;
-    background:rgba(255,255,255,0.10);overflow:hidden;
+    background:rgba(var(--ink-rgb),0.10);overflow:hidden;
   }
   .ms-seg-fill{
     display:block;height:100%;border-radius:100px;background:var(--lamp);
@@ -661,7 +666,7 @@
 
   .dept-focus-bar{
     margin:22px 18px 0;padding:16px 0 0;
-    border-top:1px solid rgba(255,255,255,0.07);
+    border-top:1px solid rgba(var(--ink-rgb),0.07);
     display:flex;flex-direction:column;gap:12px;
   }
   .dept-focus-name{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;}
@@ -697,7 +702,7 @@
   .cat-card.open .chevron{transform:rotate(-135deg);margin-top:3px;}
   .cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
   .cat-card.open .cat-body{max-height:2000px;}
-  .item{padding:13px 16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;}
+  .item{padding:13px 16px;border-top:1px solid rgba(var(--ink-rgb),0.06);display:flex;gap:10px;}
   .item-num{font-size:11px;font-weight:600;color:var(--dept-color,var(--blue));flex:0 0 20px;}
   .item-title{font-size:13.5px;font-weight:600;margin:0 0 3px;}
   .item-content{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:0 0 6px;}
@@ -725,19 +730,19 @@
     background:color-mix(in srgb, var(--dept-color,var(--blue)) 18%, transparent);
     color:var(--text);font-weight:700;
   }
-  .calendar-day.selected:not(.today){background:rgba(255,255,255,0.10);color:var(--text);}
+  .calendar-day.selected:not(.today){background:rgba(var(--ink-rgb),0.10);color:var(--text);}
   .calendar-day-dot{width:4px;height:4px;border-radius:50%;background:var(--dept-color,var(--blue));}
   .calendar-day-dots{display:flex;gap:2px;align-items:center;justify-content:center;}
   .calendar-day-dots .dot{width:4px;height:4px;border-radius:50%;}
   .calendar-day-items{display:flex;flex-direction:column;gap:3px;margin-top:6px;width:100%;min-width:0;}
   .calendar-day-item{font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .calendar-day-item .item-dot{width:6px;height:6px;border-radius:50%;background:var(--item-color);flex-shrink:0;}
-  .calendar-day-detail{margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px;}
+  .calendar-day-detail{margin-top:16px;border-top:1px solid rgba(var(--ink-rgb),0.07);padding-top:12px;}
   .calendar-day-detail-label{font-size:11px;color:var(--text-dim);font-weight:600;margin:0 0 10px;}
   
   .schedule-row{
     display:flex;flex-direction:column;gap:4px;
-    background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.08);
+    background:rgba(var(--ink-rgb),0.045);border:1px solid rgba(var(--ink-rgb),0.08);
     border-radius:14px;padding:12px 14px;margin-bottom:8px;
   }
   .schedule-dday{
@@ -768,7 +773,7 @@
   .report-summary-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
   .report-chip{
     display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
-    padding:4px 9px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    padding:4px 9px;border-radius:100px;background:rgba(var(--ink-rgb),0.06);border:1px solid rgba(var(--ink-rgb),0.09);
     color:var(--text-muted);
   }
   .report-chip .chip-dot{width:5px;height:5px;border-radius:50%;background:var(--chip-color,var(--blue));}
@@ -777,7 +782,7 @@
     background:var(--glass);border:1px solid var(--glass-border);
     border-radius:var(--radius);padding:4px 0;margin-bottom:12px;
   }
-  .queue-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);}
+  .queue-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid rgba(var(--ink-rgb),0.06);}
   .queue-row:first-child{border-top:none;}
   .queue-left{display:flex;flex-direction:column;gap:2px;}
   .queue-title{font-size:13.5px;font-weight:600;}
@@ -986,7 +991,7 @@
 
   .ring-wrap{flex:0 0 auto;position:relative;width:86px;height:86px;}
   .ring-wrap svg{transform:rotate(-90deg);display:block;}
-  .ring-track{fill:none;stroke:rgba(255,255,255,0.08);stroke-width:8;}
+  .ring-track{fill:none;stroke:rgba(var(--ink-rgb),0.08);stroke-width:8;}
   .ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s, stroke .3s;}
   .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .ring-pct{font-size:19px;font-weight:700;line-height:1;}
@@ -996,14 +1001,14 @@
   .dept-chips-row{display:flex;flex-wrap:wrap;gap:6px;}
   .dept-chip{
     display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
-    padding:6px 12px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+    padding:6px 12px;border-radius:100px;background:rgba(var(--ink-rgb),0.06);border:1px solid rgba(var(--ink-rgb),0.09);
     color:var(--text-muted);
   }
   .dept-chip .chip-dot{width:6px;height:6px;border-radius:50%;background:#30D158;}
   .dept-chip.missing{background:rgba(255,69,58,0.12);border-color:rgba(255,69,58,0.25);color:#FF8A80;}
   .dept-chip.missing .chip-dot{background:#FF453A;}
 
-  .up-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);border-radius:14px;}
+  .up-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(var(--ink-rgb),0.035);border:1px solid rgba(var(--ink-rgb),0.07);border-radius:14px;}
   .up-dday{
     flex:0 0 46px;font-weight:700;font-size:11px;text-align:center;padding:5px 0;border-radius:8px;
     background:rgba(255,159,10,0.16);
@@ -1018,7 +1023,7 @@
   .state-box{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
   .state-box .big{font-size:15px;color:var(--text);font-weight:600;margin-bottom:6px;}
   .retry-btn{
-    margin-top:14px;background:rgba(255,255,255,0.10);border:1px solid var(--glass-border-strong);
+    margin-top:14px;background:rgba(var(--ink-rgb),0.10);border:1px solid var(--glass-border-strong);
     color:var(--text);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;
   }
   .skeleton{
@@ -1069,7 +1074,7 @@
   }
   .ms-count{font-size:13px;font-weight:700;min-width:64px;text-align:center;}
   .ms-count .cur{color:var(--dept-color,var(--blue));}
-  .ms-track{height:5px;border-radius:100px;background:rgba(255,255,255,0.08);margin-top:10px;overflow:visible;}
+  .ms-track{height:5px;border-radius:100px;background:rgba(var(--ink-rgb),0.08);margin-top:10px;overflow:visible;}
   .ms-fill{height:100%;border-radius:100px;background:var(--dept-color,var(--blue));transition:width .35s ease;box-shadow:0 0 8px var(--dept-color,var(--blue)), 0 0 12px rgba(255,159,10,0.3);}
   .ms-fill.done{background:var(--dept-color,#30D158);box-shadow:0 0 12px var(--dept-color,#30D158), 0 0 20px rgba(255,159,10,0.5);animation:bar-glow 2s ease-in-out infinite;}
   .ms-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:16px 0 10px;}
@@ -1088,14 +1093,14 @@
     border-radius:12px;padding:9px 18px;font-size:12.5px;font-weight:700;
   }
 
-  .ms-archive{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);}
+  .ms-archive{margin-top:14px;padding-top:12px;border-top:1px solid rgba(var(--ink-rgb),0.07);}
   .ms-archive-toggle{display:flex;align-items:center;gap:7px;width:100%;font-size:11.5px;font-weight:600;color:var(--text-muted);}
   .ms-archive-chevron{width:6px;height:6px;border-right:1.5px solid var(--text-dim);border-bottom:1.5px solid var(--text-dim);transform:rotate(-45deg);}
   .ms-archive.open .ms-archive-chevron{transform:rotate(45deg);}
   .ms-archive-body{display:none;margin-top:10px;flex-direction:column;gap:2px;}
   .ms-archive.open .ms-archive-body{display:flex;}
-  .ms-archive-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
-  .ms-archive-nav-btn{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);}
+  .ms-archive-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid rgba(var(--ink-rgb),0.06);}
+  .ms-archive-nav-btn{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text);background:rgba(var(--ink-rgb),0.06);border:1px solid rgba(var(--ink-rgb),0.09);}
   .ms-archive-nav-label{font-size:12px;font-weight:700;color:var(--text);min-width:120px;text-align:center;}
   .ms-archive-empty{font-size:12px;color:var(--text-dim);text-align:center;padding:14px 0 6px;}
   .ms-archive-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-muted);padding:5px 0;}
@@ -1171,14 +1176,14 @@
   /* 상단 5개 과 선택 탭 바 */
   .pf-dept-tabs{display:grid;grid-template-columns:repeat(5, 1fr);gap:10px;margin-bottom:18px;}
   .pf-dept-tab{
-    padding:16px;border-radius:16px;background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.08);text-align:center;
+    padding:16px;border-radius:16px;background:rgba(var(--ink-rgb),0.03);
+    border:1px solid rgba(var(--ink-rgb),0.08);text-align:center;
     font-size:14.5px;font-weight:700;color:var(--text-muted);
     cursor:pointer;transition:all .2s ease;
   }
-  .pf-dept-tab:hover{background:rgba(255,255,255,0.06);}
+  .pf-dept-tab:hover{background:rgba(var(--ink-rgb),0.06);}
   .pf-dept-tab.active{
-    background:rgba(255,255,255,0.08);
+    background:rgba(var(--ink-rgb),0.08);
     border-color:var(--dept-color, #FF9F0A);
     color:var(--text);
     box-shadow:0 0 16px color-mix(in srgb, var(--dept-color, #FF9F0A) 30%, transparent);
@@ -1196,7 +1201,7 @@
     width:100%; min-width:0;transition:box-shadow 0.3s ease;
   }
   .pf-summary-card.last-month{
-    border-color:rgba(255,255,255,0.12);
+    border-color:rgba(var(--ink-rgb),0.12);
     box-shadow:var(--glass-shadow);
   }
   .pf-summary-card[data-progress="0"] { box-shadow:var(--glass-shadow), 0 0 12px rgba(255,159,10,0.15); }
@@ -1222,7 +1227,7 @@
     white-space:nowrap;flex-shrink:0;margin-left:auto;
   }
   .pf-summary-stats span b{color:var(--dept-color, #0A84FF);font-size:clamp(11px, 3.2vw, 14.5px);}
-  .pf-summary-bar-bg{height:8px;border-radius:100px;background:rgba(255,255,255,0.08);overflow:visible;}
+  .pf-summary-bar-bg{height:8px;border-radius:100px;background:rgba(var(--ink-rgb),0.08);overflow:visible;}
   .pf-summary-bar-fill{height:100%;border-radius:100px;background:var(--dept-color, #0A84FF);transition:width .4s ease;box-shadow:0 0 10px var(--dept-color, #0A84FF), 0 0 16px rgba(255,159,10,0.4);animation:bar-glow 2s ease-in-out infinite;}
 
   .pf-ms-history-list{
@@ -1230,7 +1235,7 @@
   }
   .pf-ms-history-item{
     display:flex;align-items:flex-start;justify-content:space-between;gap:6px;
-    font-size:11.5px;color:var(--text-muted);padding:4px 0;border-top:1px solid rgba(255,255,255,0.05);
+    font-size:11.5px;color:var(--text-muted);padding:4px 0;border-top:1px solid rgba(var(--ink-rgb),0.05);
   }
   .pf-ms-history-item:first-child{border-top:none;}
   .pf-ms-history-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
@@ -1261,20 +1266,20 @@
 
   .pf-list{display:flex;flex-direction:column;gap:10px;flex:1;}
   .pf-item-box{
-    background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);
+    background:rgba(var(--ink-rgb),0.035);border:1px solid rgba(var(--ink-rgb),0.07);
     border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;
   }
   .pf-item-tag{font-size:10px;color:var(--text-dim);font-weight:600;}
   .pf-item-title{font-size:13px;font-weight:700;color:var(--text);}
   .pf-item-desc{font-size:11.5px;color:var(--text-muted);line-height:1.4;}
 
-  .pf-row-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;font-size:12.5px;color:var(--text);}
+  .pf-row-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(var(--ink-rgb),0.04);border:1px solid rgba(var(--ink-rgb),0.08);border-radius:12px;font-size:12.5px;color:var(--text);}
   .pf-del-btn{color:var(--text-dim);font-size:13px;padding:2px 6px;opacity:.6;transition:opacity .15s;}
   .pf-del-btn:hover{opacity:1;color:#FF453A;}
 
   .pf-input-group{display:flex;gap:8px;margin-top:auto;}
   .pf-input,.pf-textarea{
-    flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);
+    flex:1;background:rgba(var(--ink-rgb),0.04);border:1px solid var(--glass-border);
     border-radius:12px;padding:11px 14px;font:inherit;font-size:12.5px;color:var(--text);outline:none;
   }
   .pf-textarea{min-height:90px;resize:vertical;line-height:1.5;}
@@ -1305,7 +1310,7 @@
   .prep-sub{font-size:13px;color:var(--text-muted);margin:0}
   .prep-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:22px;box-shadow:var(--glass-shadow);backdrop-filter:blur(24px)}
   .prep-field{display:flex;flex-direction:column;gap:8px}.prep-label{font-size:14px;color:var(--text);font-weight:700}
-  .prep-input,.prep-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit;font-size:14px;outline:none}
+  .prep-input,.prep-textarea{width:100%;background:rgba(var(--ink-rgb),.04);border:1px solid var(--glass-border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit;font-size:14px;outline:none}
   .prep-textarea.tall{min-height:300px;resize:vertical;line-height:1.6}
   .prep-savebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border:1px solid var(--glass-border);background:var(--glass);border-radius:16px;margin-top:20px}
   .prep-saved{font-size:12px;color:#30D158}
@@ -1329,7 +1334,7 @@
   .ppt-style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
   .ppt-style-field{display:flex;flex-direction:column;gap:6px;min-width:0}
   .ppt-style-field > span{font-size:11px;color:var(--text-dim);font-weight:700;display:flex;justify-content:space-between;gap:6px}
-  .ppt-style-field select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;font-size:12.5px;outline:none}
+  .ppt-style-field select{width:100%;background:rgba(var(--ink-rgb),.04);border:1px solid var(--glass-border);color:var(--text);border-radius:10px;padding:9px 10px;font:inherit;font-size:12.5px;outline:none}
   .ppt-style-field input[type=range]{width:100%;accent-color:var(--blue)}
   .ppt-style-val{color:var(--text-muted);font-weight:800}
   .ppt-style-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
@@ -1545,6 +1550,7 @@
       <h2 class="memo-title">📝 메모
         <span class="memo-sync-indicator" id="syncIndicator"></span>
       </h2>
+      <p class="memo-subtitle">이 기기에만 저장되는 개인 메모예요 · 다른 사람에게는 보이지 않아요</p>
     </div>
     <button class="memo-close-btn" onclick="closeMemoPanel()">✕</button>
   </div>
@@ -3715,7 +3721,9 @@ document.addEventListener('DOMContentLoaded',initModeSwitch);
 // ==================== 메모 기능 ====================
 
 const MEMO_DEPTS = ['전체','문화기획과','영상제작과','사진과','의전과','공연예술과'];
-const MEMO_API_URL = 'https://script.google.com/macros/d/YOUR_DEPLOYMENT_ID/usercallback';
+// ★ 메모는 서버(구글시트)와 동기화하지 않는 개인용 기능입니다.
+// 이 기기의 브라우저 저장공간(localStorage)에만 남고, 다른 사람이나 다른 기기에서는 보이지 않습니다.
+const MEMO_STORAGE_KEY = 'culture_dashboard_personal_memos_v1';
 
 let memos = [];
 let currentDetailMemoId = null;
@@ -3724,7 +3732,7 @@ let currentDetailMemoId = null;
 function openMemoPanel(){
   document.getElementById('memoPanel').classList.add('open');
   document.getElementById('memoOverlay').classList.add('open');
-  loadMemosFromSheet();
+  loadMemosFromLocal();
   document.getElementById('memoTitleInput').focus();
 }
 
@@ -3767,65 +3775,56 @@ function toggleDetailPin(){
   const memo = memos.find(m => m.id === currentDetailMemoId);
   if(memo){
     memo.pinned = !memo.pinned;
-    saveMemosToSheet();
+    saveMemosToLocal();
   }
 }
 
 function deleteDetailMemo(){
   if(confirm('이 메모를 삭제하시겠습니까?')){
     memos = memos.filter(m => m.id !== currentDetailMemoId);
-    saveMemosToSheet();
+    saveMemosToLocal();
     closeDetailModal();
   }
 }
 
-// Google Sheets에서 메모 로드
-async function loadMemosFromSheet(){
+// 이 기기의 localStorage에서 메모 로드
+function loadMemosFromLocal(){
   try {
-    showSyncStatus(true);
-    const response = await fetch(MEMO_API_URL + '?action=getMemos', {
-      cache: 'no-store'
+    const raw = localStorage.getItem(MEMO_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    memos = (Array.isArray(parsed) ? parsed : []).sort((a, b) => {
+      if(a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
     });
-    const result = await response.json();
-    
-    if(result.success && Array.isArray(result.memos)){
-      memos = result.memos.sort((a, b) => {
-        if(a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-      renderMemos();
-    }
-    showSyncStatus(false);
+    renderMemos();
   } catch(err){
-    console.error('Failed to load memos:', err);
-    showSyncStatus(false);
+    console.error('Failed to load memos from local storage:', err);
+    memos = [];
+    renderMemos();
   }
 }
 
-// Google Sheets에 메모 저장
-async function saveMemosToSheet(){
+// 이 기기의 localStorage에 메모 저장 (서버 동기화 없음 — 개인 전용)
+function saveMemosToLocal(){
   try {
     showSyncStatus(true);
-    const response = await fetch(MEMO_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'saveMemos', memos: memos }),
-      redirect: 'follow'
-    });
-    const result = await response.json();
+    localStorage.setItem(MEMO_STORAGE_KEY, JSON.stringify(memos));
     showSyncStatus(false);
   } catch(err){
-    console.error('Failed to save memos:', err);
-    showSyncStatus(false);
+    console.error('Failed to save memos to local storage:', err);
+    showSyncStatus(false, true);
   }
 }
 
-// 동기화 상태 표시
-function showSyncStatus(syncing){
+// 저장 상태 표시
+function showSyncStatus(saving, failed){
   const indicator = document.getElementById('syncIndicator');
-  if(syncing){
+  if(saving){
     indicator.textContent = '⏳ 저장 중...';
     indicator.classList.add('syncing');
+  } else if(failed){
+    indicator.textContent = '⚠️ 저장 실패';
+    indicator.classList.remove('syncing');
   } else {
     indicator.textContent = '✓ 저장됨';
     indicator.classList.remove('syncing');
@@ -3834,7 +3833,7 @@ function showSyncStatus(syncing){
 }
 
 // 메모 추가
-async function addMemo(){
+function addMemo(){
   const titleInput = document.getElementById('memoTitleInput');
   const input = document.getElementById('memoInput');
   const title = titleInput.value.trim();
@@ -3865,7 +3864,7 @@ async function addMemo(){
   titleInput.value = '';
   input.value = '';
   
-  await saveMemosToSheet();
+  saveMemosToLocal();
   renderMemos();
   
   document.getElementById('addMemoBtn').disabled = false;
@@ -3944,7 +3943,8 @@ function togglePin(id){
   const memo = memos.find(m => m.id === id);
   if(memo){
     memo.pinned = !memo.pinned;
-    saveMemosToSheet();
+    saveMemosToLocal();
+    renderMemos();
   }
 }
 
@@ -3952,7 +3952,8 @@ function togglePin(id){
 function deleteMemo(id){
   if(confirm('이 메모를 삭제하시겠습니까?')){
     memos = memos.filter(m => m.id !== id);
-    saveMemosToSheet();
+    saveMemosToLocal();
+    renderMemos();
   }
 }
 
