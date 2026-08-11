@@ -1280,7 +1280,7 @@
   .pf-title-area{display:flex;flex-direction:column;gap:4px;}
   .pf-title{font-size:26px;font-weight:800;margin:0;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;}
   .pf-sub{font-size:12.5px;color:var(--text-muted);margin:0;}
-  .pf-actions{display:flex;gap:8px;}
+  .pf-actions{display:flex;gap:8px;flex-wrap:wrap;}
   .pf-btn{
     display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;
     font-size:12.5px;font-weight:700;background:var(--glass);border:1px solid var(--glass-border);
@@ -1361,7 +1361,7 @@
   .pf-ms-history-val{font-size:11px;color:var(--text-dim);flex-shrink:0;padding-top:1px;}
 
   /* 하단 3컬럼 영역 */
-  .pf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;}
+  .pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;}
   .pf-card{
     background:var(--glass);border:1px solid var(--glass-border);
     border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;
@@ -4352,6 +4352,7 @@ function renderMeetingMode(){
         <p class="pf-sub">지난주 지시를 회수하고, 과별 한일/할일과 마일스톤을 보면서 피드백을 기록합니다. 주차별로 따로 저장됩니다.</p>
       </div>
       <div class="pf-actions">
+        <button class="pf-btn" onclick="forceWeekClose()">🧪 주 마감(수동)</button>
         <button class="pf-btn" onclick="openMeetingArchive()">🗂 지난 회의록 보기</button>
         <button class="pf-btn primary" onclick="saveMeetingNow()">💾 저장 및 회의록 생성</button>
       </div>
@@ -4360,8 +4361,6 @@ function renderMeetingMode(){
     <div class="pf-dept-tabs">
       ${deptTabsHtml}
     </div>
-
-    ${reviewCardHtml}
 
     <!-- 🎯 상단 2열 마일스톤 카드 영역 -->
     <div class="pf-milestones-row">
@@ -4399,7 +4398,7 @@ function renderMeetingMode(){
 
     <div class="pf-grid">
       <div style="display:flex; flex-direction:column; gap:16px;">
-        <div class="pf-card">
+        <div class="pf-card" style="flex:1;">
           <div class="pf-card-head">
             <h3 class="pf-card-title">📗 한 주간 한 일 <small>(일일보고 집계)</small></h3>
             <span class="pf-card-count mono">${currentDeptItems.length}건</span>
@@ -4410,33 +4409,35 @@ function renderMeetingMode(){
         </div>
       </div>
 
-      <div class="pf-card">
-        <div class="pf-card-head">
-          <h3 class="pf-card-title">🚀 차주중점업무 <small>(차주할일)</small></h3>
-          <span class="pf-card-count mono">${currentNextList.length}건</span>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="pf-card" style="flex:1;">
+          <div class="pf-card-head">
+            <h3 class="pf-card-title">🚀 차주중점업무 <small>(차주할일)</small></h3>
+            <span class="pf-card-count mono">${currentNextList.length}건</span>
+          </div>
+          <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (수동 삭제 전까지 현황판 유지)</p>
+          <div class="pf-list">
+            ${nextListHtml}
+          </div>
+          <div class="pf-input-group">
+            <input class="pf-input" id="inputNext" placeholder="차주 예정 업무 입력" onkeydown="if(event.key==='Enter') addFeedbackItem('next')">
+            <button class="pf-input-btn" onclick="addFeedbackItem('next')">+</button>
+          </div>
         </div>
-        <p class="pf-desc">차주 예정 중점 과제를 입력하세요. (수동 삭제 전까지 현황판 유지)</p>
-        <div class="pf-list">
-          ${nextListHtml}
-        </div>
-        <div class="pf-input-group">
-          <input class="pf-input" id="inputNext" placeholder="차주 예정 업무 입력" onkeydown="if(event.key==='Enter') addFeedbackItem('next')">
-          <button class="pf-input-btn" onclick="addFeedbackItem('next')">+</button>
-        </div>
-      </div>
 
-      <div class="pf-card highlight">
-        <div class="pf-card-head">
-          <h3 class="pf-card-title">💡 지시사항 & 피드백</h3>
-          <span class="pf-card-count mono">${currentFeedbackList.length}건</span>
-        </div>
-        <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (수동 삭제 전까지 현황판 유지)</p>
-        <div class="pf-list">
-          ${feedbackListHtml}
-        </div>
-        <div class="pf-input-group">
-          <input class="pf-input" id="inputDecisions" placeholder="피드백 / 지시사항 입력" onkeydown="if(event.key==='Enter') addFeedbackItem('decisions')">
-          <button class="pf-input-btn orange" onclick="addFeedbackItem('decisions')">+</button>
+        <div class="pf-card highlight" style="flex:1;">
+          <div class="pf-card-head">
+            <h3 class="pf-card-title">💡 지시사항 & 피드백</h3>
+            <span class="pf-card-count mono">${currentFeedbackList.length}건</span>
+          </div>
+          <p class="pf-desc">작성 후 저장 시 기본모드 과별 수신함에 전달됩니다. (수동 삭제 전까지 현황판 유지)</p>
+          <div class="pf-list">
+            ${feedbackListHtml}
+          </div>
+          <div class="pf-input-group">
+            <input class="pf-input" id="inputDecisions" placeholder="피드백 / 지시사항 입력" onkeydown="if(event.key==='Enter') addFeedbackItem('decisions')">
+            <button class="pf-input-btn orange" onclick="addFeedbackItem('decisions')">+</button>
+          </div>
         </div>
       </div>
 
