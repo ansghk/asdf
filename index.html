@@ -263,6 +263,25 @@
     .memo-body-split .memo-dept-row{flex:0 0 auto;}
   }
 
+  /* 모바일: 메모 목록 줄임, 작성란 크게 */
+  @media (max-width:819px){
+    .memo-body-split .memo-list{
+      order:2;flex:0 0 auto;max-height:180px;overflow-y:auto;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      padding:10px 14px;margin-top:8px;
+    }
+    body.light .memo-body-split .memo-list{border-bottom-color:rgba(0,0,0,0.06);}
+    
+    .memo-body-split .memo-input-group{
+      order:1;flex:0 0 auto;padding:14px 16px 8px;
+    }
+    .memo-body-split .memo-content-input{
+      height:280px;font-size:14px;line-height:1.5;
+      padding:12px 14px;resize:none;
+    }
+    .memo-body-split .memo-title-input{font-size:14px;padding:10px 14px;}
+  }
+
   .memo-item{
     background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.08);
     border-radius:14px;padding:12px 14px;-webkit-backdrop-filter:blur(24px);
@@ -3994,15 +4013,25 @@ function checkWeeklyReset(){
   const prevKey = meetingState.weekKey;
   snapshotCurrentWeek();
 
-  const unresolved = [...(meetingState.next||[]), ...(meetingState.decisions||[])]
-    .filter(x => !x.done && x.status !== '완료' && x.status !== '취소')
-    .map(x => ({ ...x, status:'대기', fromWeek: prevKey, srcType: x.type }));
+  // ★ 완료 항목 → .archived=true (데이터 유지, 화면 비표시)
+  // ★ 미완료 항목 → .carry++ 증가 (다음 주로 자동 이월)
+  const processed = [...(meetingState.next||[]), ...(meetingState.decisions||[])].map(x => {
+    if(x.done || x.status === '완료' || x.status === '취소') {
+      return { ...x, archived: true };  // 완료 → 숨김
+    } else {
+      return { ...x, carry: (Number(x.carry)||0) + 1, status: '대기' };  // 미완료 → carry++
+    }
+  });
 
-  const stillOpen = (meetingState.review||[])
-    .filter(x => x.status !== '완료' && x.status !== '취소' && x.status !== '이월')
-    .map(x => ({ ...x, status:'대기', carry:(Number(x.carry)||0)+1 }));
+  const stillOpen = (meetingState.review||[]).map(x => {
+    if(x.status === '완료' || x.status === '취소') {
+      return { ...x, archived: true };  // 완료 → 숨김
+    } else {
+      return { ...x, status:'대기', carry: (Number(x.carry)||0) + 1 };  // 미완료 → carry++
+    }
+  });
 
-  meetingState.review = [...stillOpen, ...unresolved];
+  meetingState.review = [...stillOpen, ...processed];
   meetingState.next = [];
   meetingState.decisions = [];
   meetingState.notes = '';
@@ -4640,7 +4669,9 @@ function archiveWeekLabel(item){
 // ★ 기본모드 회의 후속 업무 카드 항목 삭제 (id 기준)
 function removeSharedItem(type, id) {
   if(!meetingState[type]) return;
-  meetingState[type] = meetingState[type].filter(x => x.id !== id);
+  const item = meetingState[type].find(x => x.id === id);
+  if(!item) return;
+  item.archived = true;  // ★ 삭제 대신 archived=true로 표시 (데이터 유지)
   if (state.data) state.data.sharedMeeting = getSharedMeeting();
   saveMeetingState(true);
   renderSharedFollowup();
@@ -4793,7 +4824,7 @@ function renderSharedFollowup(){
   const el=document.getElementById('sharedFollowup');if(!el)return;
   const m=getSharedMeeting();
   const selected=state.dept||ALL_DEPTS;
-  const matches=x=>selected===ALL_DEPTS||x.dept===selected;
+  const matches=x=>(selected===ALL_DEPTS||x.dept===selected)&&x.archived!==true;
   const decisions=m.decisions.filter(matches),next=m.next.filter(matches);
   const archiveCount=getMeetingArchiveData().length;
   if(!decisions.length&&!next.length&&!archiveCount){el.innerHTML='';return}
