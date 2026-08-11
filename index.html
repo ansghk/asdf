@@ -2493,9 +2493,8 @@ function renderBriefing(){
     <div class="briefing-card upcoming-side-card ${isUpcomingOpen ? 'open' : ''}" id="upcomingSideCard">
       <button class="upcoming-toggle-btn" id="upcomingSideToggleBtn">
         <div class="upcoming-head-left">
-          <span class="upcoming-eyebrow">다가오는 일정</span>
           <h3 class="upcoming-title-text">
-            놓치면 안 되는 일
+            다가오는 일정
             <span class="up-side-chevron"></span>
           </h3>
         </div>
@@ -4808,8 +4807,8 @@ function renderSharedFollowup(){
       </label>
       <span class="shared-item-body" onclick="openTaskDetail('${type}','${item.id}')" title="눌러서 코멘트 남기기">
         <span class="shared-item-title">
-          <b>${escapeHtml(item.text)}</b>
           <span class="shared-dept-badge" style="--badge-color:var(--dept-${DEPT_COLOR_KEY[item.dept]||'culture'})">${escapeHtml(item.dept)}</span>
+          <b>${escapeHtml(item.text)}</b>
           ${carry>0?`<span class="pf-tag carry ${carry>=2?'danger':''}">${carry}주 이월</span>`:''}
           <span class="cmt-badge ${cmtCount?'':'empty'}">💬 ${cmtCount}</span>
         </span>
