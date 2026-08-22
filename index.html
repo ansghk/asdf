@@ -2481,39 +2481,39 @@ function openOpsChildEditor(parentId,childId='',source=''){
 async function saveOpsChild(parentId,childId='',source=''){
   const parent=managedOps().find(x=>x.id===parentId),title=childTitle.value.trim();if(!parent||!title)return alert('업무 제목을 입력해주세요.');let prog=Math.max(0,Math.min(100,Number(childProgress.value)||0));const data={parentId,level:'task',type:parent.type,title,desc:childDesc.value.trim(),dept:childDept.value,depts:[childDept.value],status:'대기',progress:prog,dueDate:childDue.value,priority:parent.priority||'보통'};if(!childId && source) data.source=source;// ★ v15:회의모드에서 추가된 세부업무만 '+추가' 표시용 source 기록
   try{
-    const result=childId?await opsApi('opsUpdate',{id:childId,...data}):await opsApi('opsAdd',data);if(!(result&&result.local)) await load();if(source==='회의'){ render();renderMeetingMode();} else { render();openOpsDetail(parentId);}
+    const result=childId?await opsApiServerOnly('opsUpdate',{id:childId,...data}):await opsApiServerOnly('opsAdd',data);if(!(result&&result.local)) await load();if(source==='회의'){ render();renderMeetingMode();} else { render();openOpsDetail(parentId);}
   }catch(e){alert('저장 실패:'+e.message)}
 }
 async function quickChildStatus(id,status,openDetail=true){
   try{
-    const result=await opsApi('opsUpdate',{id,status,progress:status==='완료'?100:status==='대기'?0:50});const k=managedOps().find(x=>x.id===id);if(result&&result.local){render();if(k&&openDetail)openOpsDetail(k.parentId);}
+    const result=await opsApiServerOnly('opsUpdate',{id,status,progress:status==='완료'?100:status==='대기'?0:50});const k=managedOps().find(x=>x.id===id);if(result&&result.local){render();if(k&&openDetail)openOpsDetail(k.parentId);}
     else{await load();const kk=managedOps().find(x=>x.id===id);if(kk&&openDetail)openOpsDetail(kk.parentId);}
   }catch(e){alert(e.message)}
 }
 async function completeOps(id){
   if(!confirm('이 운영업무와 모든 세부업무를 완료 처리할까요?'))return;try{
-    let localUsed=false;const r=await opsApi('opsUpdate',{id,status:'완료',progress:100});localUsed=!!r?.local;for(const k of childOps(id)){const rr=await opsApi('opsUpdate',{id:k.id,status:'완료',progress:100});localUsed=localUsed||!!rr?.local;}
+    let localUsed=false;const r=await opsApiServerOnly('opsUpdate',{id,status:'완료',progress:100});localUsed=!!r?.local;for(const k of childOps(id)){const rr=await opsApiServerOnly('opsUpdate',{id:k.id,status:'완료',progress:100});localUsed=localUsed||!!rr?.local;}
     closeOpsManage();if(localUsed)render();else await load();}catch(e){alert(e.message)}
 }
 async function archiveOps(id){
   if(!confirm('목록에서는 숨기고 이력으로 보관할까요? 데이터는 남습니다.'))return;try{
-    const result=await opsApi('opsArchive',{id,archived:true});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){alert(e.message)}
+    const result=await opsApiServerOnly('opsArchive',{id,archived:true});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){alert(e.message)}
 }
 async function archiveChild(parentId,id){
   if(!confirm('이 세부업무를 보관할까요?'))return;try{
-    const result=await opsApi('opsArchive',{id,archived:true});if(result&&result.local){render();openOpsDetail(parentId);}else{await load();openOpsDetail(parentId);}
+    const result=await opsApiServerOnly('opsArchive',{id,archived:true});if(result&&result.local){render();openOpsDetail(parentId);}else{await load();openOpsDetail(parentId);}
   }catch(e){alert(e.message)}
 }
 async function deleteOps(id){
   const item=managedOps().find(x=>x.id===id);if(!item)return;const kids=childOps(id,true);const msg=kids.length
     ? `정말 삭제할까요?\n\n"${item.title}"과 연결된 세부업무 ${kids.length}건도 함께 완전히 삭제됩니다.\n삭제 후 복원할 수 없습니다.`
     :`정말 "${item.title}"을 완전히 삭제할까요?\n삭제 후 복원할 수 없습니다.`;if(!confirm(msg))return;try{
-    const result=await opsApi('opsDelete',{id});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){
+    const result=await opsApiServerOnly('opsDelete',{id});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){
     alert('삭제 실패:Apps Script에 삭제 API가 아직 배포되지 않았습니다. 함께 제공한 v11.1 Apps Script로 재배포해주세요.');}
 }
 async function deleteChild(parentId,id){
   const item=managedOps().find(x=>x.id===id);if(!item)return;if(!confirm(`"${item.title}" 세부업무를 완전히 삭제할까요?\n삭제 후 복원할 수 없습니다.`))return;try{
-    const result=await opsApi('opsDelete',{id});if(result&&result.local){render();openOpsDetail(parentId);}else{await load();openOpsDetail(parentId);}
+    const result=await opsApiServerOnly('opsDelete',{id});if(result&&result.local){render();openOpsDetail(parentId);}else{await load();openOpsDetail(parentId);}
   }catch(e){
     alert('삭제 실패:Apps Script에 삭제 API가 아직 배포되지 않았습니다. 함께 제공한 v11.1 Apps Script로 재배포해주세요.');}
 }
@@ -2628,7 +2628,7 @@ function openOpsGuide(){
   </div>`;}
 function openOpsArchive(){
   const host=document.getElementById('opsManageHost'),items=rootOps(true).filter(x=>x.archived);host.innerHTML=`<div class="ops-modal-back" onclick="if(event.target===this)closeOpsManage()"><div class="ops-modal" style="width:min(760px,100%)"><div class="ops-modal-head"><div><h2 class="ops-modal-title">지난 운영업무</h2><p class="ops-modal-desc">삭제하지 않고 보관된 업무 이력입니다.</p></div><button class="ops-modal-close" onclick="closeOpsManage()">✕</button></div><div class="ops-modal-body">${items.map(x=>`<div class="ops-work-card" style="--lane-color:${opTypeMeta(x.type).color}"><div class="ops-work-top"><div class="ops-work-name">${escapeHtml(x.title)}</div><span class="ops-work-status">${x.type==='monthly'?(isDeptMonthlyGoal(x)?'과별 월간목표':'통합목표'):opTypeMeta(x.type).label}</span></div><div class="ops-work-meta"><span>${escapeHtml(x.status)}</span><span>${x.completedAt?'완료 '+x.completedAt.slice(0,10):''}</span></div><div class="ops-detail-actions"><button class="ops-mini-btn" onclick="restoreOps('${x.id}')">복원</button></div></div>`).join('')||'<div class="ops-empty">보관된 업무가 없습니다.</div>'}</div></div></div>`;}
-async function restoreOps(id){try{const result=await opsApi('opsArchive',{id,archived:false});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){alert(e.message)}}
+async function restoreOps(id){try{const result=await opsApiServerOnly('opsArchive',{id,archived:false});closeOpsManage();if(result&&result.local)render();else await load();}catch(e){alert(e.message)}}
 let opsMappingView = 'inbox';function isOpsMappingResolved(row){
   const type=opsTypeOf(row);if(type==='unclassified') return false;if(type==='monthly') return !!String(opsGoalOf(row)||'').trim();return type==='routine' || type==='external';}
 function openOpsMapping(view){
@@ -2824,7 +2824,7 @@ function msRefresh(){
 async function msAddGoal(dept,title,desc,btn){
   if(msBusy) return;msBusy = true;if(btn){ btn.disabled = true;btn.textContent = '등록 중…';}
   try{
-    const result = await opsApi('opsAdd',{ type:'monthly',dept:dept,title:title,desc:desc });await load();if(result && result.id) openOpsChildEditor(result.id);// 바로 세부업무(마일스톤) 입력으로 이동
+    const result = await opsApiServerOnly('opsAdd',{ type:'monthly',dept:dept,title:title,desc:desc });await load();if(result && result.id) openOpsChildEditor(result.id);// 바로 세부업무(마일스톤) 입력으로 이동
   }catch(e){
     alert('목표 등록 실패\n' + (e && e.message ? e.message :e));}finally{
     msBusy = false;const b = document.querySelector('[data-ms-add="' + dept + '"]');if(b){ b.disabled = false;b.textContent = '목표등록';}
@@ -2832,7 +2832,7 @@ async function msAddGoal(dept,title,desc,btn){
 }
 async function msDeleteGoal(dept,id,title){
   if(!confirm('"' + title + '" 목표를 삭제할까요? (하위 세부업무도 함께 삭제됩니다)')) return;try{
-    await opsApi('opsDelete',{ id:id });await load();}catch(e){
+    await opsApiServerOnly('opsDelete',{ id:id });await load();}catch(e){
     alert('삭제 실패했습니다.');await load();}
 }
 const MS_ARCHIVE_KEY = 'cultureDashboard_msArchive_v1';const MS_LAST_MONTH_KEY = 'cultureDashboard_msLastMonth_v1';function monthKeyOf(date){
@@ -4478,7 +4478,7 @@ function mwChildRows(item){
 function mwGroups(){
   const roots=rootOps(false);const label={A:'🎯 통합목표',B:'📈 월간목표',C:'⚠️ 외부지시',D:'🔧 임시액션'};const A=roots.filter(x=>isIntegratedMonthlyGoal(x));const B=roots.filter(x=>x.type==='monthly'&&!isIntegratedMonthlyGoal(x)).sort((a,b)=>a.id.localeCompare(b.id));const C=roots.filter(x=>x.type==='external'&&!['완료','보관','취소'].includes(x.status));const D=roots.filter(x=>x.type==='temp'&&!['완료','보관','취소'].includes(x.status));return {A,B,C,D,label};}
 function mwQuickChildStatus(id,status){
-  opsApi('opsUpdate',{id,status,progress:status==='완료'?100:status==='대기'?0:50})
+  opsApiServerOnly('opsUpdate',{id,status,progress:status==='완료'?100:status==='대기'?0:50})
     .then(async r=>{ if(!(r&&r.local)) await load();render();renderMeetingMode();})
     .catch(e=>alert(e.message));}
 function mwSummaryItemRow(x){
@@ -4539,7 +4539,7 @@ function mwActionsPage(){
     </div>`;}
 async function mwAddTempRoot(){
   const title=prompt('임시액션 제목 (예:긴급 수정 요청)');if(!title||!title.trim())return;try{
-    const result=await opsApi('opsAdd',{type:'temp',title:title.trim()});if(!(result&&result.local)) await load();render();renderMeetingMode();if(result&&result.id) openOpsChildEditor(result.id,'','회의');}catch(e){alert('등록 실패:'+e.message)}
+    const result=await opsApiServerOnly('opsAdd',{type:'temp',title:title.trim()});if(!(result&&result.local)) await load();render();renderMeetingMode();if(result&&result.id) openOpsChildEditor(result.id,'','회의');}catch(e){alert('등록 실패:'+e.message)}
 }
 function mwTab3Data(){
   try{
